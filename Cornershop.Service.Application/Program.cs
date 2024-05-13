@@ -1,8 +1,19 @@
+using Cornershop.Service.Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContextFactory<CornershopDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Localhost"),
+    b => b.MigrationsAssembly(typeof(CornershopDbContext).Assembly.FullName)),
+    ServiceLifetime.Transient);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
