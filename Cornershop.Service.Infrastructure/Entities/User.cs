@@ -5,8 +5,14 @@ using Microsoft.EntityFrameworkCore;
 namespace Cornershop.Service.Infrastructure.Entities
 {
     [Index(nameof(Id))]
-    public class User : BaseEntity
+    public class User
     {
+        [Key]
+        [Required]
+        //Not working with SQL Server as string data type
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+
         [Required]
         [MinLength(6)]
         [MaxLength(32)]
@@ -33,5 +39,11 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required bool IsBanned { get; set; } = false;
 
         public string? EmailConfirmationToken { get; set; }
+
+        public ICollection<RatingVote> RatingVotes { get; set; } = [];
+        
+        public DateTimeOffset CreatedTime { get; set; }
+
+        public DateTimeOffset UpdatedTime { get; set; }
     }
 }
