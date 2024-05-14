@@ -3,22 +3,25 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Cornershop.Service.Common.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Entities;
-using Cornershop.Service.Infrastructure.UnitOfWorks;
 using static Cornershop.Service.Common.Enums;
+using Cornershop.Service.Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services
 {
-    public class UserService(IUnitOfWork unitOfWork) : IUserService
+    public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IUserService
     {
         public async Task<UserDTO?> GetById(string id)
         {
-            var user = await unitOfWork.GetRepository<User>().GetById(id);
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
             return Mapper.Map(user);
         }
 
         public async Task<UserDTO?> GetByCredentials(string email, string password)
         {
-            var user = await unitOfWork.GetRepository<User>().Get(u => u.Email == email);
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user != null && !string.IsNullOrEmpty(password) && HashPassword(password, user.Salt).hashedPassword.Equals(user.Password))
             {
                 return Mapper.Map(user);
@@ -28,35 +31,57 @@ namespace Cornershop.Service.Domain.Services
 
         public async Task<UserDTO?> Add(UserDTO userDTO)
         {
-            (string hashed, byte[] salt) passAndSalt = HashPassword(userDTO.PlainPassword);
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            (string hashed, byte[] salt) = HashPassword(userDTO.PlainPassword);
             var user = new User
             {
                 Name = userDTO.Name,
                 Email = userDTO.Email,
-                Password = passAndSalt.hashed,
+                Password = hashed,
                 IsEmailConfirmed = false,
-                Salt = passAndSalt.salt,
+                Salt = salt,
                 Role = userDTO.Role ?? (int)Role.Customer,
                 IsBanned = false
             };
-            await unitOfWork.GetRepository<User>().Add(user);
-            await unitOfWork.SaveChanges();
+            await dbContext.Users.AddAsync(user);
+            await dbContext.SaveChangesAsync();
             return Mapper.Map(user);
         }
 
-        public Task<UserDTO?> Update(UserDTO userDTO)
+        public async Task<UserDTO?> Update(UserDTO userDTO)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id);
+            if (existingUser == null) return null;
+            existingUser.Name = userDTO.Name ?? existingUser.Name;
+            existingUser.Email = userDTO.Email ?? existingUser.Email; 
+            existingUser.Role = userDTO.Role ?? existingUser.Role;
+            existingUser.IsBanned = userDTO.IsBanned ?? existingUser.IsBanned;
+            await dbContext.SaveChangesAsync();
+            return userDTO;
         }
 
-        public Task<UserDTO?> UpdatePassword(string id, string oldPassword, string newPassword)
+        public async Task<bool> UpdatePassword(string id, string oldPassword, string newPassword)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception();
+            if (!string.IsNullOrEmpty(oldPassword) && HashPassword(oldPassword, user.Salt).hashedPassword.Equals(user.Password))
+            {
+                (string hashed, byte[] salt) = HashPassword(newPassword);
+                user.Password = hashed;
+                user.Salt = salt;
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
-        public Task<bool> Remove(string id)
+        public async Task<bool> Remove(string id)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception();
+            dbContext.Users.Remove(user);
+            return true;
         }
 
         public Task<bool> SendEmailConfirmation(string id)
@@ -64,9 +89,17 @@ namespace Cornershop.Service.Domain.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> ConfirmEmail(string id, string token)
+        public async Task<bool> ConfirmEmail(string id, string token)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception();
+            if (user.EmailConfirmationToken == token)
+            {
+                user.IsEmailConfirmed = true;
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         private static (string hashedPassword, byte[] salt) HashPassword(string password, byte[]? salt = null)

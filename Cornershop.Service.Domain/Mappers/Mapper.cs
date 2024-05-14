@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain
 {
     public static class Mapper 
     {
-        public static UserDTO Map(User user)
+        public static UserDTO? Map(User? user)
         {
+            if (user == null) return null;
             return new UserDTO
             {
                 Id = user.Id,
