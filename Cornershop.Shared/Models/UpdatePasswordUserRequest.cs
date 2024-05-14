@@ -1,6 +1,6 @@
 ﻿namespace Cornershop.Shared.Models
 {
-    public class ChangePasswordRequest
+    public class UpdatePasswordRequest
     {
         public string Id { get; set; }
 

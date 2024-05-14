@@ -69,12 +69,35 @@ namespace NashtechECommerceService.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
-        [Route("test-auth")]
-        public async Task<IActionResult> TestAuth()
+        [Route("update")]
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequest input)
         {
-            return Ok("Success!");
+            var userDTO = new UserDTO
+            {
+                Name = input.Name,
+                Email = input.Email,
+            };
+            var result = await userService.Update(userDTO);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("recover-password")]
+        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequestUser input)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest input)
+        {
+            var result = await userService.UpdatePassword(input.Id, input.OldPassword, input.NewPassword);
+            return Ok(result);
         }
     }
 }
