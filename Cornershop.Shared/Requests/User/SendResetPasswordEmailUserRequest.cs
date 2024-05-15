@@ -1,4 +1,4 @@
-﻿namespace Cornershop.Shared.Models
+﻿namespace Cornershop.Shared.Requests
 {
     public class SendResetPasswordEmailRequestUser
     {

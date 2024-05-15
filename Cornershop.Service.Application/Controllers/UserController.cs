@@ -2,43 +2,46 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Cornershop.Service.Common;
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
-using Cornershop.Shared.Models;
+using Cornershop.Shared.Requests;
+using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using static Cornershop.Service.Common.Enums;
 
-namespace NashtechECommerceService.Controllers
+namespace Cornershop.Service.Application.Controllers
 {
     [Route("api/user")]
     [ApiController]
     public class UserController(IConfiguration configuration, IStringLocalizer<SharedResources> stringLocalizer, IUserService userService) : ControllerBase
     {
-        [HttpPost]
+        [HttpPut]
         [AllowAnonymous]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserRequest input)
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
             var userDTO = new UserDTO
             {
-                Name = input.Name,
-                Email = input.Email,
-                PlainPassword = input.Password,
+                Username = request.Username,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                PlainPassword = request.Password,
                 Role = (int)Role.Customer
             };
-            await userService.Add(userDTO);
-            return Ok();
+            var result = await userService.Add(userDTO);
+            return Ok(result);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserRequest input)
+        public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
-            var user = await userService.GetByCredentials(input.Email, input.Password);
+            var user = await userService.GetByCredentials(request.Email, request.Password);
 
             if (user != null)
             {
@@ -61,7 +64,7 @@ namespace NashtechECommerceService.Controllers
                     expires: DateTimeOffset.UtcNow.UtcDateTime.AddDays(7),
                     signingCredentials: signIn);
 
-                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                return Ok(new LoginUserResponse { Token = new JwtSecurityTokenHandler().WriteToken(token) });
             }
             else
             {
@@ -69,15 +72,15 @@ namespace NashtechECommerceService.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPatch]
         [Authorize]
         [Route("update")]
-        public async Task<IActionResult> Update([FromBody] UpdateUserRequest input)
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
         {
             var userDTO = new UserDTO
             {
-                Name = input.Name,
-                Email = input.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName
             };
             var result = await userService.Update(userDTO);
             return Ok(result);
@@ -86,17 +89,17 @@ namespace NashtechECommerceService.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("recover-password")]
-        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequestUser input)
+        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequestUser request)
         {
             throw new NotImplementedException();
         }
 
-        [HttpPost]
+        [HttpPatch]
         [Authorize]
         [Route("update-password")]
-        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest input)
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            var result = await userService.UpdatePassword(input.Id, input.OldPassword, input.NewPassword);
+            var result = await userService.UpdatePassword(request.Id, request.OldPassword, request.NewPassword);
             return Ok(result);
         }
     }

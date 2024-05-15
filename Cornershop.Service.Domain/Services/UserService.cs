@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Entities;
 using static Cornershop.Service.Common.Enums;
@@ -32,15 +32,19 @@ namespace Cornershop.Service.Domain.Services
         public async Task<UserDTO?> Add(UserDTO userDTO)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var existingEmailUser = await dbContext.Users.FirstOrDefaultAsync(e => e.Email == userDTO.Email);
+            if (existingEmailUser == null) return null;
             (string hashed, byte[] salt) = HashPassword(userDTO.PlainPassword);
             var user = new User
             {
-                Name = userDTO.Name,
+                Username = userDTO.Username,
+                FirstName = userDTO.FirstName,
+                LastName = userDTO.LastName,
                 Email = userDTO.Email,
                 Password = hashed,
                 IsEmailConfirmed = false,
                 Salt = salt,
-                Role = userDTO.Role ?? (int)Role.Customer,
+                Role = userDTO.Role,
                 IsBanned = false
             };
             await dbContext.Users.AddAsync(user);
@@ -51,12 +55,13 @@ namespace Cornershop.Service.Domain.Services
         public async Task<UserDTO?> Update(UserDTO userDTO)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id);
-            if (existingUser == null) return null;
-            existingUser.Name = userDTO.Name ?? existingUser.Name;
-            existingUser.Email = userDTO.Email ?? existingUser.Email; 
-            existingUser.Role = userDTO.Role ?? existingUser.Role;
-            existingUser.IsBanned = userDTO.IsBanned ?? existingUser.IsBanned;
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id) ?? throw new Exception(); //TO BE FIXED
+            user.Username = userDTO.Username ?? user.Username;
+            user.FirstName = userDTO.FirstName ?? user.FirstName;
+            user.LastName = userDTO.LastName ?? user.LastName;
+            user.Email = userDTO.Email ?? user.Email; 
+            user.Role = userDTO.Role;
+            user.IsBanned = userDTO.IsBanned;
             await dbContext.SaveChangesAsync();
             return userDTO;
         }

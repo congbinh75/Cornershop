@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Cornershop.Service.Infrastructure\Cornershop.Service.Infrastructure.csproj" />
     <ProjectReference Include="..\Cornershop.Service.Common\Cornershop.Service.Common.csproj" />
+    <ProjectReference Include="..\Cornershop.Shared\Cornershop.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
