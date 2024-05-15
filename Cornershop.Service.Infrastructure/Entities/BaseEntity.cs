@@ -11,11 +11,11 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         public bool IsDeleted { get; set; } = false;
 
-        public DateTimeOffset CreatedTime { get; set; }
+        public DateTimeOffset CreatedOn { get; set; }
 
         public User? CreatedBy { get; set; }
 
-        public DateTimeOffset UpdatedTime { get; set; }
+        public DateTimeOffset UpdatedOn { get; set; }
 
         public User? UpdatedBy { get; set; }
     }

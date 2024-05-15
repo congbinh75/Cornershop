@@ -16,7 +16,13 @@ namespace Cornershop.Service.Infrastructure.Entities
         [Required]
         [MinLength(6)]
         [MaxLength(32)]
-        public required string Name { get; set; }
+        public required string Username { get; set; }
+
+        [Required]
+        public required string FirstName { get; set; }
+
+        [Required]
+        public required string LastName { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress)]
@@ -42,8 +48,8 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         public ICollection<RatingVote> RatingVotes { get; set; } = [];
         
-        public DateTimeOffset CreatedTime { get; set; }
+        public DateTimeOffset CreatedOn { get; set; }
 
-        public DateTimeOffset UpdatedTime { get; set; }
+        public DateTimeOffset UpdatedOn { get; set; }
     }
 }

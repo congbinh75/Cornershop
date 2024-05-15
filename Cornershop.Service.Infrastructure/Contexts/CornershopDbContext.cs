@@ -34,15 +34,15 @@ namespace Cornershop.Service.Infrastructure.Contexts
                     switch (changedEntity.State)
                     {
                         case EntityState.Added:
-                            entity.CreatedTime = now;
-                            entity.UpdatedTime = now;
+                            entity.CreatedOn = now;
+                            entity.UpdatedOn = now;
                             entity.CreatedBy = currentUser;
                             entity.UpdatedBy = currentUser;
                             break;
                         case EntityState.Modified:
                             Entry(entity).Property(x => x.CreatedBy).IsModified = false;
-                            Entry(entity).Property(x => x.CreatedTime).IsModified = false;
-                            entity.UpdatedTime = now;
+                            Entry(entity).Property(x => x.CreatedOn).IsModified = false;
+                            entity.UpdatedOn = now;
                             entity.UpdatedBy = currentUser;
                             break;
                     }
@@ -52,12 +52,12 @@ namespace Cornershop.Service.Infrastructure.Contexts
                     switch (changedEntity.State)
                     {
                         case EntityState.Added:
-                            user.CreatedTime = now;
-                            user.UpdatedTime = now;
+                            user.CreatedOn = now;
+                            user.UpdatedOn = now;
                             break;
                         case EntityState.Modified:
-                            Entry(user).Property(x => x.CreatedTime).IsModified = false;
-                            user.UpdatedTime = now;
+                            Entry(user).Property(x => x.CreatedOn).IsModified = false;
+                            user.UpdatedOn = now;
                             break;
                     }
                 }

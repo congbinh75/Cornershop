@@ -27,6 +27,6 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required decimal Rating { get; set; }
 
         [Required]
-        public required ICollection<RatingVote> RatingVotes { get; set; } = [];
+        public ICollection<RatingVote> RatingVotes { get; set; } = [];
     }
 }
