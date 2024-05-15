@@ -1,5 +1,5 @@
 using Cornershop.Service.Common;
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Service.Infrastructure.Entities;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services
 {
-    public class CategoryService(IDbContextFactory<CornershopDbContext> dbContextFactory, ITokenInfoProvider tokenInfoProvider) : ICategoryService
+    public class CategoryService(IDbContextFactory<CornershopDbContext> dbContextFactory) : ICategoryService
     {
         public async Task<CategoryDTO?> Add(CategoryDTO categoryDTO)
         {
@@ -31,7 +31,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<CategoryDTO?> GetById(string id)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var result = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var result = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception(); //TO BE FIXED
             return Mapper.Map(result);
         }
 

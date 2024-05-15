@@ -14,7 +14,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<UserDTO?> GetById(string id)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception(); //TO BE FIXED
             return Mapper.Map(user);
         }
 

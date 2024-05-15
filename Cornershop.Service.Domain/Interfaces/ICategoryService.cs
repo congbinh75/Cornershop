@@ -1,4 +1,4 @@
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 
 namespace Cornershop.Service.Domain.Interfaces
 {

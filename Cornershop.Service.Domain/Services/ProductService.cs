@@ -1,5 +1,5 @@
 using Cornershop.Service.Common;
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Service.Infrastructure.Entities;
@@ -19,7 +19,7 @@ namespace Cornershop.Service.Domain.Services
                 Code = productDTO.Code,
                 Description = productDTO.Description,
                 Category = category,
-                Price = (decimal)productDTO.Price,
+                Price = productDTO.Price,
                 Rating = 0
             };
             await dbContext.Products.AddAsync(product);
@@ -31,7 +31,7 @@ namespace Cornershop.Service.Domain.Services
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(); //TO BE FIXED
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == tokenInfoProvider.Id);
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == tokenInfoProvider.Id) ?? throw new Exception(); //TO BE FIXED
             var ratingVote = new RatingVote
             {
                 Product = product,
@@ -48,7 +48,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<ProductDTO?> GetById(string id)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(); //TO BE FIXED
             return Mapper.Map(product);
         }
 
@@ -69,7 +69,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<bool> Remove(string id)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(); //TO BE FIXED
             dbContext.Products.Remove(product);
             await dbContext.SaveChangesAsync();
             return true;
@@ -78,7 +78,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<bool> RemoveRating(string id)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var ratingVote = await dbContext.RatingVotes.Where(x => x.ProductId == id && x.UserId == tokenInfoProvider.Id).FirstOrDefaultAsync();
+            var ratingVote = await dbContext.RatingVotes.Where(x => x.ProductId == id && x.UserId == tokenInfoProvider.Id).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
             dbContext.RatingVotes.Remove(ratingVote);
             await dbContext.SaveChangesAsync();
             return true;
@@ -94,9 +94,9 @@ namespace Cornershop.Service.Domain.Services
             product.Description = productDTO.Description ?? product.Description;
             product.Category = category;
             product.Code = productDTO.Code ?? product.Code;
-            product.Price = productDTO.Price ?? product.Price;
+            product.Price = productDTO.Price;
             product.ImagesUrls = productDTO.ImagesUrls ?? product.ImagesUrls;
-            product.Rating = productDTO.Rating ?? product.Rating;
+            product.Rating = productDTO.Rating;
             product.RatingVotes = productDTO.RatingVotes.Select(Mapper.Map).ToList() ?? product.RatingVotes;
 
             await dbContext.SaveChangesAsync();

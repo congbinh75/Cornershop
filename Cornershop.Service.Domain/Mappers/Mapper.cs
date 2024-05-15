@@ -1,13 +1,12 @@
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 using Cornershop.Service.Infrastructure.Entities;
 
 namespace Cornershop.Service.Domain
 {
     public static class Mapper 
     {
-        public static UserDTO? Map(User? user)
+        public static UserDTO Map(User user)
         {
-            if (user == null) return null;
             return new UserDTO
             {
                 Id = user.Id,
@@ -22,19 +21,18 @@ namespace Cornershop.Service.Domain
             };
         }
 
-        public static User? Map(UserDTO? userDTO)
+        public static User Map(UserDTO userDTO)
         {
-            if (userDTO == null) return null;
             return new User
             {
-                Id = userDTO.Id!,
-                Username = userDTO.Username!,
-                FirstName = userDTO.FirstName!,
-                LastName = userDTO.LastName!,
-                Email = userDTO.Email!,
-                IsBanned = userDTO.IsBanned ?? false,
-                Role = userDTO.Role ?? 0,
-                IsEmailConfirmed = userDTO.IsEmailConfirmed ?? false,
+                Id = userDTO.Id,
+                Username = userDTO.Username,
+                FirstName = userDTO.FirstName,
+                LastName = userDTO.LastName,
+                Email = userDTO.Email,
+                IsBanned = userDTO.IsBanned,
+                Role = userDTO.Role,
+                IsEmailConfirmed = userDTO.IsEmailConfirmed,
                 Password = "",
                 Salt = [],
                 CreatedOn = userDTO.CreatedOn,
@@ -42,27 +40,25 @@ namespace Cornershop.Service.Domain
             };
         }
 
-        public static CategoryDTO? Map(Category? category)
+        public static CategoryDTO Map(Category category)
         {
-            if (category == null) return null;
             return new CategoryDTO
             {
                 Name = category.Name,
                 Description = category.Description,
                 CreatedOn = category.CreatedOn,
-                CreatedBy = Map(category.CreatedBy),
+                CreatedBy = category.CreatedBy == null ? null : Map(category.CreatedBy),
                 UpdatedOn = category.UpdatedOn,
-                UpdatedBy = Map(category.UpdatedBy)
+                UpdatedBy = category.UpdatedBy == null ? null : Map(category.UpdatedBy)
             };
         }
 
-        public static Category? Map(CategoryDTO? categoryDTO)
+        public static Category Map(CategoryDTO categoryDTO)
         {
-            if (categoryDTO == null) return null;
             return new Category
             {
-                Name = categoryDTO.Name!,
-                Description = categoryDTO.Description!,
+                Name = categoryDTO.Name,
+                Description = categoryDTO.Description,
                 CreatedOn = categoryDTO.CreatedOn,
                 CreatedBy = Map(categoryDTO.CreatedBy),
                 UpdatedOn = categoryDTO.UpdatedOn,
@@ -70,10 +66,9 @@ namespace Cornershop.Service.Domain
             };
         }
 
-        public static ProductDTO? Map(Product? product)
+        public static ProductDTO Map(Product product)
         {
-            if (product == null) return null;
-            var ratingVoteDTOs = product.RatingVotes.Select(v => Mapper.Map(v)).ToList();
+            var ratingVoteDTOs = product.RatingVotes.Select(Map).ToList();
             return new ProductDTO
             {
                 Name = product.Name,
@@ -85,25 +80,24 @@ namespace Cornershop.Service.Domain
                 Rating = product.Rating,
                 RatingVotes = product.RatingVotes.Select(Map).ToList()!,
                 CreatedOn = product.CreatedOn,
-                CreatedBy = Map(product.CreatedBy),
+                CreatedBy = product.CreatedBy == null ? null : Map(product.CreatedBy),
                 UpdatedOn = product.UpdatedOn,
-                UpdatedBy = Map(product.UpdatedBy)
+                UpdatedBy = product.UpdatedBy == null ? null : Map(product.UpdatedBy)
             };
         }
 
-        public static Product? Map(ProductDTO? productDTO)
+        public static Product Map(ProductDTO productDTO)
         {
-            if (productDTO == null) return null;
             var ratingVoteDTOs = productDTO.RatingVotes.Select(Map).ToList();
             return new Product
             {
-                Name = productDTO.Name ?? string.Empty,
-                Code = productDTO.Code ?? string.Empty,
-                Description = productDTO.Description ?? string.Empty,
+                Name = productDTO.Name,
+                Code = productDTO.Code,
+                Description = productDTO.Description,
                 Category = Map(productDTO.Category),
-                Price = productDTO.Price ?? 0,
+                Price = productDTO.Price,
                 ImagesUrls = productDTO.ImagesUrls,
-                Rating = productDTO.Rating ?? 0,
+                Rating = productDTO.Rating,
                 RatingVotes = productDTO.RatingVotes.Select(Map).ToList(),
                 CreatedOn = productDTO.CreatedOn,
                 CreatedBy = Map(productDTO.CreatedBy),
@@ -112,9 +106,8 @@ namespace Cornershop.Service.Domain
             };
         }
 
-        public static RatingVoteDTO? Map(RatingVote? ratingVote)
+        public static RatingVoteDTO Map(RatingVote ratingVote)
         {
-            if (ratingVote == null) return null;
             return new RatingVoteDTO
             {
                 Product = Map(ratingVote.Product),
@@ -123,15 +116,14 @@ namespace Cornershop.Service.Domain
             };
         }
 
-        public static RatingVote? Map(RatingVoteDTO? ratingVoteDTO)
+        public static RatingVote Map(RatingVoteDTO ratingVoteDTO)
         {
-            if (ratingVoteDTO == null) return null;
             return new RatingVote
             {
-                Product = Map(ratingVoteDTO.Product)!,
-                ProductId = ratingVoteDTO.Product!.Id!,
-                User = Map(ratingVoteDTO.User)!,
-                UserId = ratingVoteDTO.User!.Id!,
+                Product = Map(ratingVoteDTO.Product),
+                ProductId = ratingVoteDTO.Product.Id,
+                User = Map(ratingVoteDTO.User),
+                UserId = ratingVoteDTO.User.Id,
                 Rate = ratingVoteDTO.Rate
             };
         }

@@ -12,11 +12,11 @@ namespace Cornershop.Shared.DTOs
 
         public CategoryDTO Category { get; set; }
 
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
 
         public ICollection<string> ImagesUrls { get; set; }
 
-        public decimal? Rating { get; set; }
+        public decimal Rating { get; set; }
 
         public ICollection<RatingVoteDTO> RatingVotes { get; set; }
     }

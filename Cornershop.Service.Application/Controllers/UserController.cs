@@ -89,7 +89,7 @@ namespace Cornershop.Service.Application.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("recover-password")]
-        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequestUser request)
+        public Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequestUser request)
         {
             throw new NotImplementedException();
         }

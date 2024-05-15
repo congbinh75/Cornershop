@@ -1,4 +1,4 @@
-using Cornershop.Service.Common.DTOs;
+using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
