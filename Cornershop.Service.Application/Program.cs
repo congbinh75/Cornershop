@@ -1,11 +1,15 @@
+using System.Net;
 using System.Text;
+using System.Text.Json;
 using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Domain.Services;
 using Cornershop.Service.Infrastructure.Contexts;
+using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,5 +67,22 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        context.Response.ContentType = "application/json"; // Set content type to JSON
+
+        var stringLocalizer = app.Services.GetService<IStringLocalizer<SharedResources>>();
+        var errorMessage = stringLocalizer?[Constants.ERR_UNEXPECTED_ERROR].Value ?? Constants.DefaultErrorMessage;
+
+        var responseObject = new BaseResponse { Status = Cornershop.Shared.Constants.Failure, Message = errorMessage };
+        var jsonResponse = JsonSerializer.Serialize(responseObject);
+
+        await context.Response.WriteAsync(jsonResponse);
+    });
+});
 
 app.Run();

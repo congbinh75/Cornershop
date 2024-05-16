@@ -2,7 +2,7 @@
 
 namespace Cornershop.Shared.Responses
 {
-    public class RegisterUserResponse : BaseResponse
+    public class UpdateUserResponse : BaseResponse
     {
         public UserDTO User { get; set; }
     }

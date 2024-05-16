@@ -33,7 +33,7 @@ namespace Cornershop.Service.Application.Controllers
                 Role = (int)Role.Customer
             };
             var result = await userService.Add(userDTO);
-            return Ok(result);
+            return Ok(new RegisterUserResponse { User = result });
         }
 
         [HttpPost]
@@ -68,7 +68,10 @@ namespace Cornershop.Service.Application.Controllers
             }
             else
             {
-                return BadRequest(stringLocalizer[Constants.ERR_INVALID_CREDENTIALS].Value);
+                return BadRequest(new LoginUserResponse {
+                    Status = Shared.Constants.Failure,
+                    Message = stringLocalizer[Constants.ERR_INVALID_CREDENTIALS].Value
+                });
             }
         }
 
@@ -83,7 +86,7 @@ namespace Cornershop.Service.Application.Controllers
                 LastName = request.LastName
             };
             var result = await userService.Update(userDTO);
-            return Ok(result);
+            return Ok(new UpdateUserResponse { User = result });
         }
 
         [HttpPost]
@@ -99,8 +102,8 @@ namespace Cornershop.Service.Application.Controllers
         [Route("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            var result = await userService.UpdatePassword(request.Id, request.OldPassword, request.NewPassword);
-            return Ok(result);
+            await userService.UpdatePassword(request.Id, request.OldPassword, request.NewPassword);
+            return Ok(new UpdatePasswordUserResponse());
         }
     }
 }
