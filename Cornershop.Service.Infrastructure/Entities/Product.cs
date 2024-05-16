@@ -28,5 +28,8 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         [Required]
         public ICollection<RatingVote> RatingVotes { get; set; } = [];
+
+        [Required]
+        public required bool IsVisible { get; set; } = false;
     }
 }
