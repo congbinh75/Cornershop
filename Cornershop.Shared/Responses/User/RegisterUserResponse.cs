@@ -1,6 +1,6 @@
 ﻿namespace Cornershop.Shared.Responses
 {
-    public class RegisterUserResponse
+    public class RegisterUserResponse : BaseResponse
     {
         
     }

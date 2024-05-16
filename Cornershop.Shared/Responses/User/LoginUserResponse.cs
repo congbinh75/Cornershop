@@ -1,6 +1,6 @@
 namespace Cornershop.Shared.Responses
 {
-    public class LoginUserResponse
+    public class LoginUserResponse : BaseResponse
     {
         public string Token { get; set; }
     }

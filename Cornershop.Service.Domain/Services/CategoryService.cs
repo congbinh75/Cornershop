@@ -1,4 +1,3 @@
-using Cornershop.Service.Common;
 using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Contexts;
