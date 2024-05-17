@@ -1,9 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Dashboard from './pages/dashboard/index.tsx';
+import App from './App';
+import './index.css';
+import Calendar from './pages/calendar';
+import Profile from './pages/profile';
+import FormElements from './pages/form/FormElements';
+import FormLayout from './pages/form/FormLayout';
+import Alerts from './pages/uiElements/Alerts';
+import Buttons from './pages/uiElements/Buttons';
+import SignIn from './pages/auth/SignIn';
+import SignUp from './pages/auth/SignUp';
+import Products from './pages/products';
+import Categories from './pages/categories';
+import Orders from './pages/orders';
+import Users from './pages/users';
+import Dashboard from './pages/dashboard';
 
 const router = createBrowserRouter([
   {
@@ -14,6 +26,54 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Dashboard />,
+      },
+      {
+        path: "/products",
+        element: <Products />,
+      },
+      {
+        path: "/categories",
+        element: <Categories />,
+      },
+      {
+        path: "/orders",
+        element: <Orders />,
+      },
+      {
+        path: "/users",
+        element: <Users />,
+      },
+      {
+        path: "/calendar",
+        element: <Calendar />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
+      },
+      {
+        path: "/forms/form-elements",
+        element: <FormElements />,
+      },
+      {
+        path: "/forms/form-layout",
+        element: <FormLayout />,
+      },
+      {
+        path: "/alerts",
+        element: <Alerts />,
+      },
+      {
+        path: "/buttons",
+        element: <Buttons />,
+      },
+      {
+        path: "/auth/signin",
+        element: <SignIn />,
+      },
+      {
+        path: "/auth/signup",
+        element: <SignUp />,
       }
     ],
   }
