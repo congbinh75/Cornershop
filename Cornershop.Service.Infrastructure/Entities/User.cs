@@ -19,16 +19,19 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required string Username { get; set; }
 
         [Required]
+        [MinLength(1)]
+        [MaxLength(32)]
         public required string FirstName { get; set; }
 
         [Required]
+        [MinLength(1)]
+        [MaxLength(32)]
         public required string LastName { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress)]
         public required string Email { get; set; }
 
-        [Required]
         public required bool IsEmailConfirmed { get; set; } = false;
 
         [Required]
@@ -46,7 +49,11 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         public string? EmailConfirmationToken { get; set; }
 
-        public ICollection<RatingVote> RatingVotes { get; set; } = [];
+        public ICollection<Review> Reviews { get; set; } = [];
+
+        public required Cart Cart { get; set; }
+
+        public required ICollection<Order> Orders { get; set; } = [];
         
         public DateTimeOffset CreatedOn { get; set; }
 

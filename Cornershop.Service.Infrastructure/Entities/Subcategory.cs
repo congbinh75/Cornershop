@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Cornershop.Service.Infrastructure.Entities
 {
     [Index(nameof(Id))]
-    public class Category : BaseEntity
+    public class Subcategory : BaseEntity
     {
         [Required]
         [MaxLength(32)]
@@ -14,7 +14,7 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required string Description { get; set; }
 
         [Required]
-        public ICollection<Category> Categories { get; set; } = [];
+        public required Category Category { get; set; }
 
         [Required]
         public ICollection<Product> Products { get; set; } = [];

@@ -36,15 +36,22 @@ namespace Cornershop.Service.Domain.Services
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
             var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == productDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
+            var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(s => s.Id == productDTO.Subcategory.Id) ?? throw new Exception(); //TO BE FIXED
+            var authorIds = productDTO.Authors.Select(a => a.Id).ToList();
+            var authors = await dbContext.Authors.Where(a => authorIds.Contains(a.Id)).ToListAsync() ?? throw new Exception();
+            var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.Publisher.Id) ?? throw new Exception(); //TO BE FIXED
             var product = new Product
             {
                 Name = productDTO.Name,
                 Code = productDTO.Code,
                 Description = productDTO.Description,
                 Category = category,
+                Subcategory = subcategory,
                 Price = productDTO.Price,
                 Rating = 0,
-                IsVisible = false
+                IsVisible = false,
+                Authors = authors,
+                Publisher = publisher
             };
             await dbContext.Products.AddAsync(product);
             await dbContext.SaveChangesAsync();

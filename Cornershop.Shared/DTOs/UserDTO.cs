@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Cornershop.Shared.DTOs
 {
     public class UserDTO :  BaseDTO
@@ -19,5 +21,11 @@ namespace Cornershop.Shared.DTOs
         public bool IsBanned { get; set; }
 
         public int Role { get; set; }
+
+        public CartDTO Cart { get; set; }
+
+        public ICollection<OrderDTO> Orders { get; set; }
+
+        public ICollection<ReviewDTO> Reviews { get; set; }
     }
 }

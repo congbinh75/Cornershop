@@ -1,5 +1,4 @@
 using Cornershop.Service.Common;
-using Cornershop.Service.Infrastructure.Configurations;
 using Cornershop.Service.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,16 +8,22 @@ namespace Cornershop.Service.Infrastructure.Contexts
     {
         private readonly ITokenInfoProvider tokenInfoProvider = tokenInfoProvider;
 
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartDetail> CartDetails { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Subcategory> Subcategories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<RatingVote> RatingVotes { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<Order> Orders{ get; set; }
+        public DbSet<OrderDetail> OrdersDetails { get; set;}
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
-            modelBuilder.ApplyConfiguration(new RatingVoteConfiguration());
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
