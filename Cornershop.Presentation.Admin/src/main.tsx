@@ -16,6 +16,7 @@ import Categories from './pages/categories';
 import Orders from './pages/orders';
 import Users from './pages/users';
 import Dashboard from './pages/dashboard';
+import Table from './components/table';
 
 const router = createBrowserRouter([
   {
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
       {
         path: "/auth/signup",
         element: <SignUp />,
+      },
+      {
+        path: "/tables",
+        element: <Table />,
       }
     ],
   }

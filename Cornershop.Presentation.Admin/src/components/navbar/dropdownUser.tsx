@@ -36,11 +36,10 @@ const DropdownUser = () => {
 
   return (
     <div className="relative">
-      <Link
+      <div
         ref={trigger}
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="flex items-center gap-4"
-        to=""
       >
         <span className="text-right">
           <span className="block text-sm font-medium text-black dark:text-white">
@@ -48,7 +47,7 @@ const DropdownUser = () => {
           </span>
         </span>
         <i className="fa-solid fa-chevron-down"></i>
-      </Link>
+      </div>
 
       <div
         ref={dropdown}
