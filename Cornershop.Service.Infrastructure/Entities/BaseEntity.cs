@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cornershop.Service.Infrastructure.Entities
 {
@@ -13,10 +14,16 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         public DateTimeOffset CreatedOn { get; set; }
 
+        [NotMapped]
         public User? CreatedBy { get; set; }
+
+        public string? CreatedById { get; set; }
 
         public DateTimeOffset UpdatedOn { get; set; }
 
+        [NotMapped]
         public User? UpdatedBy { get; set; }
+
+        public string? UpdatedById { get; set; }
     }
 }

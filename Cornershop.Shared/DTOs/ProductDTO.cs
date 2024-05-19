@@ -10,10 +10,6 @@ namespace Cornershop.Shared.DTOs
         public string Code { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
-        
-        public string CategoryId { get; set; }
-
-        public CategoryDTO Category { get; set; }
 
         public string SubcategoryId { get; set; }
 

@@ -1,4 +1,3 @@
-using Cornershop.Service.Common;
 using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Contexts;
@@ -7,35 +6,59 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services
 {
-    public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFactory, ITokenInfoProvider tokenInfoProvider) : IProductService
+    public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IProductService
     {
-        public async Task<ProductDTO?> GetById(string id, bool isVisible = false)
+        public async Task<ProductDTO?> GetById(string id, bool isHiddenIncluded = false)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var product = await dbContext.Products.Where(p => p.Id == id && p.IsVisible == isVisible).FirstOrDefaultAsync()
-                ?? throw new Exception(); //TO BE FIXED
-            return Mapper.Map(product);
+            if (isHiddenIncluded) 
+            {
+                var product = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
+                return Mapper.Map(product);
+            }
+            else
+            {
+                var product = await dbContext.Products.Where(p => p.Id == id && p.IsVisible == true).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
+                return Mapper.Map(product); 
+            }
         }
 
-        public async Task<ICollection<ProductDTO>> GetList(int page, int pageSize, bool isVisible = false)
+        public async Task<ICollection<ProductDTO>> GetAll(int page, int pageSize, bool isHiddenIncluded = false)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var products = await dbContext.Products.Where(p => p.IsVisible == isVisible).Skip(page * pageSize).Take(pageSize).ToListAsync();
-            return products.ConvertAll(Mapper.Map);
+            if (isHiddenIncluded) 
+            {
+                var products = await dbContext.Products.Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                return products.ConvertAll(Mapper.Map);
+            }
+            else
+            {
+                var products = await dbContext.Products.Where(p => p.IsVisible == true)
+                    .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                return products.ConvertAll(Mapper.Map);
+            }
         }
 
-        public async Task<ICollection<ProductDTO>> GetListByCategory(string categoryId, int page, int pageSize, bool isVisible)
+        public async Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize, bool isHiddenIncluded = false)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var products = await dbContext.Products.Where(x => x.Category.Id == categoryId && x.IsVisible == isVisible)
-                .Skip(page * pageSize).Take(pageSize).ToListAsync();
-            return products.ConvertAll(Mapper.Map);
+            if (isHiddenIncluded) 
+            {
+                var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId)
+                    .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                return products.ConvertAll(Mapper.Map);
+            }
+            else
+            {
+                var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId && p.IsVisible == true)
+                    .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                return products.ConvertAll(Mapper.Map);
+            }
         }
 
         public async Task<ProductDTO?> Add(ProductDTO productDTO)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == productDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
             var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(s => s.Id == productDTO.Subcategory.Id) ?? throw new Exception(); //TO BE FIXED
             var authorIds = productDTO.Authors.Select(a => a.Id).ToList();
             var authors = await dbContext.Authors.Where(a => authorIds.Contains(a.Id)).ToListAsync() ?? throw new Exception();
@@ -45,9 +68,17 @@ namespace Cornershop.Service.Domain.Services
                 Name = productDTO.Name,
                 Code = productDTO.Code,
                 Description = productDTO.Description,
-                Category = category,
                 Subcategory = subcategory,
+                SubcategoryId = subcategory.Id,
                 Price = productDTO.Price,
+                OriginalPrice = productDTO.OriginalPrice,
+                Width = productDTO.Width,
+                Length = productDTO.Length,
+                Height = productDTO.Height,
+                Pages = productDTO.Pages,
+                Format = productDTO.Format,
+                Stock = productDTO.Stock,
+                PublishedYear = productDTO.PublishedYear,
                 Rating = 0,
                 IsVisible = false,
                 Authors = authors,
@@ -62,16 +93,24 @@ namespace Cornershop.Service.Domain.Services
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productDTO.Id) ?? throw new Exception(); //TO BE FIXED
-            var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == productDTO.Category.Id) ?? product.Category;
             
             product.Name = productDTO.Name ?? product.Name;
             product.Description = productDTO.Description ?? product.Description;
-            product.Category = category;
             product.Code = productDTO.Code ?? product.Code;
             product.Price = productDTO.Price;
+            product.Subcategory = Mapper.Map(productDTO.Subcategory);
+            product.SubcategoryId = productDTO.Subcategory.Id;
+            product.OriginalPrice = productDTO.OriginalPrice;
+            product.Width = productDTO.Width;
+            product.Length = productDTO.Length;
+            product.Height = productDTO.Height;
+            product.Pages = productDTO.Pages;
+            product.Format = productDTO.Format;
+            product.Stock = productDTO.Stock;
+            product.PublishedYear = productDTO.PublishedYear;
             product.ImagesUrls = productDTO.ImagesUrls ?? product.ImagesUrls;
             product.Rating = productDTO.Rating;
-            product.RatingVotes = productDTO.RatingVotes.Select(Mapper.Map).ToList() ?? product.RatingVotes;
+            product.Reviews = productDTO.Reviews.Select(Mapper.Map).ToList() ?? product.Reviews;
             product.IsVisible = productDTO.IsVisible;
 
             await dbContext.SaveChangesAsync();
@@ -83,33 +122,6 @@ namespace Cornershop.Service.Domain.Services
             var dbContext = await dbContextFactory.CreateDbContextAsync();
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(); //TO BE FIXED
             dbContext.Products.Remove(product);
-            await dbContext.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> AddRating(string id, int rating)
-        {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(); //TO BE FIXED
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == tokenInfoProvider.Id) ?? throw new Exception(); //TO BE FIXED
-            var ratingVote = new RatingVote
-            {
-                Product = product,
-                ProductId = product.Id,
-                User = user,
-                UserId = user.Id,
-                Rate = rating
-            };
-            await dbContext.RatingVotes.AddAsync(ratingVote);
-            await dbContext.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> RemoveRating(string id)
-        {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var ratingVote = await dbContext.RatingVotes.Where(x => x.ProductId == id && x.UserId == tokenInfoProvider.Id).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
-            dbContext.RatingVotes.Remove(ratingVote);
             await dbContext.SaveChangesAsync();
             return true;
         }

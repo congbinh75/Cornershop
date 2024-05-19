@@ -1,4 +1,5 @@
 using Cornershop.Service.Common;
+using Cornershop.Service.Infrastructure.Configurations;
 using Cornershop.Service.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,8 +7,6 @@ namespace Cornershop.Service.Infrastructure.Contexts
 {
     public class CornershopDbContext(DbContextOptions<CornershopDbContext> options, ITokenInfoProvider tokenInfoProvider) : DbContext(options)
     {
-        private readonly ITokenInfoProvider tokenInfoProvider = tokenInfoProvider;
-
         public DbSet<Author> Authors { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartDetail> CartDetails { get; set; }
@@ -24,6 +23,12 @@ namespace Cornershop.Service.Infrastructure.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new CartConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new TransactionConfiguration());
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -40,29 +45,19 @@ namespace Cornershop.Service.Infrastructure.Contexts
                     {
                         case EntityState.Added:
                             entity.CreatedOn = now;
-                            entity.UpdatedOn = now;
                             entity.CreatedBy = currentUser;
+                            entity.CreatedById = currentUser?.Id;
+                            entity.UpdatedOn = now;
                             entity.UpdatedBy = currentUser;
+                            entity.UpdatedById = currentUser?.Id;
                             break;
                         case EntityState.Modified:
                             Entry(entity).Property(x => x.CreatedBy).IsModified = false;
+                            Entry(entity).Property(x => x.CreatedById).IsModified = false;
                             Entry(entity).Property(x => x.CreatedOn).IsModified = false;
                             entity.UpdatedOn = now;
                             entity.UpdatedBy = currentUser;
-                            break;
-                    }
-                }
-                else if (changedEntity.Entity is User user)
-                {
-                    switch (changedEntity.State)
-                    {
-                        case EntityState.Added:
-                            user.CreatedOn = now;
-                            user.UpdatedOn = now;
-                            break;
-                        case EntityState.Modified:
-                            Entry(user).Property(x => x.CreatedOn).IsModified = false;
-                            user.UpdatedOn = now;
+                            entity.UpdatedById = currentUser?.Id;
                             break;
                     }
                 }

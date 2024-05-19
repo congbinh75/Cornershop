@@ -5,14 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Cornershop.Service.Infrastructure.Entities
 {
     [Index(nameof(Id))]
-    public class User
+    public class User : BaseEntity
     {
-        [Key]
-        [Required]
-        //Not working with SQL Server as string data type
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-
         [Required]
         [MinLength(6)]
         [MaxLength(32)]
@@ -54,9 +48,5 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required Cart Cart { get; set; }
 
         public required ICollection<Order> Orders { get; set; } = [];
-        
-        public DateTimeOffset CreatedOn { get; set; }
-
-        public DateTimeOffset UpdatedOn { get; set; }
     }
 }

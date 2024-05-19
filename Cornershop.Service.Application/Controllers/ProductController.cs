@@ -3,63 +3,100 @@ using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Azure;
 
 namespace Cornershop.Service.Application.Controllers
 {
-    [Route("api/product")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ProductController(IProductService productService) : ControllerBase
     {
         [HttpGet]
-        [Route("get")]
-        public async Task<IActionResult> Get([FromQuery] string id, bool isVisble = false)
+        [Route("{id}")]
+        public async Task<IActionResult> Get(string id)
         {
             var result = await productService.GetById(id);
             return Ok(new GetProductResponse{ Product = result });
         }
 
         [HttpGet]
-        [Route("get-list")]
-        public async Task<IActionResult> GetList([FromBody] GetListProductRequest request)
+        [Route("admin/{id}")]
+        [Authorize(Roles = "Admin, Staff")]
+        public async Task<IActionResult> Get(string id, [FromQuery] bool isHiddenIncluded)
         {
-            var result = await productService.GetList(request.Page, request.PageSize);
+            var result = await productService.GetById(id, isHiddenIncluded);
+            return Ok(new GetProductResponse{ Product = result });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
+        {
+            var result = await productService.GetAll(page, pageSize);
+            return Ok(new GetListProductResponse{ ProductList = result });
+        }
+
+        [HttpGet]
+        [Route("admin")]
+        public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, bool isHiddenIncluded)
+        {
+            var result = await productService.GetAll(page, pageSize, isHiddenIncluded);
             return Ok(new GetListProductResponse{ ProductList = result });
         }
 
         [HttpPut]
-        [Route("add")]
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> Add([FromBody] AddProductRequest request)
         {
             var product = await productService.Add(new ProductDTO{
                 Name = request.Name,
                 Code = request.Code,
                 Description = request.Description,
-                CategoryId = request.CategoryId,
+                SubcategoryId = request.SubcategoryId,
                 Price = request.Price,
+                OriginalPrice = request.OriginalPrice,
+                Width = request.Width,
+                Length = request.Length,
+                Height = request.Height,
+                Pages = request.Pages,
+                Stock = request.Stock,
+                Format = request.Format,
+                PublishedYear = request.PublishedYear,
+                AuthorsIds = request.AuthorsIds,
+                PublisherId = request.PublisherId,
                 UploadImagesFiles = request.UploadedImagesFiles
             });
             return Ok(new AddProductResponse { Product = product });
         }
 
         [HttpPatch]
-        [Route("update")]
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> Update([FromBody] UpdateProductRequest request)
         {
             var product = await productService.Update(new ProductDTO{
-                Id = request.Id,
                 Name = request.Name,
                 Code = request.Code,
                 Description = request.Description,
-                CategoryId = request.CategoryId,
+                SubcategoryId = request.SubcategoryId,
                 Price = request.Price,
+                OriginalPrice = request.OriginalPrice,
+                Width = request.Width,
+                Length = request.Length,
+                Height = request.Height,
+                Pages = request.Pages,
+                Stock = request.Stock,
+                Format = request.Format,
+                PublishedYear = request.PublishedYear,
+                AuthorsIds = request.AuthorsIds,
+                PublisherId = request.PublisherId,
                 UploadImagesFiles = request.UploadedImagesFiles
             });
             return Ok(new UpdateProductResponse { Product = product });
         }
 
         [HttpDelete]
-        [Route("remove")]
-        public async Task<IActionResult> Remove([FromBody] string id)
+        [Route("{id}")]
+        public async Task<IActionResult> Remove(string id)
         {
             await productService.Remove(id);
             return Ok(new RemoveCategoryResponse());

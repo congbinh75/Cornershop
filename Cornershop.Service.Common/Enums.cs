@@ -5,7 +5,7 @@
         public enum Role
         {
             Admin = 0,
-            Employee = 1,
+            Staff = 1,
             Customer = 2
         }
 

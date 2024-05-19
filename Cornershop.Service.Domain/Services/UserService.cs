@@ -45,7 +45,9 @@ namespace Cornershop.Service.Domain.Services
                 IsEmailConfirmed = false,
                 Salt = salt,
                 Role = userDTO.Role,
-                IsBanned = false
+                IsBanned = false,
+                Cart = Mapper.Map(userDTO.Cart),
+                Orders = userDTO.Orders.Select(Mapper.Map).ToList(),
             };
             await dbContext.Users.AddAsync(user);
             await dbContext.SaveChangesAsync();

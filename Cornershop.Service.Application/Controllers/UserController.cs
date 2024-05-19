@@ -14,13 +14,19 @@ using static Cornershop.Service.Common.Enums;
 
 namespace Cornershop.Service.Application.Controllers
 {
-    [Route("api/user")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController(IConfiguration configuration, IStringLocalizer<SharedResources> stringLocalizer, IUserService userService) : ControllerBase
     {
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            var user = await userService.GetById(id);
+            return Ok(user);
+        }
+
         [HttpPut]
-        [AllowAnonymous]
-        [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
             var userDTO = new UserDTO
@@ -37,7 +43,6 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
@@ -77,7 +82,6 @@ namespace Cornershop.Service.Application.Controllers
 
         [HttpPatch]
         [Authorize]
-        [Route("update")]
         public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
         {
             var userDTO = new UserDTO
@@ -90,7 +94,6 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [Route("recover-password")]
         public Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequestUser request)
         {

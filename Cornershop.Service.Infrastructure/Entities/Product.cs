@@ -17,10 +17,10 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required string Description { get; set; }
 
         [Required]
-        public required Category Category { get; set; }
+        public required Subcategory Subcategory { get; set; }
 
         [Required]
-        public required Subcategory Subcategory { get; set; }
+        public required string SubcategoryId { get; set; }
 
         [Required]
         public required decimal Price { get; set; }
@@ -66,5 +66,7 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         [Required]
         public required bool IsVisible { get; set; } = false;
+
+        public ICollection<OrderDetail> OrderDetails { get; set; } = [];
     }
 }

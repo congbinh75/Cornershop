@@ -17,7 +17,9 @@ namespace Cornershop.Service.Domain
                 IsBanned = user.IsBanned,
                 Role = user.Role,
                 CreatedOn = user.CreatedOn,
+                CreatedBy = user.CreatedBy != null ? Map(user.CreatedBy) : null,
                 UpdatedOn = user.UpdatedOn,
+                UpdatedBy = user.UpdatedBy != null ? Map(user.UpdatedBy) : null,
             };
         }
 
@@ -39,7 +41,9 @@ namespace Cornershop.Service.Domain
                 Cart = Map(userDTO.Cart),
                 Orders = userDTO.Orders.Select(Map).ToList(),
                 CreatedOn = userDTO.CreatedOn,
-                UpdatedOn = userDTO.UpdatedOn
+                CreatedBy = Map(userDTO.CreatedBy),
+                UpdatedOn = userDTO.UpdatedOn,
+                UpdatedBy = Map(userDTO.UpdatedBy)
             };
         }
 
@@ -110,7 +114,6 @@ namespace Cornershop.Service.Domain
                 Name = product.Name,
                 Code = product.Code,
                 Description = product.Description,
-                Category = Map(product.Category),
                 Price = product.Price,
                 OriginalPrice = product.OriginalPrice,
                 Width = product.Width,
@@ -139,8 +142,8 @@ namespace Cornershop.Service.Domain
                 Name = productDTO.Name,
                 Code = productDTO.Code,
                 Description = productDTO.Description,
-                Category = Map(productDTO.Category),
                 Subcategory = Map(productDTO.Subcategory),
+                SubcategoryId = productDTO.Subcategory.Id,
                 Price = productDTO.Price,
                 OriginalPrice = productDTO.OriginalPrice,
                 Width = productDTO.Width,
@@ -264,7 +267,11 @@ namespace Cornershop.Service.Domain
                 Code = order.Code,
                 OrderDetails = order.OrderDetails.Select(Map).ToList(),
                 TotalPrice = order.TotalPrice,
-                Transactions = order.Transactions.Select(Map).ToList()
+                Transactions = order.Transactions.Select(Map).ToList(),
+                CreatedBy = order.CreatedBy != null ? Map(order.CreatedBy) : null,
+                CreatedOn = order.CreatedOn,
+                UpdatedBy = order.UpdatedBy != null ? Map(order.UpdatedBy) : null,
+                UpdatedOn = order.UpdatedOn,
             };
         }
 
@@ -277,7 +284,11 @@ namespace Cornershop.Service.Domain
                 Code = orderDTO.Code,
                 OrderDetails = orderDTO.OrderDetails.Select(Map).ToList(),
                 TotalPrice = orderDTO.TotalPrice,
-                Transactions = orderDTO.Transactions.Select(Map).ToList()
+                Transactions = orderDTO.Transactions.Select(Map).ToList(),
+                CreatedBy = Map(orderDTO.CreatedBy),
+                CreatedOn = orderDTO.CreatedOn,
+                UpdatedBy = Map(orderDTO.UpdatedBy),
+                UpdatedOn = orderDTO.UpdatedOn,
             };
         }
 
@@ -297,7 +308,9 @@ namespace Cornershop.Service.Domain
             return new OrderDetail
             {
                 Order = Map(orderDetailDTO.Order),
+                OrderId = orderDetailDTO.Order.Id,
                 Product = Map(orderDetailDTO.Product),
+                ProductId = orderDetailDTO.Product.Id,
                 Quantity = orderDetailDTO.Quantity,
                 Price = orderDetailDTO.Price
             };
@@ -345,6 +358,7 @@ namespace Cornershop.Service.Domain
             return new Cart
             {
                 User = Map(cartDTO.User),
+                UserId = cartDTO.User.Id,
                 CartDetails = cartDTO.CartDetails.Select(Map).ToList()
             };
         }
@@ -365,7 +379,9 @@ namespace Cornershop.Service.Domain
             return new CartDetail
             {
                 Cart = Map(cartDetailDTO.Cart),
+                CartId = cartDetailDTO.Cart.Id,
                 Product = Map(cartDetailDTO.Product),
+                ProductId = cartDetailDTO.Product.Id,
                 Quantity = cartDetailDTO.Quantity,
                 AddedOn = cartDetailDTO.AddedOn
             };

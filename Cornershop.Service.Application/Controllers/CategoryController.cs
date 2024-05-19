@@ -3,6 +3,7 @@ using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cornershop.Service.Application.Controllers
 {
@@ -11,23 +12,22 @@ namespace Cornershop.Service.Application.Controllers
     public class CategoryController(ICategoryService categoryService) : ControllerBase
     {
         [HttpGet]
-        [Route("get")]
-        public async Task<IActionResult> Get([FromQuery] string id)
+        [Route("{id}")]
+        public async Task<IActionResult> Get(string id)
         {
             var category = await categoryService.GetById(id);
             return Ok(new GetCategoryResponse{ Category = category });
         }
 
         [HttpGet]
-        [Route("get-all")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
         {
-            var categoryList = await categoryService.GetAll();
+            var categoryList = await categoryService.GetAll(page, pageSize);
             return Ok(new GetAllCategoryResponse{ CategoryList = categoryList });
         }
 
         [HttpPut]
-        [Route("add")]
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> Add([FromBody] AddCategoryRequest request)
         {
             var category = await categoryService.Add(new CategoryDTO{
@@ -38,7 +38,7 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpPatch]
-        [Route("update")]
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> Update([FromBody] UpdateCategoryRequest request)
         {
             var category = await categoryService.Update(new CategoryDTO{ 
@@ -49,7 +49,7 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpDelete]
-        [Route("remove")]
+        [Authorize(Roles = "Admin, Staff")]
         public async Task<IActionResult> Remove([FromBody] string id)
         {
             await categoryService.Remove(id);
