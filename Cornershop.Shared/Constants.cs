@@ -4,5 +4,8 @@ namespace Cornershop.Shared
     {     
         public const string Success = "success";
         public const string Failure = "failure";
+
+        public const int Page = 1;
+        public const int PageSize = 15;
     }
 }

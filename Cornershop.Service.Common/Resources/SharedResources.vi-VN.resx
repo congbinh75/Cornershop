@@ -137,4 +137,8 @@
     <value>Lỗi hệ thống. Vui lòng thử lại sau hoặc liên hệ đội hỗ trợ</value>
     <comment/>
   </data>
+  <data name="ERR_USERNAME_ALREADY_REGISTERED" xml:space="preserve">
+    <value>Username đã được đăng ký</value>
+    <comment/>
+  </data>
 </root>

@@ -137,4 +137,8 @@
     <value>An unexpected error happened. Please try again later or contact our support team</value>
     <comment/>
   </data>
+  <data name="ERR_USERNAME_ALREADY_REGISTERED" xml:space="preserve">
+    <value>Username already registered</value>
+    <comment/>
+  </data>
 </root>

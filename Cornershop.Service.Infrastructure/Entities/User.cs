@@ -45,8 +45,8 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         public ICollection<Review> Reviews { get; set; } = [];
 
-        public required Cart Cart { get; set; }
+        public Cart? Cart { get; set; }
 
-        public required ICollection<Order> Orders { get; set; } = [];
+        public ICollection<Order> Orders { get; set; } = [];
     }
 }

@@ -26,6 +26,13 @@ namespace Cornershop.Service.Application.Controllers
             return Ok(user);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int page = Shared.Constants.Page, int pageSize = Shared.Constants.PageSize)
+        {
+            var users = await userService.GetAll(page, pageSize);
+            return Ok(users);
+        }
+
         [HttpPut]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
@@ -39,8 +46,30 @@ namespace Cornershop.Service.Application.Controllers
                 Role = (int)Role.Customer
             };
             var result = await userService.Add(userDTO);
-            return Ok(new RegisterUserResponse { User = result });
+
+            if (result.Success)
+            {
+                return Ok(new RegisterUserResponse { User = result.Value });
+            }
+            else
+            {
+                if (result.Error == Constants.ERR_EMAIL_ALREADY_REGISTERED)
+                {
+                    return Ok(new RegisterUserResponse { 
+                        Status = Shared.Constants.Failure, 
+                        Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED] 
+                    });
+                }
+                else
+                {
+                    return Ok(new RegisterUserResponse { 
+                        Status = Shared.Constants.Failure, 
+                        Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED] 
+                    });
+                }
+            }
         }
+
 
         [HttpPost]
         [Route("login")]
@@ -73,7 +102,8 @@ namespace Cornershop.Service.Application.Controllers
             }
             else
             {
-                return BadRequest(new LoginUserResponse {
+                return BadRequest(new LoginUserResponse
+                {
                     Status = Shared.Constants.Failure,
                     Message = stringLocalizer[Constants.ERR_INVALID_CREDENTIALS].Value
                 });

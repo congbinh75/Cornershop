@@ -14,6 +14,6 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required User User { get; set; }
 
         [Required]
-        public required ICollection<CartDetail> CartDetails { get; set; }
+        public required ICollection<CartDetail> CartDetails { get; set; } = [];
     }
 }

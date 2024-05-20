@@ -5,6 +5,7 @@
         public const string DefaultErrorMessage = "An unexpected error happened. Please try again later or contact our support team.";
 
         public const string ERR_EMAIL_ALREADY_REGISTERED = "ERR_EMAIL_ALREADY_REGISTERED";
+        public const string ERR_USERNAME_ALREADY_REGISTERED = "ERR_USERNAME_ALREADY_REGISTERED";
         public const string ERR_GROUP_NOT_FOUND = "ERR_GROUP_NOT_FOUND";
         public const string ERR_INVALID_CREDENTIALS = "ERR_INVALID_CREDENTIALS";
         public const string ERR_INVALID_INPUT_DATA = "ERR_INVALID_INPUT_DATA";

@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Cornershop.Shared.DTOs;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Entities;
-using static Cornershop.Service.Common.Enums;
 using Cornershop.Service.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Cornershop.Service.Common;
 
 namespace Cornershop.Service.Domain.Services
 {
@@ -16,6 +16,13 @@ namespace Cornershop.Service.Domain.Services
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception(); //TO BE FIXED
             return Mapper.Map(user);
+        }
+
+        public async Task<ICollection<UserDTO>> GetAll(int page, int pageSize)
+        {
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var users = await dbContext.Users.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+            return users.ConvertAll(Mapper.Map);
         }
 
         public async Task<UserDTO?> GetByCredentials(string email, string password)
@@ -29,12 +36,17 @@ namespace Cornershop.Service.Domain.Services
             return null;
         }
 
-        public async Task<UserDTO?> Add(UserDTO userDTO)
+        public async Task<Result<UserDTO?, string?>> Add(UserDTO userDTO)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var existingEmailUser = await dbContext.Users.FirstOrDefaultAsync(e => e.Email == userDTO.Email);
-            if (existingEmailUser == null) return null;
+
+            var existingEmailUser = await dbContext.Users.Where(e => e.Email == userDTO.Email).FirstOrDefaultAsync();
+            if (existingEmailUser != null) return Constants.ERR_EMAIL_ALREADY_REGISTERED;
+            existingEmailUser = await dbContext.Users.Where(e => e.Username == userDTO.Username).FirstOrDefaultAsync();
+            if (existingEmailUser != null) return Constants.ERR_USERNAME_ALREADY_REGISTERED;
+
             (string hashed, byte[] salt) = HashPassword(userDTO.PlainPassword);
+
             var user = new User
             {
                 Username = userDTO.Username,
@@ -45,11 +57,19 @@ namespace Cornershop.Service.Domain.Services
                 IsEmailConfirmed = false,
                 Salt = salt,
                 Role = userDTO.Role,
-                IsBanned = false,
-                Cart = Mapper.Map(userDTO.Cart),
-                Orders = userDTO.Orders.Select(Mapper.Map).ToList(),
+                IsBanned = false
             };
             await dbContext.Users.AddAsync(user);
+
+            var cart = new Cart 
+            {
+                UserId = user.Id,
+                User = user,
+                CartDetails = []
+            };
+            user.Cart = cart;
+            await dbContext.Carts.AddAsync(cart);
+
             await dbContext.SaveChangesAsync();
             return Mapper.Map(user);
         }
@@ -58,10 +78,8 @@ namespace Cornershop.Service.Domain.Services
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id) ?? throw new Exception(); //TO BE FIXED
-            user.Username = userDTO.Username ?? user.Username;
             user.FirstName = userDTO.FirstName ?? user.FirstName;
             user.LastName = userDTO.LastName ?? user.LastName;
-            user.Email = userDTO.Email ?? user.Email; 
             user.Role = userDTO.Role;
             user.IsBanned = userDTO.IsBanned;
             await dbContext.SaveChangesAsync();

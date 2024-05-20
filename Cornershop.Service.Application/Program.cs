@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -7,6 +8,7 @@ using Cornershop.Service.Domain.Services;
 using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -44,12 +46,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddMvc().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization(options =>
     {
         options.DataAnnotationLocalizerProvider = (type, factory) =>
             factory.Create(typeof(SharedResources));
     });
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyHeader();
+        });
+});
 
 var app = builder.Build();
 
@@ -60,11 +71,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("vi-VN") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors();
 
 app.MapControllers();
 
@@ -73,7 +94,7 @@ app.UseExceptionHandler(errorApp =>
     errorApp.Run(async context =>
     {
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-        context.Response.ContentType = "application/json"; // Set content type to JSON
+        context.Response.ContentType = "application/json";
 
         var stringLocalizer = app.Services.GetService<IStringLocalizer<SharedResources>>();
         var errorMessage = stringLocalizer?[Constants.ERR_UNEXPECTED_ERROR].Value ?? Constants.DefaultErrorMessage;
