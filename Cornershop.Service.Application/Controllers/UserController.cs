@@ -16,13 +16,35 @@ namespace Cornershop.Service.Application.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IConfiguration configuration, IStringLocalizer<SharedResources> stringLocalizer, IUserService userService) : ControllerBase
+    public class UserController(IConfiguration configuration, 
+        IStringLocalizer<SharedResources> stringLocalizer,
+        ITokenInfoProvider tokenInfoProvider,
+        IUserService userService) : ControllerBase
     {
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> Get(string id)
         {
             var user = await userService.GetById(id);
+            return Ok(user);
+        }
+
+        [HttpGet]
+        [Route("/current")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            string userId = tokenInfoProvider.Id ?? throw new Exception(); //TO BE FIXED
+            var user = await userService.GetById(userId);
+            return Ok(user);
+        }
+
+        [HttpGet]
+        [Route("/admin/current")]
+        [Authorize (Roles = "Admin, Staff")]
+        public async Task<IActionResult> GetCurrentUserAdmin()
+        {
+            string userId = tokenInfoProvider.Id ?? throw new Exception(); //TO BE FIXED
+            var user = await userService.GetById(userId);
             return Ok(user);
         }
 
