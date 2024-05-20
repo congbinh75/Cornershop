@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Loader from './components/loader';
 import Sidebar from './components/sidebar';
 import Navbar from './components/navbar';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,6 +34,7 @@ function App() {
               </div>
             </main>
           </div>
+          <ToastContainer />
         </div>
       </div>
     </>

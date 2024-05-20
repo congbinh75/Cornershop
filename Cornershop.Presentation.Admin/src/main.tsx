@@ -9,14 +9,14 @@ import FormElements from './pages/form/FormElements';
 import FormLayout from './pages/form/FormLayout';
 import Alerts from './pages/uiElements/Alerts';
 import Buttons from './pages/uiElements/Buttons';
-import SignIn from './pages/auth/SignIn';
-import SignUp from './pages/auth/SignUp';
+import Login from './pages/login';
 import Products from './pages/products';
 import Categories from './pages/categories';
 import Orders from './pages/orders';
 import Users from './pages/users';
 import Dashboard from './pages/dashboard';
 import Table from './components/table';
+import { ToastContainer } from 'react-toastify';
 
 const router = createBrowserRouter([
   {
@@ -69,18 +69,14 @@ const router = createBrowserRouter([
         element: <Buttons />,
       },
       {
-        path: "/auth/signin",
-        element: <SignIn />,
-      },
-      {
-        path: "/auth/signup",
-        element: <SignUp />,
-      },
-      {
         path: "/tables",
         element: <Table />,
       }
-    ],
+    ]
+  },
+  {
+    path: "/login",
+    element: <Login />
   }
 ]);
 
