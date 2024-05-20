@@ -1,2 +1,3 @@
-export const Success = "success";
-export const Failure = "failure";
+export const success = "success";
+export const failure = "failure";
+export const token = "token";

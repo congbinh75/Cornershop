@@ -15,40 +15,34 @@
 }
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/assets/fonts/Satoshi-Regular.woff2') format('woff2'),
-       url('/assets/fonts/Satoshi-Regular.ttf') format('truetype');
-       font-weight: 400;
-       font-display: swap;
-       font-style: normal;
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url('/fonts/Montserrat-Regular.ttf') format('truetype');
 }
 
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/assets/fonts/Satoshi-Italic.woff2') format('woff2'),
-       url('/assets/fonts/Satoshi-Italic.ttf') format('truetype');
-       font-weight: 400;
-       font-display: swap;
-       font-style: italic;
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url('/fonts/Montserrat-Italic.ttf') format('truetype');
+  font-style: italic;
 }
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/assets/fonts/Satoshi-Bold.woff2') format('woff2'),
-       url('/assets/fonts/Satoshi-Bold.ttf') format('truetype');
-       font-weight: 700;
-       font-display: swap;
-       font-style: normal;
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url('/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: bold;
 }
 
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/assets/fonts/Satoshi-BoldItalic.woff2') format('woff2'),
-       url('/assets/fonts/Satoshi-BoldItalic.ttf') format('truetype');
-       font-weight: 700;
-       font-display: swap;
-       font-style: italic;
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url('/fonts/Montserrat-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
 }
 

@@ -3,6 +3,15 @@ import { handleResponse, handleError } from "./response";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+export const get = async (resource: string) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${resource}`);
+    return handleResponse(response);
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
 export const getAll = async (resource: string) => {
   try {
     const response = await axios.get(`${BASE_URL}/${resource}`);

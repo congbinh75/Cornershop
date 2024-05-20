@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { Failure } from "../../utils/constants";
+import { failure } from "../../utils/constants";
 
 interface Response {
   config: object;
@@ -31,7 +31,7 @@ interface Error {
 
 export function handleResponse(response: Response) {
   if (response.data) {
-    if (response.data.status == Failure) {
+    if (response.data.status == failure) {
       toast.error(response.data.message);
     }
     return response.data;

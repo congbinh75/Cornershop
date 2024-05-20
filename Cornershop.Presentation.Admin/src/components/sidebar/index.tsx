@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Logo from "../../assets/images/logo/logo_darkmode.png";
+import Logo from "/images/logo/logo_darkmode.png";
 
 interface SidebarProps {
   sidebarOpen: boolean;

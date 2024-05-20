@@ -1,4 +1,4 @@
-import { getSingle, post } from "./utils/provider";
+import { get, getSingle, post } from "./utils/provider";
 
 const url = 'api/user';
 
@@ -8,4 +8,8 @@ export const getUser = async (id: string) => {
 
 export const loginUser = async (email: string, password: string) => {
     return await post(url + "/login", { email: email, password: password});
+}
+
+export const getCurrentUser = async () => {
+    return await get(url + "/admin/current");
 }

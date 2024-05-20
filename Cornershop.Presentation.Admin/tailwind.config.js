@@ -5,9 +5,6 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
-    fontFamily: {
-      sans: ['Satoshi', 'sans-serif'],
-    },
     screens: {
       '2xsm': '375px',
       xsm: '425px',

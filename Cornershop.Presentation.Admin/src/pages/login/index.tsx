@@ -3,7 +3,7 @@ import { loginUser } from "../../api/user";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { Success } from "../../utils/constants";
+import { success, token } from "../../utils/constants";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,6 +12,10 @@ const Login = () => {
 
   const submitCredentials = async () => {
     const data = await loginUser(email, password);
+    if (data?.status === success) {
+      window.localStorage.setItem(token, data.token);
+      navigate("/");
+    }
   }
 
   return (
@@ -31,7 +35,7 @@ const Login = () => {
                 <input
                   type="text"
                   placeholder="sample@email.com"
-                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  className="w-full rounded-lg border border-stroke bg-transparent py-4 px-6 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   onChange={e => setEmail(e.target.value)}
                 />
               </div>
@@ -45,7 +49,7 @@ const Login = () => {
                 <input
                   type="password"
                   placeholder="********"
-                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  className="w-full rounded-lg border border-stroke bg-transparent py-4 px-6 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   onChange={e => setPassword(e.target.value)}
                 />
               </div>
