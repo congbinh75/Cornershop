@@ -122,7 +122,7 @@
     <comment/>
   </data>
   <data name="ERR_INVALID_CREDENTIALS" xml:space="preserve">
-    <value>Invalid credentials</value>
+    <value>Email or password is incorrect</value>
     <comment/>
   </data>
   <data name="ERR_INVALID_INPUT_DATA" xml:space="preserve">

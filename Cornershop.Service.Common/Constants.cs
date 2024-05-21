@@ -2,6 +2,8 @@
 {
     public static class Constants
     {
+        public const string AdminAndStaff = "Admin, Staff";
+
         public const string DefaultErrorMessage = "An unexpected error happened. Please try again later or contact our support team.";
 
         public const string ERR_EMAIL_ALREADY_REGISTERED = "ERR_EMAIL_ALREADY_REGISTERED";

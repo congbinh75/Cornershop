@@ -16,7 +16,7 @@ namespace Cornershop.Service.Application.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IConfiguration configuration, 
+    public class UserController(IConfiguration configuration,
         IStringLocalizer<SharedResources> stringLocalizer,
         ITokenInfoProvider tokenInfoProvider,
         IUserService userService) : ControllerBase
@@ -30,29 +30,29 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpGet]
-        [Route("/current")]
+        [Route("current")]
         public async Task<IActionResult> GetCurrentUser()
         {
             string userId = tokenInfoProvider.Id ?? throw new Exception(); //TO BE FIXED
             var user = await userService.GetById(userId);
-            return Ok(user);
+            return Ok(new GetCurrentUserResponse { User = user });
         }
 
         [HttpGet]
-        [Route("/admin/current")]
-        [Authorize (Roles = "Admin, Staff")]
+        [Route("admin/current")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> GetCurrentUserAdmin()
         {
             string userId = tokenInfoProvider.Id ?? throw new Exception(); //TO BE FIXED
             var user = await userService.GetById(userId);
-            return Ok(user);
+            return Ok(new GetCurrentUserResponse { User = user });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int page = Shared.Constants.Page, int pageSize = Shared.Constants.PageSize)
         {
             var users = await userService.GetAll(page, pageSize);
-            return Ok(users);
+            return Ok(new GetAllUserResponse { Users = users });
         }
 
         [HttpPut]
@@ -77,21 +77,22 @@ namespace Cornershop.Service.Application.Controllers
             {
                 if (result.Error == Constants.ERR_EMAIL_ALREADY_REGISTERED)
                 {
-                    return Ok(new RegisterUserResponse { 
-                        Status = Shared.Constants.Failure, 
-                        Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED] 
+                    return Ok(new RegisterUserResponse
+                    {
+                        Status = Shared.Constants.Failure,
+                        Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED]
                     });
                 }
                 else
                 {
-                    return Ok(new RegisterUserResponse { 
-                        Status = Shared.Constants.Failure, 
-                        Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED] 
+                    return Ok(new RegisterUserResponse
+                    {
+                        Status = Shared.Constants.Failure,
+                        Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED]
                     });
                 }
             }
         }
-
 
         [HttpPost]
         [Route("login")]
@@ -103,12 +104,11 @@ namespace Cornershop.Service.Application.Controllers
             {
                 var claims = new[]
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, configuration["Jwt:Subject"] ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                     new Claim(ClaimTypes.NameIdentifier, user.Id ?? ""),
                     new Claim(ClaimTypes.Email, user.Email ?? ""),
-                    new Claim(ClaimTypes.Role, "User")
+                    new Claim(ClaimTypes.Role, ((Role)user.Role).ToString())
                 };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? ""));
@@ -119,8 +119,15 @@ namespace Cornershop.Service.Application.Controllers
                     claims,
                     expires: DateTimeOffset.UtcNow.UtcDateTime.AddDays(7),
                     signingCredentials: signIn);
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                Response.Cookies.Append("AuthCookie", tokenString, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
 
-                return Ok(new LoginUserResponse { Token = new JwtSecurityTokenHandler().WriteToken(token) });
+                return Ok(new LoginUserResponse());
             }
             else
             {

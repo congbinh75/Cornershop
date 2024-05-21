@@ -26,6 +26,14 @@ builder.Services.AddDbContextFactory<CornershopDbContext>(options =>
     b => b.MigrationsAssembly(typeof(CornershopDbContext).Assembly.FullName)));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            context.Token = context.Request.Cookies["AuthCookie"];
+            return Task.CompletedTask;
+        }
+    };
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters()
@@ -58,7 +66,10 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.AllowAnyOrigin().AllowAnyHeader();
+            policy
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
 });
 
