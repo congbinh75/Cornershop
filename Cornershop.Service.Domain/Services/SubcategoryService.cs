@@ -1,36 +1,68 @@
-using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Contexts;
+using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services
 {
-    public class SubcategoryService : ISubCategoryService
+    public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContextFactory) : ISubCategoryService
     {
-        public Task<SubcategoryDTO?> Add(SubcategoryDTO categoryDTO)
+        public async Task<SubcategoryDTO?> GetById(string id)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var result = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception(); //TO BE FIXED
+            return Mapper.Map(result);
         }
 
-        public Task<ICollection<SubcategoryDTO>> GetAll()
+        public async Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var result = await dbContext.Subcategories.Skip(page * pageSize).Take(pageSize).ToListAsync();
+            return result.ConvertAll(Mapper.Map);
         }
 
-        public Task<SubcategoryDTO?> GetById(string id)
+        public async Task<int> GetCount()
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            return dbContext.Subcategories.Count();
         }
 
-        public Task<bool> Remove(string id)
+        public async Task<SubcategoryDTO?> Add(SubcategoryDTO subcategoryDTO)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
+            var subcategory = new Subcategory
+            {
+                Name = subcategoryDTO.Name,
+                Description = subcategoryDTO.Description,
+                Category = category
+            };
+            await dbContext.Subcategories.AddAsync(subcategory);
+            return Mapper.Map(subcategory);
         }
 
-        public Task<SubcategoryDTO?> Update(SubcategoryDTO categoryDTO)
+        public async Task<SubcategoryDTO?> Update(SubcategoryDTO subcategoryDTO)
         {
-            throw new NotImplementedException();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
+            var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception();
+            
+            subcategory.Name = subcategoryDTO.Name ?? subcategory.Name;
+            subcategory.Description = subcategoryDTO.Description ?? subcategory.Description;
+            subcategory.Category = category;
+
+            await dbContext.SaveChangesAsync();
+
+            return Mapper.Map(subcategory);
+        }
+
+        public async Task<bool> Remove(string id)
+        {
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            var result = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id);
+            await dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
