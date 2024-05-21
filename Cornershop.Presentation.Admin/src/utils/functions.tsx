@@ -1,15 +1,10 @@
-export const parseJwt = (token: string) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  const jsonPayload = decodeURIComponent(
-    window
-      .atob(base64)
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
-      .join("")
-  );
+export const getDateFromString = (str: string) => {
+  const date = new Date(str);
+  const localDateStr = date.toLocaleDateString();
+  const localDate = new Date(localDateStr);
 
-  return JSON.parse(jsonPayload);
+  const day = localDate.getDate();
+  const month = localDate.getMonth() + 1;
+  const year = localDate.getFullYear(); 
+  return day + "/" + month + "/" + year;
 };

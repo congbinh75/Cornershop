@@ -2,6 +2,7 @@ import DropdownUser from "./dropdownUser"
 const Navbar = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
+  currentUser: object | null;
 }) => {
   return (
     <header className="sticky top-0 z-40 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
@@ -20,7 +21,7 @@ const Navbar = (props: {
         </div>
         <div className="grow"></div>
         <div className="flex items-center gap-3 2xsm:gap-7">
-          <DropdownUser />
+          <DropdownUser currrentUser={props.currentUser} />
         </div>
       </div>
     </header>

@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-
-import Loader from './components/loader';
-import Sidebar from './components/sidebar';
-import Navbar from './components/navbar';
-import { ToastContainer } from 'react-toastify';
+import { useEffect, useState } from "react";
+import { Outlet, redirect, useLocation, useNavigate } from "react-router-dom";
+import Loader from "./components/loader";
+import Sidebar from "./components/sidebar";
+import Navbar from "./components/navbar";
+import { toast, ToastContainer } from "react-toastify";
+import { useGet } from "./api/service";
 
 function App() {
-  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -15,19 +15,19 @@ function App() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  const { data, isLoading, isError } = useGet("/user/admin/current");
 
-  return loading ? (
-    <Loader />
-  ) : (
+  return (
     <>
       <div className="dark:bg-boxdark-2 dark:text-bodydark">
         <div className="flex h-screen overflow-hidden">
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            <Navbar
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              currentUser={data?.user}
+            />
             <main>
               <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
                 <Outlet />

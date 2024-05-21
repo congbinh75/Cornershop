@@ -16,7 +16,6 @@ import Orders from './pages/orders';
 import Users from './pages/users';
 import Dashboard from './pages/dashboard';
 import Table from './components/table';
-import { ToastContainer } from 'react-toastify';
 
 const router = createBrowserRouter([
   {

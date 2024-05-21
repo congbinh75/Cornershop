@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import DarkModeSwitcher from "./darkModeSwitcher";
 
-const DropdownUser = () => {
+interface Props {
+  currrentUser : object | null
+}
+
+const DropdownUser = (props: Props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+
+  console.log("🚀 ~ currrentUser:", props.currrentUser)
 
   // close on click outside
   useEffect(() => {
@@ -43,7 +49,7 @@ const DropdownUser = () => {
       >
         <span className="text-right">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {props?.currrentUser?.username}
           </span>
         </span>
         <i className="fa-solid fa-chevron-down"></i>

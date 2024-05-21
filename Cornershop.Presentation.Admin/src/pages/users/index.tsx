@@ -1,4 +1,27 @@
+import { useState } from "react";
+import { defaultPageSize } from "../../utils/constants";
+import { getDateFromString } from "../../utils/functions";
+import { Roles } from "../../utils/enums";
+import { Select } from "@headlessui/react";
+import { useGet } from "../../api/service";
+import { toast } from "react-toastify";
+
 const Users = () => {
+  const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+
+  const { data, isLoading, isError } = useGet("/user" + "?page=" + page + "?pageSize=" + pageSize);
+
+  if (data?.data?.users){
+    setUsers(data.data.users);
+  }
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    toast.error(data?.data?.message)
+  }
+
   return (
     <div>
       <div className="flex flex-row w-full mb-5">
@@ -23,8 +46,11 @@ const Users = () => {
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-          <div className="col-span-2 flex items-center">
-            <p className="font-medium">Name</p>
+          <div className="col-span-1 flex items-center">
+            <p className="font-medium">First name</p>
+          </div>
+          <div className="col-span-1 flex items-center">
+            <p className="font-medium">Last name</p>
           </div>
           <div className="col-span-1 hidden items-center sm:flex">
             <p className="font-medium">Username</p>
@@ -41,31 +67,41 @@ const Users = () => {
           <div className="col-span-1 flex items-center"></div>
         </div>
 
-        {/* {categoryData.map((product, key) => ( */}
+        {users.map((user, key) => (
           <div
             className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-            // key={key}
+            key={key}
           >
-            <div className="col-span-4 flex items-center">
+            <div className="col-span-1 flex items-center">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <p className="text-sm text-black dark:text-white">
-                  {/* {product.name} */}
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {user.firstName}
                 </p>
               </div>
             </div>
             <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white">
-                {/* {product.subcategories} */}
+              <p className="text-sm text-black dark:text-white line-clamp-1">
+                {user.lastName}
               </p>
             </div>
             <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white">
-                {/* {product.products} */}
+              <p className="text-sm text-black dark:text-white line-clamp-1">
+                {user.username}
+              </p>
+            </div>
+            <div className="col-span-2 flex items-center">
+              <p className="text-sm text-black dark:text-white line-clamp-1">
+                {user.email}
               </p>
             </div>
             <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white">
-                {/* {product.stock} */}
+              <p className="text-sm text-black dark:text-white line-clamp-1">
+                {Roles[user.role]}
+              </p>
+            </div>
+            <div className="col-span-1 flex items-center">
+              <p className="text-sm text-black dark:text-white line-clamp-1">
+                {getDateFromString(user.createdOn)}
               </p>
             </div>
             <div className="col-span-1 flex items-center">
@@ -74,14 +110,23 @@ const Users = () => {
               </button>
             </div>
           </div>
-        {/* ))} */}
+        ))}
       </div>
-      <div className="flex flex-row grow justify-center gap-4">
-        <button className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black hover:bg-opacity-90 dark:border-form-strokedark dark:text-white">
+      <div className="flex flex-row grow gap-4">
+        <Select
+          name="pageSize"
+          aria-label="Page size"
+          className="inline-flex items-center justify-center rounded-md bg-inherit border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
+        >
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="45">45</option>
+        </Select>
+        <button className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white">
           <i className="fa-solid fa-arrow-left"></i>
         </button>
         <span></span>
-        <button className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black hover:bg-opacity-90 dark:border-form-strokedark dark:text-white">
+        <button className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white">
           <i className="fa-solid fa-arrow-right"></i>
         </button>
       </div>
