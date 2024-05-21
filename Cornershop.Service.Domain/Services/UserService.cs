@@ -25,6 +25,12 @@ namespace Cornershop.Service.Domain.Services
             return users.ConvertAll(Mapper.Map);
         }
 
+        public async Task<int> GetCount()
+        {
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
+            return dbContext.Users.Count();
+        }
+
         public async Task<UserDTO?> GetByCredentials(string email, string password)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();

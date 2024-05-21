@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Azure;
+using System.Reflection.Metadata;
+using Cornershop.Service.Common;
 
 namespace Cornershop.Service.Application.Controllers
 {
@@ -33,19 +35,24 @@ namespace Cornershop.Service.Application.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
         {
             var result = await productService.GetAll(page, pageSize);
-            return Ok(new GetListProductResponse{ ProductList = result });
+            var count = await productService.GetCount();
+            var pagesCount = (int)Math.Ceiling((double)count / pageSize);
+            return Ok(new GetListProductResponse{ ProductList = result, PagesCount = pagesCount });
         }
 
         [HttpGet]
         [Route("admin")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, bool isHiddenIncluded)
         {
             var result = await productService.GetAll(page, pageSize, isHiddenIncluded);
-            return Ok(new GetListProductResponse{ ProductList = result });
+            var count = await productService.GetCount();
+            var pagesCount = (int)Math.Ceiling((double)count / pageSize);
+            return Ok(new GetListProductResponse{ ProductList = result, PagesCount = pagesCount });
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin, Staff")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> Add([FromBody] AddProductRequest request)
         {
             var product = await productService.Add(new ProductDTO{

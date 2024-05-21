@@ -39,6 +39,12 @@ namespace Cornershop.Service.Domain.Services
             }
         }
 
+        public async Task<int> GetCount()
+        {
+            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            return dbContext.Products.Count();
+        }    
+
         public async Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize, bool isHiddenIncluded = false)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();

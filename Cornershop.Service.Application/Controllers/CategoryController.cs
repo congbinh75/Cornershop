@@ -22,8 +22,10 @@ namespace Cornershop.Service.Application.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
         {
-            var categoryList = await categoryService.GetAll(page, pageSize);
-            return Ok(new GetAllCategoryResponse{ CategoryList = categoryList });
+            var categories = await categoryService.GetAll(page, pageSize);
+            var count = await categoryService.GetCount();
+            var pagesCount = (int)Math.Ceiling((double)count / pageSize);
+            return Ok(new GetAllCategoryResponse{ Categories = categories, PagesCount = pagesCount });
         }
 
         [HttpPut]

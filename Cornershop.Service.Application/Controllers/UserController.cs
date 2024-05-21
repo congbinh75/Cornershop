@@ -52,7 +52,9 @@ namespace Cornershop.Service.Application.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int page = Shared.Constants.Page, int pageSize = Shared.Constants.PageSize)
         {
             var users = await userService.GetAll(page, pageSize);
-            return Ok(new GetAllUserResponse { Users = users });
+            var count = await userService.GetCount();
+            var pageCount = (int)Math.Ceiling((double)count / pageSize);
+            return Ok(new GetAllUserResponse { Users = users, PagesCount = pageCount });
         }
 
         [HttpPut]

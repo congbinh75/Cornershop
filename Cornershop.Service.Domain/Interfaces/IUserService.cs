@@ -7,6 +7,7 @@ namespace Cornershop.Service.Domain.Interfaces
     {
         public Task<UserDTO?> GetById(string id);
         public Task<ICollection<UserDTO>> GetAll(int page, int pageSize);
+        public Task<int> GetCount();
         public Task<UserDTO?> GetByCredentials(string email, string password);
         public Task<Result<UserDTO?, string?>> Add(UserDTO userDTO);
         public Task<UserDTO?> Update(UserDTO userDTO);
