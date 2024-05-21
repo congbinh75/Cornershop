@@ -16,10 +16,10 @@ const Login = () => {
       email: email,
       password: password,
     });
-    if (response?.status === success) {
-      return navigate("/");
+    if (response?.data?.status === success) {
+      navigate("/");
     } else {
-      toast.error(response?.message);
+      toast.error(response?.data?.message);
     }
   };
 

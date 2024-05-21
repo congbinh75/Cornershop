@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Outlet, redirect, useLocation, useNavigate } from "react-router-dom";
-import Loader from "./components/loader";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/navbar";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useGet } from "./api/service";
+import Loader from "./components/loader";
 
 function App() {
   const navigate = useNavigate();
@@ -16,6 +16,9 @@ function App() {
   }, [pathname]);
 
   const { data, isLoading, isError } = useGet("/user/admin/current");
+
+  if (isLoading) return <Loader />;
+  if (isError) navigate("/login");
 
   return (
     <>

@@ -2,7 +2,7 @@ import DropdownUser from "./dropdownUser"
 const Navbar = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
-  currentUser: object | null;
+  currentUser: { username: string } | null;
 }) => {
   return (
     <header className="sticky top-0 z-40 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">

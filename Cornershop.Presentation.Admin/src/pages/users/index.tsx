@@ -2,24 +2,29 @@ import { useState } from "react";
 import { defaultPageSize } from "../../utils/constants";
 import { getDateFromString } from "../../utils/functions";
 import { Roles } from "../../utils/enums";
+import { toast } from "react-toastify";
 import { Select } from "@headlessui/react";
 import { useGet } from "../../api/service";
-import { toast } from "react-toastify";
+
+interface User {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  role: number;
+  createdOn: string;
+}
 
 const Users = () => {
-  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
-  const { data, isLoading, isError } = useGet("/user" + "?page=" + page + "?pageSize=" + pageSize);
+  const { data, isError, mutate } = useGet(
+    "/user" + "?page=" + page + "&pageSize=" + pageSize
+  );
 
-  if (data?.data?.users){
-    setUsers(data.data.users);
-  }
-
-  if (isLoading) return <div>Loading...</div>;
   if (isError) {
-    toast.error(data?.data?.message)
+    toast.error(isError.message);
   }
 
   return (
@@ -45,7 +50,7 @@ const Users = () => {
         </div>
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-7 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
           <div className="col-span-1 flex items-center">
             <p className="font-medium">First name</p>
           </div>
@@ -62,71 +67,101 @@ const Users = () => {
             <p className="font-medium">Role</p>
           </div>
           <div className="col-span-1 flex items-center">
-            <p className="font-medium">CreatedDate</p>
+            <p className="font-medium">Created date</p>
           </div>
           <div className="col-span-1 flex items-center"></div>
         </div>
 
-        {users.map((user, key) => (
-          <div
-            className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-            key={key}
-          >
-            <div className="col-span-1 flex items-center">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        {data?.users.length <= 0 ? (
+          <div className="py-3 lg:py-6 border border-stroke dark:border-strokedark">
+            <p className="mx-auto w-fit">No data</p>
+          </div>
+        ) : (
+          data?.users.map((user: User, key : string) => (
+            <div
+              className="grid grid-cols-6 border border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+              key={key}
+            >
+              <div className="col-span-1 flex items-center">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <p className="text-sm text-black dark:text-white line-clamp-1">
+                    {user.firstName}
+                  </p>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {user.firstName}
+                  {user.lastName}
                 </p>
               </div>
+              <div className="col-span-1 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {user.username}
+                </p>
+              </div>
+              <div className="col-span-2 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {user.email}
+                </p>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {Roles[user?.role]}
+                </p>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {getDateFromString(user.createdOn)}
+                </p>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <button className="text-sm text-black dark:text-white">
+                  <i className="fa-solid fa-pen"></i>
+                </button>
+              </div>
             </div>
-            <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white line-clamp-1">
-                {user.lastName}
-              </p>
-            </div>
-            <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white line-clamp-1">
-                {user.username}
-              </p>
-            </div>
-            <div className="col-span-2 flex items-center">
-              <p className="text-sm text-black dark:text-white line-clamp-1">
-                {user.email}
-              </p>
-            </div>
-            <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white line-clamp-1">
-                {Roles[user.role]}
-              </p>
-            </div>
-            <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white line-clamp-1">
-                {getDateFromString(user.createdOn)}
-              </p>
-            </div>
-            <div className="col-span-1 flex items-center">
-              <button className="text-sm text-black dark:text-white">
-                <i className="fa-solid fa-pen"></i>
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
       <div className="flex flex-row grow gap-4">
         <Select
           name="pageSize"
           aria-label="Page size"
           className="inline-flex items-center justify-center rounded-md bg-inherit border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
+          onChange={(e) => {
+            if (Number(e.target.value) !== pageSize) {
+              setPageSize(Number(e.target.value));
+              mutate();
+            }
+          }}
         >
           <option value="15">15</option>
           <option value="30">30</option>
           <option value="45">45</option>
         </Select>
-        <button className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white">
+        <button
+          className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
+          onClick={() => {
+            if (page > 1) {
+              setPage(page - 1);
+              mutate();
+            }
+          }}
+        >
           <i className="fa-solid fa-arrow-left"></i>
         </button>
-        <span></span>
-        <button className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white">
+        <span className="inline-flex items-center justify-center">
+          {page + "/" + data?.pagesCount}
+        </span>
+        <button
+          className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
+          onClick={() => {
+            if (page < data?.pagesCount) {
+              setPage(page + 1);
+              mutate();
+            }
+          }}
+        >
           <i className="fa-solid fa-arrow-right"></i>
         </button>
       </div>

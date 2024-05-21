@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import DarkModeSwitcher from "./darkModeSwitcher";
 
 interface Props {
-  currrentUser : object | null
+  currrentUser : {
+    username: string
+  } | null
 }
 
 const DropdownUser = (props: Props) => {
@@ -12,16 +14,14 @@ const DropdownUser = (props: Props) => {
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
 
-  console.log("🚀 ~ currrentUser:", props.currrentUser)
-
-  // close on click outside
+  // Close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!dropdown.current) return;
       if (
         !dropdownOpen ||
-        dropdown.current.contains(target) ||
-        trigger.current.contains(target)
+        dropdown?.current?.contains(target) ||
+        trigger?.current?.contains(target)
       )
         return;
       setDropdownOpen(false);
@@ -30,7 +30,7 @@ const DropdownUser = (props: Props) => {
     return () => document.removeEventListener("click", clickHandler);
   });
 
-  // close if the esc key is pressed
+  // Close if the esc key is pressed
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!dropdownOpen || keyCode !== 27) return;
