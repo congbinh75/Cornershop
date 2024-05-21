@@ -5,6 +5,8 @@ namespace Cornershop.Shared.Responses
 {
     public class GetAllCategoryResponse : BaseResponse
     {
-        public ICollection<CategoryDTO> CategoryList { get; set; }
+        public ICollection<CategoryDTO> Categories { get; set; }
+
+        public int PagesCount { get; set; }
     }
 }
