@@ -15,8 +15,5 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         [Required]
         public ICollection<Subcategory> Subcategories { get; set; } = [];
-
-        [Required]
-        public ICollection<Product> Products { get; set; } = [];
     }
 }
