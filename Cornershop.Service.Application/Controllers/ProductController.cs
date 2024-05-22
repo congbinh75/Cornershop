@@ -4,8 +4,6 @@ using Cornershop.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Azure;
-using System.Reflection.Metadata;
 using Cornershop.Service.Common;
 
 namespace Cornershop.Service.Application.Controllers
@@ -24,7 +22,7 @@ namespace Cornershop.Service.Application.Controllers
 
         [HttpGet]
         [Route("admin/{id}")]
-        [Authorize(Roles = "Admin, Staff")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> Get(string id, [FromQuery] bool isHiddenIncluded)
         {
             var result = await productService.GetById(id, isHiddenIncluded);
@@ -77,7 +75,7 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpPatch]
-        [Authorize(Roles = "Admin, Staff")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> Update([FromBody] UpdateProductRequest request)
         {
             var product = await productService.Update(new ProductDTO{

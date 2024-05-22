@@ -4,6 +4,7 @@ using Cornershop.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Cornershop.Service.Common;
 
 namespace Cornershop.Service.Application.Controllers
 {
@@ -29,7 +30,7 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin, Staff")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> Add([FromBody] AddSubcategoryRequest request)
         {
             var subcategory = await subcategoryService.Add(new SubcategoryDTO{
@@ -43,7 +44,7 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpPatch]
-        [Authorize(Roles = "Admin, Staff")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> Update([FromBody] UpdateSubcategoryRequest request)
         {
             var subcategory = await subcategoryService.Update(new SubcategoryDTO{ 
@@ -55,7 +56,7 @@ namespace Cornershop.Service.Application.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin, Staff")]
+        [Authorize(Roles = Constants.AdminAndStaff)]
         public async Task<IActionResult> Remove([FromBody] string id)
         {
             await subcategoryService.Remove(id);

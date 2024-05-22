@@ -11,7 +11,7 @@ namespace Cornershop.Service.Domain.Services
     {
         public async Task<ProductDTO?> GetById(string id, bool isHiddenIncluded = false)
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
             if (isHiddenIncluded)
             {
                 var product = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
@@ -42,13 +42,13 @@ namespace Cornershop.Service.Domain.Services
 
         public async Task<int> GetCount()
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
             return dbContext.Products.Count();
         }    
 
         public async Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize, bool isHiddenIncluded = false)
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
             if (isHiddenIncluded) 
             {
                 var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId)
@@ -65,7 +65,7 @@ namespace Cornershop.Service.Domain.Services
 
         public async Task<ProductDTO?> Add(ProductDTO productDTO)
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(s => s.Id == productDTO.Subcategory.Id) ?? throw new Exception(); //TO BE FIXED
             var authorIds = productDTO.Authors.Select(a => a.Id).ToList();
             var authors = await dbContext.Authors.Where(a => authorIds.Contains(a.Id)).ToListAsync() ?? throw new Exception();
@@ -98,7 +98,7 @@ namespace Cornershop.Service.Domain.Services
 
         public async Task<ProductDTO?> Update(ProductDTO productDTO)
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productDTO.Id) ?? throw new Exception(); //TO BE FIXED
             
             product.Name = productDTO.Name ?? product.Name;
@@ -115,7 +115,6 @@ namespace Cornershop.Service.Domain.Services
             product.Format = productDTO.Format;
             product.Stock = productDTO.Stock;
             product.PublishedYear = productDTO.PublishedYear;
-            product.ImagesUrls = productDTO.ImagesUrls ?? product.ImagesUrls;
             product.Rating = productDTO.Rating;
             product.Reviews = productDTO.Reviews.Select(ReviewMapper.Map).ToList() ?? product.Reviews;
             product.IsVisible = productDTO.IsVisible;
@@ -126,7 +125,7 @@ namespace Cornershop.Service.Domain.Services
 
         public async Task<bool> Remove(string id)
         {
-            var dbContext = await dbContextFactory.CreateDbContextAsync();
+            using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(); //TO BE FIXED
             dbContext.Products.Remove(product);
             await dbContext.SaveChangesAsync();

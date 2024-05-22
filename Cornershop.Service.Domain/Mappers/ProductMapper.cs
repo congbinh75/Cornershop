@@ -7,7 +7,6 @@ public static class ProductMapper
 {
     public static ProductDTO Map(this Product product)
     {
-        var reviewsDTOs = product.Reviews.Select(ReviewMapper.Map).ToList();
         return new ProductDTO
         {
             Id = product.Id,
@@ -23,9 +22,8 @@ public static class ProductMapper
             Format = product.Format,
             Stock = product.Stock,
             PublishedYear = product.PublishedYear,
-            ImagesUrls = product.ImagesUrls,
             Rating = product.Rating,
-            Reviews = product.Reviews.Select(ReviewMapper.Map).ToList(),
+            Reviews = [],
             CreatedOn = product.CreatedOn,
             CreatedBy = product.CreatedBy?.Map(),
             UpdatedOn = product.UpdatedOn,
@@ -53,7 +51,6 @@ public static class ProductMapper
             Format = productDTO.Format,
             Stock = productDTO.Stock,
             PublishedYear = productDTO.PublishedYear,
-            ImagesUrls = productDTO.ImagesUrls,
             Rating = productDTO.Rating,
             Reviews = productDTO.Reviews.Select(ReviewMapper.Map).ToList(),
             Authors = productDTO.Authors.Select(AuthorMapper.Map).ToList(),

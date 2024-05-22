@@ -29,9 +29,6 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required decimal OriginalPrice { get; set; }
 
         [Required]
-        public ICollection<string> ImagesUrls { get; set; } = [];
-
-        [Required]
         public required decimal Rating { get; set; }
 
         [Required]
