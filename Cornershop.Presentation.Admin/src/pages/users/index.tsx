@@ -23,9 +23,7 @@ const Users = () => {
     "/user" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (isError) {
-    toast.error(isError.message);
-  }
+  if (isError) toast.error(isError.message);
 
   return (
     <div>
@@ -73,13 +71,13 @@ const Users = () => {
         </div>
 
         {data?.users.length <= 0 ? (
-          <div className="py-3 lg:py-6 border border-stroke dark:border-strokedark">
+          <div className="py-4 px-4 border border-stroke dark:border-strokedark md:px-6 2xl:px-8">
             <p className="mx-auto w-fit">No data</p>
           </div>
         ) : (
           data?.users.map((user: User, key : string) => (
             <div
-              className="grid grid-cols-6 border border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+              className="grid grid-cols-6 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
               <div className="col-span-1 flex items-center">

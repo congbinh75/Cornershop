@@ -85,7 +85,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <Link
                   to="/"
                   className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    (pathname === "/" || pathname.includes("dashboard")) &&
+                    (pathname === "/" || pathname.includes("/dashboard")) &&
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
@@ -95,11 +95,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <span>Dashboard</span>
                 </Link>
               </li>
+
               <li>
                 <Link
                   to="/products"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("products") &&
+                    pathname.includes("/products") &&
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
@@ -114,7 +115,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <Link
                   to="/categories"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("categories") && "bg-graydark dark:bg-meta-4"
+                    pathname.includes("/categories") && "bg-graydark dark:bg-meta-4"
                   }`}
                 >
                   <span className="w-5">
@@ -126,9 +127,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <li>
                 <Link
+                  to="/subcategories"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("/subcategories") && "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <span className="w-5">
+                    <i className="fa-solid fa-cubes-stacked"></i>
+                  </span>
+                  <span>Subcategories</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link
                   to="/orders"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("orders") && "bg-graydark dark:bg-meta-4"
+                    pathname.includes("/orders") && "bg-graydark dark:bg-meta-4"
                   }`}
                 >
                   <span className="w-5">
@@ -141,7 +156,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <Link
                   to="/users"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("users") &&
+                    pathname.includes("/users") &&
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
