@@ -15,13 +15,17 @@ interface Category {
   name: string;
 }
 
-const SubmitForm = async (name: string, categoryId: string | undefined, description: string) => {
+const SubmitForm = async (
+  name: string,
+  categoryId: string | undefined,
+  description: string
+) => {
   return await usePut("/subcategory", {
     name: name,
     categoryId: categoryId,
     description: description,
   });
-}
+};
 
 const NewSubcategory = () => {
   const [name, setName] = useState("");
@@ -39,13 +43,16 @@ const NewSubcategory = () => {
 
   if (isError) toast.error(isError.message);
 
-  const onSubmit = async (event: { preventDefault: () => void; }) => {
+  const onSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const response = await SubmitForm(name, category?.id, description);
-    if (response?.data?.status === success) {
-      toast.success("Success");
-    } else {
-      toast.error(response?.data?.message);
+    try {
+      if (response?.data?.status === success) {
+        toast.success("Success");
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
 
     setName("");
@@ -107,7 +114,10 @@ const NewSubcategory = () => {
                   <i className="fa-solid fa-chevron-down"></i>
                 </ComboboxButton>
               </div>
-              <ComboboxOptions anchor="bottom" className="empty:hidden overflow-hidden">
+              <ComboboxOptions
+                anchor="bottom"
+                className="empty:hidden overflow-hidden"
+              >
                 {filteredCategories?.map((category: Category) => (
                   <ComboboxOption
                     key={category.id}

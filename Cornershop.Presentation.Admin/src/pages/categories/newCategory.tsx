@@ -9,21 +9,24 @@ const SubmitForm = async (name: string, description: string) => {
     name: name,
     description: description,
   });
-}
+};
 
 const NewCategory = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const onSubmit = async (event: { preventDefault: () => void; }) => {
-    event.preventDefault();
-    const response = await SubmitForm(name, description);
-    if (response?.data?.status === success) {
-      toast.success("Success");
-      navigate("/categories");
-    } else {
-      toast.error(response?.data?.message);
+  const onSubmit = async (event: { preventDefault: () => void }) => {
+    try {
+      event.preventDefault();
+      const response = await SubmitForm(name, description);
+      if (response?.data?.status === success) {
+        toast.success("Success");
+        navigate("/categories");
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
 
     setName("");

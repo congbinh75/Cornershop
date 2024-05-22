@@ -5,21 +5,28 @@ import "react-toastify/dist/ReactToastify.css";
 import { success } from "../../utils/constants";
 import { usePost } from "../../api/service";
 
+const SubmitForm = async (email: string, password: string) => {
+  return await usePost("/user/login", {
+    email: email,
+    password: password,
+  });
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handlePost = async (event) => {
-    event.preventDefault();
-    const response = await usePost("/user/login", {
-      email: email,
-      password: password,
-    });
-    if (response?.data?.status === success) {
-      navigate("/");
-    } else {
-      toast.error(response?.data?.message);
+  const handlePost = async (event: { preventDefault: () => void }) => {
+    try {
+      event.preventDefault();
+      const response = await SubmitForm(email, password);
+      if (response?.data?.status === success) {
+        navigate("/");
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
   };
 
@@ -41,8 +48,9 @@ const Login = () => {
                   type="text"
                   placeholder="sample@email.com"
                   className="w-full rounded-lg border border-stroke bg-transparent py-4 px-6 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   value={email}
+                  required
                 />
               </div>
             </div>
@@ -56,8 +64,9 @@ const Login = () => {
                   type="password"
                   placeholder="********"
                   className="w-full rounded-lg border border-stroke bg-transparent py-4 px-6 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   value={password}
+                  required
                 />
               </div>
             </div>
