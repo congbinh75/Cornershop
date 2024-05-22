@@ -3,6 +3,7 @@ using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Service.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Cornershop.Service.Domain.Mappers;
 
 namespace Cornershop.Service.Domain.Services
 {
@@ -11,15 +12,15 @@ namespace Cornershop.Service.Domain.Services
         public async Task<ProductDTO?> GetById(string id, bool isHiddenIncluded = false)
         {
             var dbContext = await dbContextFactory.CreateDbContextAsync();
-            if (isHiddenIncluded) 
+            if (isHiddenIncluded)
             {
                 var product = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
-                return Mapper.Map(product);
+                return product.Map();
             }
             else
             {
                 var product = await dbContext.Products.Where(p => p.Id == id && p.IsVisible == true).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
-                return Mapper.Map(product); 
+                return product.Map();
             }
         }
 
@@ -29,13 +30,13 @@ namespace Cornershop.Service.Domain.Services
             if (isHiddenIncluded) 
             {
                 var products = await dbContext.Products.Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-                return products.ConvertAll(Mapper.Map);
+                return products.ConvertAll(ProductMapper.Map);
             }
             else
             {
                 var products = await dbContext.Products.Where(p => p.IsVisible == true)
                     .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-                return products.ConvertAll(Mapper.Map);
+                return products.ConvertAll(ProductMapper.Map);
             }
         }
 
@@ -52,13 +53,13 @@ namespace Cornershop.Service.Domain.Services
             {
                 var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId)
                     .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-                return products.ConvertAll(Mapper.Map);
+                return products.ConvertAll(ProductMapper.Map);
             }
             else
             {
                 var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId && p.IsVisible == true)
                     .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-                return products.ConvertAll(Mapper.Map);
+                return products.ConvertAll(ProductMapper.Map);
             }
         }
 
@@ -92,7 +93,7 @@ namespace Cornershop.Service.Domain.Services
             };
             await dbContext.Products.AddAsync(product);
             await dbContext.SaveChangesAsync();
-            return Mapper.Map(product);
+            return product.Map();
         }
 
         public async Task<ProductDTO?> Update(ProductDTO productDTO)
@@ -104,7 +105,7 @@ namespace Cornershop.Service.Domain.Services
             product.Description = productDTO.Description ?? product.Description;
             product.Code = productDTO.Code ?? product.Code;
             product.Price = productDTO.Price;
-            product.Subcategory = Mapper.Map(productDTO.Subcategory);
+            product.Subcategory = productDTO.Subcategory.Map();
             product.SubcategoryId = productDTO.Subcategory.Id;
             product.OriginalPrice = productDTO.OriginalPrice;
             product.Width = productDTO.Width;
@@ -116,11 +117,11 @@ namespace Cornershop.Service.Domain.Services
             product.PublishedYear = productDTO.PublishedYear;
             product.ImagesUrls = productDTO.ImagesUrls ?? product.ImagesUrls;
             product.Rating = productDTO.Rating;
-            product.Reviews = productDTO.Reviews.Select(Mapper.Map).ToList() ?? product.Reviews;
+            product.Reviews = productDTO.Reviews.Select(ReviewMapper.Map).ToList() ?? product.Reviews;
             product.IsVisible = productDTO.IsVisible;
 
             await dbContext.SaveChangesAsync();
-            return Mapper.Map(product);
+            return product.Map();
         }
 
         public async Task<bool> Remove(string id)

@@ -6,6 +6,7 @@ using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Service.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Cornershop.Service.Common;
+using Cornershop.Service.Domain.Mappers;
 
 namespace Cornershop.Service.Domain.Services
 {
@@ -15,14 +16,14 @@ namespace Cornershop.Service.Domain.Services
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception(); //TO BE FIXED
-            return Mapper.Map(user);
+            return user.Map();
         }
 
         public async Task<ICollection<UserDTO>> GetAll(int page, int pageSize)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var users = await dbContext.Users.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-            return users.ConvertAll(Mapper.Map);
+            return users.ConvertAll(UserMapper.Map);
         }
 
         public async Task<int> GetCount()
@@ -37,7 +38,7 @@ namespace Cornershop.Service.Domain.Services
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user != null && !string.IsNullOrEmpty(password) && HashPassword(password, user.Salt).hashedPassword.Equals(user.Password))
             {
-                return Mapper.Map(user);
+                return user.Map();
             }
             return null;
         }
@@ -77,7 +78,7 @@ namespace Cornershop.Service.Domain.Services
             await dbContext.Carts.AddAsync(cart);
 
             await dbContext.SaveChangesAsync();
-            return Mapper.Map(user);
+            return user.Map();
         }
 
         public async Task<UserDTO?> Update(UserDTO userDTO)
@@ -89,7 +90,7 @@ namespace Cornershop.Service.Domain.Services
             user.Role = userDTO.Role;
             user.IsBanned = userDTO.IsBanned;
             await dbContext.SaveChangesAsync();
-            return userDTO;
+            return user.Map();
         }
 
         public async Task<bool> UpdatePassword(string id, string oldPassword, string newPassword)

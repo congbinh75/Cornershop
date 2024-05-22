@@ -1,4 +1,5 @@
 using Cornershop.Service.Domain.Interfaces;
+using Cornershop.Service.Domain.Mappers;
 using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Shared.DTOs;
@@ -11,15 +12,15 @@ namespace Cornershop.Service.Domain.Services
         public async Task<SubcategoryDTO?> GetById(string id)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var result = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception(); //TO BE FIXED
-            return Mapper.Map(result);
+            var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception(); //TO BE FIXED
+            return subcategory.Map();
         }
 
         public async Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var result = await dbContext.Subcategories.Skip(page * pageSize).Take(pageSize).ToListAsync();
-            return result.ConvertAll(Mapper.Map);
+            var subcategories = await dbContext.Subcategories.Skip(page * pageSize).Take(pageSize).ToListAsync();
+            return subcategories.ConvertAll(SubcategoryMapper.Map);
         }
 
         public async Task<int> GetCount()
@@ -39,7 +40,7 @@ namespace Cornershop.Service.Domain.Services
                 Category = category
             };
             await dbContext.Subcategories.AddAsync(subcategory);
-            return Mapper.Map(subcategory);
+            return subcategory.Map();
         }
 
         public async Task<SubcategoryDTO?> Update(SubcategoryDTO subcategoryDTO)
@@ -54,7 +55,7 @@ namespace Cornershop.Service.Domain.Services
 
             await dbContext.SaveChangesAsync();
 
-            return Mapper.Map(subcategory);
+            return subcategory.Map();
         }
 
         public async Task<bool> Remove(string id)
