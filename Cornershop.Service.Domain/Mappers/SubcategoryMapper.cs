@@ -12,7 +12,7 @@ public static class SubcategoryMapper
             Id = subcategory.Id,
             Name = subcategory.Name,
             Description = subcategory.Description,
-            Category = subcategory.Category.Map(),
+            Category = subcategory.Category?.Map(),
             CreatedOn = subcategory.CreatedOn,
             CreatedBy = subcategory.CreatedBy?.Map(),
             UpdatedOn = subcategory.UpdatedOn,

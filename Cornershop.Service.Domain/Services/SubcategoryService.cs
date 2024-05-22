@@ -12,14 +12,17 @@ namespace Cornershop.Service.Domain.Services
         public async Task<SubcategoryDTO?> GetById(string id)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception(); //TO BE FIXED
+            var subcategory = await dbContext.Subcategories
+                .Where(c => c.Id == id)
+                .Include(c => c.Category)
+                .FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
             return subcategory.Map();
         }
 
         public async Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var subcategories = await dbContext.Subcategories.Skip(page * pageSize).Take(pageSize).ToListAsync();
+            var subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             return subcategories.ConvertAll(SubcategoryMapper.Map);
         }
 
@@ -40,6 +43,7 @@ namespace Cornershop.Service.Domain.Services
                 Category = category
             };
             await dbContext.Subcategories.AddAsync(subcategory);
+            await dbContext.SaveChangesAsync();
             return subcategory.Map();
         }
 

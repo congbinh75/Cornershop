@@ -12,7 +12,7 @@ public static class AuthorMapper
             Id = author.Id,
             Name = author.Name,
             Description = author.Description,
-            Products = author.Products.Select(ProductMapper.Map).ToList(),
+            Products = author.Products?.Select(ProductMapper.Map).ToList(),
             CreatedOn = author.CreatedOn,
             CreatedBy = author.CreatedBy?.Map(),
             UpdatedOn = author.UpdatedOn,

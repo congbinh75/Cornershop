@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Cornershop.Service.Application.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/subcategory")]
     [ApiController]
-    public class SubategoryController(ISubCategoryService subcategoryService) : ControllerBase
+    public class SubcategoryController(ISubCategoryService subcategoryService) : ControllerBase
     {
         [HttpGet]
         [Route("{id}")]
@@ -22,10 +22,10 @@ namespace Cornershop.Service.Application.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
         {
-            var categories = await subcategoryService.GetAll(page, pageSize);
+            var subcategories = await subcategoryService.GetAll(page, pageSize);
             var count = await subcategoryService.GetCount();
             var pagesCount = (int)Math.Ceiling((double)count / pageSize);
-            return Ok(new GetAllSubcategoryResponse{ Subcategories = categories, PagesCount = pagesCount });
+            return Ok(new GetAllSubcategoryResponse { Subcategories = subcategories, PagesCount = pagesCount });
         }
 
         [HttpPut]

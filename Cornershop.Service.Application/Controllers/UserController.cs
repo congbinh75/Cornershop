@@ -14,7 +14,7 @@ using static Cornershop.Service.Common.Enums;
 
 namespace Cornershop.Service.Application.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UserController(IConfiguration configuration,
         IStringLocalizer<SharedResources> stringLocalizer,

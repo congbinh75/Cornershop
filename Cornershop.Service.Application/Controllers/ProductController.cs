@@ -10,7 +10,7 @@ using Cornershop.Service.Common;
 
 namespace Cornershop.Service.Application.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/product")]
     [ApiController]
     public class ProductController(IProductService productService) : ControllerBase
     {

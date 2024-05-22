@@ -19,7 +19,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<ICollection<CategoryDTO>> GetAll(int page, int pageSize)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var categories = await dbContext.Categories.Skip(page * pageSize).Take(pageSize).ToListAsync();
+            var categories = await dbContext.Categories.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             return categories.ConvertAll(CategoryMapper.Map);
         }
 
@@ -38,6 +38,7 @@ namespace Cornershop.Service.Domain.Services
                 Description = categoryDTO.Description
             };
             await dbContext.Categories.AddAsync(category);
+            await dbContext.SaveChangesAsync();
             return category.Map();
         }
 

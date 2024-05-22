@@ -29,7 +29,7 @@ namespace Cornershop.Service.Domain.Services
             var dbContext = await dbContextFactory.CreateDbContextAsync();
             if (isHiddenIncluded) 
             {
-                var products = await dbContext.Products.Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                var products = await dbContext.Products.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
                 return products.ConvertAll(ProductMapper.Map);
             }
             else
@@ -52,13 +52,13 @@ namespace Cornershop.Service.Domain.Services
             if (isHiddenIncluded) 
             {
                 var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId)
-                    .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
                 return products.ConvertAll(ProductMapper.Map);
             }
             else
             {
                 var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId && p.IsVisible == true)
-                    .Skip(page * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
                 return products.ConvertAll(ProductMapper.Map);
             }
         }
