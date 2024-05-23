@@ -13,6 +13,7 @@ namespace Cornershop.Service.Infrastructure.Contexts
         public DbSet<Category> Categories { get; set; }
         public DbSet<Subcategory> Subcategories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Order> Orders{ get; set; }
         public DbSet<OrderDetail> OrdersDetails { get; set;}
