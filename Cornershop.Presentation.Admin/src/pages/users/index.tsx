@@ -19,11 +19,11 @@ const Users = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
-  const { data, isError, mutate } = useGet(
+  const { data, error, mutate } = useGet(
     "/user" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (isError) toast.error(isError.message);
+  if (error) toast.error(error.message);
 
   return (
     <div>
@@ -48,7 +48,7 @@ const Users = () => {
         </div>
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="grid grid-cols-7 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-8 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
           <div className="col-span-1 flex items-center">
             <p className="font-medium">First name</p>
           </div>
@@ -64,7 +64,7 @@ const Users = () => {
           <div className="col-span-1 flex items-center">
             <p className="font-medium">Role</p>
           </div>
-          <div className="col-span-1 flex items-center">
+          <div className="col-span-2 flex items-center">
             <p className="font-medium">Created date</p>
           </div>
           <div className="col-span-1 flex items-center"></div>
@@ -77,7 +77,7 @@ const Users = () => {
         ) : (
           data?.users.map((user: User, key : string) => (
             <div
-              className="grid grid-cols-6 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
+              className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
               <div className="col-span-1 flex items-center">
@@ -107,7 +107,7 @@ const Users = () => {
                   {Roles[user?.role]}
                 </p>
               </div>
-              <div className="col-span-1 flex items-center">
+              <div className="col-span-2 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
                   {getDateFromString(user.createdOn)}
                 </p>

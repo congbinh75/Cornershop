@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DarkModeSwitcher from "./darkModeSwitcher";
+import { useGet } from "../../api/service";
 
-interface Props {
-  currrentUser : {
-    username: string
-  } | null
-}
-
-const DropdownUser = (props: Props) => {
+const DropdownUser = () => {
+  const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -40,6 +36,13 @@ const DropdownUser = (props: Props) => {
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
+  const { data, error } = useGet("/user/admin/current");
+  if (error) {
+    if (error?.response?.status == 401) {
+      navigate("/login");
+    }
+  }
+
   return (
     <div className="relative">
       <div
@@ -49,7 +52,7 @@ const DropdownUser = (props: Props) => {
       >
         <span className="text-right">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {props?.currrentUser?.username}
+            {data?.user?.username}
           </span>
         </span>
         <i className="fa-solid fa-chevron-down"></i>

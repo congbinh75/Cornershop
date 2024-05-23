@@ -7,21 +7,22 @@ import { Link } from "react-router-dom";
 
 interface Subcategory {
   name: string;
-  category: string;
-  productsCount: number;
-  stock: number;
+  category: {
+    name: string;
+  };
+  description: string;
 }
 
 const Subcategories = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
-  const { data, isError, mutate } = useGet(
+  const { data, error, mutate } = useGet(
     "/subcategory" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (isError) {
-    toast.error(isError.message);
+  if (error) {
+    toast.error(error.message);
   }
 
   return (
@@ -30,7 +31,8 @@ const Subcategories = () => {
         <div className="grow">
           <Link
             to="/subcategories/create"
-            className="inline-flex align-middle items-center justify-center rounded-md bg-primary p-4 text-center font-medium text-white hover:bg-opacity-90 gap-4">
+            className="inline-flex align-middle items-center justify-center rounded-md bg-primary p-4 text-center font-medium text-white hover:bg-opacity-90 gap-4"
+          >
             <i className="fa-solid fa-plus"></i>
             <span className="hidden sm:block">New subcategory</span>
           </Link>
@@ -49,18 +51,15 @@ const Subcategories = () => {
         </div>
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="grid grid-cols-7 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8">
-          <div className="col-span-3 flex items-center">
+        <div className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8">
+          <div className="col-span-2 flex items-center">
             <p className="font-medium">Name</p>
           </div>
           <div className="col-span-2 flex items-center">
             <p className="font-medium">Category</p>
           </div>
-          <div className="flex items-center hidden sm:block">
-            <p className="font-medium">Products</p>
-          </div>
-          <div className="flex items-center hidden sm:block">
-            <p className="font-medium">Stock</p>
+          <div className="col-span-3 flex items-center hidden sm:block">
+            <p className="font-medium">Description</p>
           </div>
           <div className="flex items-center"></div>
         </div>
@@ -70,9 +69,9 @@ const Subcategories = () => {
             <p className="mx-auto w-fit">No data</p>
           </div>
         ) : (
-          data?.subcategories.map((subcategory: Subcategory, key: string) => (
+          data?.subcategories?.map((subcategory: Subcategory, key: string) => (
             <div
-              className="grid grid-cols-6 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
+              className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
               <div className="col-span-2 flex items-center">
@@ -84,17 +83,12 @@ const Subcategories = () => {
               </div>
               <div className="col-span-2 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {subcategory.category}
+                  {subcategory.category?.name}
                 </p>
               </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1 hidden sm:block">
-                  {subcategory.productsCount}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1 hidden sm:block">
-                  {subcategory.stock}
+              <div className="col-span-3 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {subcategory.description}
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">

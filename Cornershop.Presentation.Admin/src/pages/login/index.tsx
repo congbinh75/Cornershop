@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { success } from "../../utils/constants";
 import { usePost } from "../../api/service";
@@ -18,15 +18,10 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const handlePost = async (event: { preventDefault: () => void }) => {
-    try {
-      event.preventDefault();
-      const response = await SubmitForm(email, password);
-      if (response?.data?.status === success) {
-        navigate("/");
-      }
-    } catch (error) {
-      const errorMessage = error?.response?.data?.message || error?.message;
-      toast.error(errorMessage);
+    event.preventDefault();
+    const data = await SubmitForm(email, password);
+    if (data?.status === success) {
+      navigate("/");
     }
   };
 

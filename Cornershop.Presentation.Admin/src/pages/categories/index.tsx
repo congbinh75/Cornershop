@@ -8,21 +8,18 @@ import { Link } from "react-router-dom";
 interface Category {
   name: string;
   description: string;
-  subcategoriesCount: number;
-  productsCount: number;
-  stock: number;
 }
 
 const Categories = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
-  const { data, isError, mutate } = useGet(
+  const { data, error, mutate } = useGet(
     "/category" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (isError) {
-    toast.error(isError.message);
+  if (error) {
+    toast.error(error.response?.data?.message);
   }
 
   return (
@@ -52,59 +49,38 @@ const Categories = () => {
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="grid grid-cols-8 border border-stroke py-4 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8">
-          <div className="col-span-2 flex items-center">
+          <div className="col-span-3 flex items-center">
             <p className="font-medium">Name</p>
           </div>
-          <div className="col-span-2 flex items-center">
+          <div className="col-span-4 flex items-center">
             <p className="font-medium">Description</p>
           </div>
           <div className="col-span-1 hidden items-center sm:flex">
             <p className="font-medium">Subcategories</p>
           </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Products</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Stock</p>
-          </div>
           <div className="col-span-1 flex items-center"></div>
         </div>
 
-        {data?.categories.length <= 0 ? (
+        {data?.categories?.length <= 0 ? (
           <div className="py-4 px-4 border border-stroke dark:border-strokedark md:px-6 2xl:px-8">
             <p className="mx-auto w-fit">No data</p>
           </div>
         ) : (
-          data?.categories.map((category: Category, key: string) => (
+          data?.categories?.map((category: Category, key: string) => (
             <div
               className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-3 flex items-center">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <p className="text-sm text-black dark:text-white line-clamp-1">
                     {category.name}
                   </p>
                 </div>
               </div>
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-4 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
                   {category.description}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {category.subcategoriesCount}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {category.productsCount}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {category.stock}
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">

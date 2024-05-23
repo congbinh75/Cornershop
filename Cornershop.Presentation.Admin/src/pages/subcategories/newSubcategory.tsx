@@ -37,23 +37,16 @@ const NewSubcategory = () => {
   const page = 1;
   const pageSize = 128;
 
-  const { data, isError } = useGet(
+  const { data, error } = useGet(
     "/category" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (isError) toast.error(isError.message);
+  if (error) toast.error(error.message);
 
   const onSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const response = await SubmitForm(name, category?.id, description);
-    try {
-      if (response?.data?.status === success) {
-        toast.success("Success");
-      }
-    } catch (error) {
-      const errorMessage = error?.response?.data?.message || error?.message;
-      toast.error(errorMessage);
-    }
+    if (response?.data?.status === success) toast.success("Success");
 
     setName("");
     setCategory(null);
@@ -66,10 +59,6 @@ const NewSubcategory = () => {
     });
     setFilteredCategories(filteredData);
   }, [data?.categories, query]);
-
-  useEffect(() => {
-    console.log(category);
-  }, [category]);
 
   return (
     <div className="w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
