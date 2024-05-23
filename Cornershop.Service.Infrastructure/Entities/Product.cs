@@ -32,6 +32,9 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required decimal Rating { get; set; }
 
         [Required]
+        public ICollection<ProductImage> ProductImages { get; set; } = [];
+
+        [Required]
         public ICollection<Review> Reviews { get; set; } = [];
 
         [Required]
