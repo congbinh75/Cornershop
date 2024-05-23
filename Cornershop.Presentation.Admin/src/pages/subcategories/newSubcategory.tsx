@@ -105,7 +105,6 @@ const NewSubcategory = () => {
               </div>
               <ComboboxOptions
                 anchor="bottom"
-                className="empty:hidden overflow-hidden"
               >
                 {filteredCategories?.map((category: Category) => (
                   <ComboboxOption

@@ -10,6 +10,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
+import { Formats } from "../../utils/enums";
 
 interface Category {
   id: string;
@@ -29,6 +30,7 @@ interface FormData {
   subcategoryId: string;
   price: number;
   originalPrice: number;
+  uploadedMainImage: string;
   uploadedImages: string[];
   width: number;
   height: number;
@@ -42,6 +44,32 @@ interface FormData {
   isVisible: boolean;
 }
 
+const formats = [
+  {
+    name: "Paperback",
+    value: 0,
+  },
+  {
+    name: "Hardcover",
+    value: 1,
+  },
+  {
+    name: "Massmarket",
+    value: 2,
+  },
+];
+
+const visibilities = [
+  {
+    name: "Not visible",
+    value: false,
+  },
+  {
+    name: "Visible",
+    value: true,
+  },
+];
+
 const SubmitForm = async (formData: FormData) => {
   return await usePut("/product", formData);
 };
@@ -51,8 +79,10 @@ const NewProduct = () => {
 
   const [category, setCategory] = useState<Category | null>(null);
   const [subcategory, setSubcategory] = useState<Subcategory | null>(null);
-  const [images, setImages] = useState();
-  const [mainImage, setMainImage] = useState();
+  const [images, setImages] = useState<string[]>([]);
+  const [mainImage, setMainImage] = useState<string>("");
+  const [format, setFormat] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -62,7 +92,8 @@ const NewProduct = () => {
     subcategoryId: subcategory?.id ?? "",
     price: 0,
     originalPrice: 0,
-    uploadedImages: [],
+    uploadedMainImage: mainImage,
+    uploadedImages: images,
     width: 0,
     height: 0,
     length: 0,
@@ -86,10 +117,11 @@ const NewProduct = () => {
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleImagesChange = (e) => {
+  const handleImagesChange = (e: { target: { files: any } }) => {
     const files = e.target.files;
     const promises = [];
     for (let i = 0; i < files.length; i++) {
@@ -305,8 +337,8 @@ const NewProduct = () => {
             </Combobox>
           </div>
 
-          <div className="mb-6 flex flex-row gap-4">
-            <div className="grow">
+          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Price <span className="text-meta-1">*</span>
               </label>
@@ -320,7 +352,7 @@ const NewProduct = () => {
                 required
               ></input>
             </div>
-            <div className="grow">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Original price <span className="text-meta-1">*</span>
               </label>
@@ -336,8 +368,8 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 flex flex-row gap-4">
-            <div className="grow">
+          <div className="mb-6 grid grid-rows-1 lg:grid-rows-3">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Width (mm)<span className="text-meta-1">*</span>
               </label>
@@ -351,7 +383,7 @@ const NewProduct = () => {
                 required
               ></input>
             </div>
-            <div className="grow">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Length (mm)<span className="text-meta-1">*</span>
               </label>
@@ -365,7 +397,7 @@ const NewProduct = () => {
                 required
               ></input>
             </div>
-            <div className="grow">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Height (mm)<span className="text-meta-1">*</span>
               </label>
@@ -381,8 +413,8 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 flex flex-row gap-4">
-            <div className="grow">
+          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Pages <span className="text-meta-1">*</span>
               </label>
@@ -396,7 +428,7 @@ const NewProduct = () => {
                 required
               ></input>
             </div>
-            <div className="grow">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Stock <span className="text-meta-1">*</span>
               </label>
@@ -412,22 +444,46 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 flex flex-row gap-4">
-            <div className="grow">
+          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Format <span className="text-meta-1">*</span>
               </label>
-              <input
-                type="number"
-                placeholder="Enter format"
-                className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                name="format"
-                value={formData.format}
-                onChange={handleChange}
-                required
-              ></input>
+              <div>
+                <Combobox
+                  value={format}
+                  name="format"
+                  onChange={(e: number) => setFormat(e)}
+                >
+                  <div className="relative">
+                    <ComboboxInput
+                      className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-pointer dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      placeholder="Choose format"
+                      displayValue={(format: number) => Formats[format]}
+                      required
+                      disabled
+                    />
+                    <ComboboxButton className="absolute inset-y-0 right-0 px-4">
+                      <i className="fa-solid fa-chevron-down"></i>
+                    </ComboboxButton>
+                  </div>
+                  <ComboboxOptions anchor="bottom">
+                    {formats?.map((format) => (
+                      <ComboboxOption
+                        key={format.value}
+                        value={format.value}
+                        className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
+                      >
+                        <div className="text-sm p-4 text-black dark:text-white">
+                          {format.name}
+                        </div>
+                      </ComboboxOption>
+                    ))}
+                  </ComboboxOptions>
+                </Combobox>
+              </div>
             </div>
-            <div className="grow">
+            <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Published year <span className="text-meta-1">*</span>
               </label>
@@ -443,18 +499,58 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6">
-            <label className="mb-2 block text-black dark:text-white">
-              Main image <span className="text-meta-1">*</span>
-            </label>
-            <input type="file" onChange={handleMainImageChange} />
+          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+            <div className="mb-4">
+              <label className="mb-2 block text-black dark:text-white">
+                Main image <span className="text-meta-1">*</span>
+              </label>
+              <input type="file" onChange={handleMainImageChange} />
+            </div>
+            <div className="mb-4">
+              <label className="mb-2 block text-black dark:text-white">
+                Images (multiple) <span className="text-meta-1">*</span>
+              </label>
+              <input type="file" multiple onChange={handleImagesChange} />
+            </div>
           </div>
 
           <div className="mb-6">
             <label className="mb-2 block text-black dark:text-white">
-              Images (multiple) <span className="text-meta-1">*</span>
+              Visible to customers <span className="text-meta-1">*</span>
             </label>
-            <input type="file" multiple onChange={handleImagesChange} />
+            <Combobox
+              value={isVisible}
+              name="isVisible"
+              onChange={(e) => setIsVisible(e)}
+            >
+              <div className="relative">
+                <ComboboxInput
+                  className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-pointer dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  placeholder="Choose format"
+                  displayValue={(isVisible: boolean) =>
+                    visibilities.find((v) => v.value === isVisible)?.name
+                  }
+                  required
+                  disabled
+                />
+                <ComboboxButton className="absolute inset-y-0 right-0 px-4">
+                  <i className="fa-solid fa-chevron-down"></i>
+                </ComboboxButton>
+              </div>
+              <ComboboxOptions anchor="bottom">
+                {visibilities?.map((visibility) => (
+                  <ComboboxOption
+                    key={visibility.name}
+                    value={visibility.value}
+                    className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
+                  >
+                    <div className="text-sm p-4 text-black dark:text-white">
+                      {visibility.name}
+                    </div>
+                  </ComboboxOption>
+                ))}
+              </ComboboxOptions>
+            </Combobox>
           </div>
 
           <input

@@ -75,7 +75,7 @@ const Users = () => {
             <p className="mx-auto w-fit">No data</p>
           </div>
         ) : (
-          data?.users.map((user: User, key : string) => (
+          data?.users.map((user: User, key: string) => (
             <div
               className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
@@ -107,7 +107,7 @@ const Users = () => {
                   {Roles[user?.role]}
                 </p>
               </div>
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-1 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
                   {getDateFromString(user.createdOn)}
                 </p>
