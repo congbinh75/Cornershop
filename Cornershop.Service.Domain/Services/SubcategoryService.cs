@@ -22,7 +22,7 @@ namespace Cornershop.Service.Domain.Services
         public async Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize).Include(s => s.Category).ToListAsync();
             return subcategories.ConvertAll(SubcategoryMapper.Map);
         }
 
@@ -65,7 +65,8 @@ namespace Cornershop.Service.Domain.Services
         public async Task<bool> Remove(string id)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var result = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id);
+            var result = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception();
+            dbContext.Subcategories.Remove(result);
             await dbContext.SaveChangesAsync();
             return true;
         }

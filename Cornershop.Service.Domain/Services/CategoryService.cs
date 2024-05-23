@@ -58,7 +58,8 @@ namespace Cornershop.Service.Domain.Services
         public async Task<bool> Remove(string id)
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            var result = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var result = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception();
+            dbContext.Categories.Remove(result);
             await dbContext.SaveChangesAsync();
             return true;
         }

@@ -79,7 +79,7 @@ namespace Cornershop.Service.Application.Controllers
             {
                 if (result.Error == Constants.ERR_EMAIL_ALREADY_REGISTERED)
                 {
-                    return Ok(new RegisterUserResponse
+                    return BadRequest(new RegisterUserResponse
                     {
                         Status = Shared.Constants.Failure,
                         Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED]
@@ -87,7 +87,7 @@ namespace Cornershop.Service.Application.Controllers
                 }
                 else
                 {
-                    return Ok(new RegisterUserResponse
+                    return BadRequest(new RegisterUserResponse
                     {
                         Status = Shared.Constants.Failure,
                         Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED]
