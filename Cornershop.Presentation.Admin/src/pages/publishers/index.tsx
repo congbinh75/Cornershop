@@ -1,36 +1,25 @@
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-  Select,
-} from "@headlessui/react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useGet } from "../../api/service";
+import { toast } from "react-toastify";
 import { defaultPageSize } from "../../utils/constants";
+import { useState } from "react";
+import { useGet } from "../../api/service";
+import { Select } from "@headlessui/react";
+import { Link } from "react-router-dom";
 
-interface Product {
+interface Publisher {
   name: string;
-  category: string;
-  subcategory: string;
-  price: number;
-  stock: number;
+  description: string;
 }
 
-const Products = () => {
-  const navigate = useNavigate();
+const Publishers = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const { data, error, mutate } = useGet(
-    "/product/admin" + "?page=" + page + "&pageSize=" + pageSize
+    "/publisher" + "?page=" + page + "&pageSize=" + pageSize
   );
 
   if (error) {
-    if (error?.response?.status == 401) {
-      navigate("/login");
-    }
+    toast.error(error.response?.data?.message);
   }
 
   return (
@@ -38,11 +27,11 @@ const Products = () => {
       <div className="flex flex-row w-full mb-5">
         <div className="grow">
           <Link
-            to="/products/create"
+            to="/publishers/create"
             className="inline-flex align-middle items-center justify-center rounded-md bg-primary p-4 text-center font-medium text-white hover:bg-opacity-90 gap-4"
           >
             <i className="fa-solid fa-plus"></i>
-            <span>New product</span>
+            <span>New publisher</span>
           </Link>
         </div>
         <div>
@@ -60,59 +49,35 @@ const Products = () => {
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="grid grid-cols-8 border border-stroke py-4 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8">
-          <div className="col-span-2 flex items-center">
+          <div className="col-span-3 flex items-center">
             <p className="font-medium">Name</p>
           </div>
-          <div className="col-span-2 flex items-center">
-            <p className="font-medium">Category</p>
-          </div>
-          <div className="col-span-1 hidden items-center sm:flex">
-            <p className="font-medium">Subcategory</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Price</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Stock</p>
+          <div className="col-span-4 flex items-center">
+            <p className="font-medium">Description</p>
           </div>
           <div className="col-span-1 flex items-center"></div>
         </div>
 
-        {data?.products?.length <= 0 ? (
+        {data?.publishers?.length <= 0 ? (
           <div className="py-4 px-4 border border-stroke dark:border-strokedark md:px-6 2xl:px-8">
             <p className="mx-auto w-fit">No data</p>
           </div>
         ) : (
-          data?.products?.map((product: Product, key: string) => (
+          data?.publishers?.map((publisher: Publisher, key: string) => (
             <div
               className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-3 flex items-center">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <p className="text-sm text-black dark:text-white line-clamp-1">
-                    {product.name}
+                    {publisher.name}
                   </p>
                 </div>
               </div>
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-4 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.category}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.subcategory}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.price}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.stock}
+                  {publisher.description}
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">
@@ -170,4 +135,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default Publishers;

@@ -113,6 +113,32 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <li>
                 <Link
+                  to="/authors"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("/authors") && "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <span className="w-5">
+                  </span>
+                  <span className="text-sm">Authors</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/publishers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("/publishers") && "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <span className="w-5">
+                  </span>
+                  <span className="text-sm">Publishers</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link
                   to="/categories"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes("/categories") && "bg-graydark dark:bg-meta-4"
@@ -128,14 +154,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <Link
                   to="/subcategories"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes("/subcategories") && "bg-graydark dark:bg-meta-4"
                   }`}
                 >
                   <span className="w-5">
-                    <i className="fa-solid fa-cubes-stacked"></i>
                   </span>
-                  <span>Subcategories</span>
+                  <span className="text-sm">Subcategories</span>
                 </Link>
               </li>
 

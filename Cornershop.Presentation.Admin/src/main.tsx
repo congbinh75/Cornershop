@@ -19,6 +19,11 @@ import Table from "./components/table";
 import Subcategories from "./pages/subcategories";
 import NewCategory from "./pages/categories/newCategory";
 import NewSubcategory from "./pages/subcategories/newSubcategory";
+import NewProduct from "./pages/products/newProduct";
+import Authors from "./pages/authors";
+import NewAuthor from "./pages/authors/newAuthor";
+import Publishers from "./pages/publishers";
+import NewPublisher from "./pages/publishers/newPublisher";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +38,26 @@ const router = createBrowserRouter([
       {
         path: "/products",
         element: <Products />,
+      },
+      {
+        path: "/products/create",
+        element: <NewProduct />,
+      },
+      {
+        path: "/authors",
+        element: <Authors />,
+      },
+      {
+        path: "/authors/create",
+        element: <NewAuthor />,
+      },
+      {
+        path: "/publishers",
+        element: <Publishers />,
+      },
+      {
+        path: "/publishers/create",
+        element: <NewPublisher />,
       },
       {
         path: "/categories",
