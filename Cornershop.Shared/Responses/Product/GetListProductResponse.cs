@@ -3,9 +3,9 @@ using Cornershop.Shared.DTOs;
 
 namespace Cornershop.Shared.Requests
 {
-    public class GetListProductResponse
+    public class GetAllProductResponse
     {
-        public ICollection<ProductDTO> ProductList { get; set; }
+        public ICollection<ProductDTO> Products { get; set; }
 
         public int PagesCount { get; set; }
     }

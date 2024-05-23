@@ -35,7 +35,7 @@ namespace Cornershop.Service.Application.Controllers
             var result = await productService.GetAll(page, pageSize);
             var count = await productService.GetCount();
             var pagesCount = (int)Math.Ceiling((double)count / pageSize);
-            return Ok(new GetListProductResponse{ ProductList = result, PagesCount = pagesCount });
+            return Ok(new GetAllProductResponse{ Products = result, PagesCount = pagesCount });
         }
 
         [HttpGet]
@@ -46,7 +46,7 @@ namespace Cornershop.Service.Application.Controllers
             var result = await productService.GetAll(page, pageSize, isHiddenIncluded);
             var count = await productService.GetCount();
             var pagesCount = (int)Math.Ceiling((double)count / pageSize);
-            return Ok(new GetListProductResponse{ ProductList = result, PagesCount = pagesCount });
+            return Ok(new GetAllProductResponse{ Products = result, PagesCount = pagesCount });
         }
 
         [HttpPut]
