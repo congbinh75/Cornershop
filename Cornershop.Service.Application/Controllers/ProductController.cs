@@ -69,7 +69,8 @@ namespace Cornershop.Service.Application.Controllers
                 PublishedYear = request.PublishedYear,
                 AuthorsIds = request.AuthorsIds,
                 PublisherId = request.PublisherId,
-                UploadImagesFiles = request.UploadedImagesFiles
+                UploadImagesFiles = request.UploadedImagesFiles,
+                UploadedMainImageFile = request.UploadedMainImageFile,
             });
             return Ok(new AddProductResponse { Product = product });
         }
@@ -94,7 +95,8 @@ namespace Cornershop.Service.Application.Controllers
                 PublishedYear = request.PublishedYear,
                 AuthorsIds = request.AuthorsIds,
                 PublisherId = request.PublisherId,
-                UploadImagesFiles = request.UploadedImagesFiles
+                UploadImagesFiles = request.UploadedImagesFiles,
+                ProductImagesIds = request.ProductImagesIds
             });
             return Ok(new UpdateProductResponse { Product = product });
         }

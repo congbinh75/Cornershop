@@ -5,11 +5,11 @@ namespace Cornershop.Shared.DTOs
 {
     public class ProductDTO : BaseDTO
     {
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
-        public string Code { get; set; } = string.Empty;
+        public string Code { get; set; }
 
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; }
 
         public string SubcategoryId { get; set; }
 
@@ -33,9 +33,13 @@ namespace Cornershop.Shared.DTOs
 
         public int PublishedYear { get; set; }
 
-        public ICollection<byte[]> UploadImagesFiles { get; set; }
+        public string UploadedMainImageFile { get; set; }
 
-        public ICollection<string> ImagesUrls { get; set; }
+        public ICollection<string> UploadImagesFiles { get; set; }
+
+        public ICollection<ProductImageDTO> ProductImages { get; set; }
+
+        public ICollection<string> ProductImagesIds { get; set; }
 
         public decimal Rating { get; set; }
 

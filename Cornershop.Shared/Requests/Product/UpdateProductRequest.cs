@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cornershop.Shared.DTOs;
 
 namespace Cornershop.Shared.Requests
 {
@@ -18,7 +19,9 @@ namespace Cornershop.Shared.Requests
 
         public decimal OriginalPrice { get; set; }
 
-        public ICollection<byte[]> UploadedImagesFiles { get; set; }
+        public ICollection<string> UploadedImagesFiles { get; set; }
+
+        public ICollection<string> ProductImagesIds { get; set; }
 
         public int Width { get; set; }
 

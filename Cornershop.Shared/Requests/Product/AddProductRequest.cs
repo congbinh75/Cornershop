@@ -16,7 +16,9 @@ namespace Cornershop.Shared.Requests
 
         public decimal OriginalPrice { get; set; }
 
-        public ICollection<byte[]> UploadedImagesFiles { get; set; }
+        public string UploadedMainImageFile { get; set; }
+
+        public ICollection<string> UploadedImagesFiles { get; set; }
 
         public int Width { get; set; }
 
