@@ -2,7 +2,6 @@ import { toast } from "react-toastify";
 import { defaultPageSize } from "../../utils/constants";
 import { useState } from "react";
 import { useGet } from "../../api/service";
-import { Select } from "@headlessui/react";
 import { Link } from "react-router-dom";
 
 interface Subcategory {
@@ -101,21 +100,22 @@ const Subcategories = () => {
         )}
       </div>
       <div className="flex flex-row grow gap-4">
-        <Select
-          name="pageSize"
-          aria-label="Page size"
-          className="inline-flex items-center justify-center rounded-md bg-inherit border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
+        <select
+          value={pageSize}
           onChange={(e) => {
             if (Number(e.target.value) !== pageSize) {
               setPageSize(Number(e.target.value));
-              mutate();
             }
           }}
+          className="inline-flex items-center justify-center rounded-md bg-transparent border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
         >
           <option value="15">15</option>
           <option value="30">30</option>
           <option value="45">45</option>
-        </Select>
+          <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+            <i className="fa-solid fa-chevron-down"></i>
+          </span>
+        </select>
         <button
           className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
           onClick={() => {

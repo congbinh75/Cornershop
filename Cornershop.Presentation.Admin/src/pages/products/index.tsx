@@ -1,10 +1,3 @@
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-  Select,
-} from "@headlessui/react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGet } from "../../api/service";
@@ -66,11 +59,8 @@ const Products = () => {
           <div className="col-span-2 flex items-center">
             <p className="font-medium">Category</p>
           </div>
-          <div className="col-span-1 hidden items-center sm:flex">
+          <div className="col-span-2 hidden items-center sm:flex">
             <p className="font-medium">Subcategory</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Price</p>
           </div>
           <div className="col-span-1 flex items-center">
             <p className="font-medium">Stock</p>
@@ -100,14 +90,9 @@ const Products = () => {
                   {product.category}
                 </p>
               </div>
-              <div className="col-span-1 flex items-center">
+              <div className="col-span-2 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
                   {product.subcategory}
-                </p>
-              </div>
-              <div className="col-span-1 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.price}
                 </p>
               </div>
               <div className="col-span-1 flex items-center">
@@ -125,21 +110,28 @@ const Products = () => {
         )}
       </div>
       <div className="flex flex-row grow gap-4">
-        <Select
-          name="pageSize"
-          aria-label="Page size"
-          className="inline-flex items-center justify-center rounded-md bg-inherit border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
+        <select
+          value={pageSize}
           onChange={(e) => {
             if (Number(e.target.value) !== pageSize) {
               setPageSize(Number(e.target.value));
-              mutate();
             }
           }}
+          className="inline-flex items-center justify-center rounded-md bg-transparent border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
         >
-          <option value="15">15</option>
-          <option value="30">30</option>
-          <option value="45">45</option>
-        </Select>
+          <option value="15">
+            15
+          </option>
+          <option value="30">
+            30
+          </option>
+          <option value="45">
+            45
+          </option>
+          <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+            <i className="fa-solid fa-chevron-down"></i>
+          </span>
+        </select>
         <button
           className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
           onClick={() => {
