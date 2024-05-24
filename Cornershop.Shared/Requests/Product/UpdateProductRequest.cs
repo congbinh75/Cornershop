@@ -37,7 +37,7 @@ namespace Cornershop.Shared.Requests
 
         public int PublishedYear { get; set; }
 
-        public ICollection<string> AuthorsIds { get; set; }
+        public string AuthorId { get; set; }
 
         public string PublisherId { get; set; }
 

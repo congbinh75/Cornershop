@@ -68,10 +68,9 @@ namespace Cornershop.Service.Domain.Services
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
-            var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(s => s.Id == productDTO.Subcategory.Id) ?? throw new Exception(); //TO BE FIXED
-            var authorIds = productDTO.Authors.Select(a => a.Id).ToList();
-            var authors = await dbContext.Authors.Where(a => authorIds.Contains(a.Id)).ToListAsync() ?? throw new Exception();
-            var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.Publisher.Id) ?? throw new Exception(); //TO BE FIXED
+            var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(s => s.Id == productDTO.SubcategoryId) ?? throw new Exception(); //TO BE FIXED
+            var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Id == productDTO.AuthorId) ?? throw new Exception();
+            var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.PublisherId) ?? throw new Exception(); //TO BE FIXED
 
             var product = new Product
             {
@@ -91,7 +90,7 @@ namespace Cornershop.Service.Domain.Services
                 PublishedYear = productDTO.PublishedYear,
                 Rating = 0,
                 IsVisible = false,
-                Authors = authors,
+                Author = author,
                 Publisher = publisher
             };
             await dbContext.Products.AddAsync(product);
@@ -129,6 +128,8 @@ namespace Cornershop.Service.Domain.Services
         {
             using var dbContext = await dbContextFactory.CreateDbContextAsync();
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productDTO.Id) ?? throw new Exception(); //TO BE FIXED
+            var author = await dbContext.Authors.FirstOrDefaultAsync(p => p.Id == productDTO.AuthorId);
+            var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.PublisherId); //TO BE FIXED
 
             product.Name = productDTO.Name ?? product.Name;
             product.Description = productDTO.Description ?? product.Description;
@@ -147,6 +148,8 @@ namespace Cornershop.Service.Domain.Services
             product.Rating = productDTO.Rating;
             product.Reviews = productDTO.Reviews.Select(ReviewMapper.Map).ToList() ?? product.Reviews;
             product.IsVisible = productDTO.IsVisible;
+            product.Author = author ?? product.Author;
+            product.Publisher = publisher ?? product.Publisher;
 
             var deletedProductImages = await dbContext.ProductImages.Where(p => !productDTO.ProductImagesIds.Any(p2 => p2 == p.Id)).ToListAsync();
             // foreach (var deletedProductImage in deletedProductImages)

@@ -67,7 +67,7 @@ namespace Cornershop.Service.Application.Controllers
                 Stock = request.Stock,
                 Format = request.Format,
                 PublishedYear = request.PublishedYear,
-                AuthorsIds = request.AuthorsIds,
+                AuthorId = request.AuthorId,
                 PublisherId = request.PublisherId,
                 UploadImagesFiles = request.UploadedImagesFiles,
                 UploadedMainImageFile = request.UploadedMainImageFile,
@@ -93,7 +93,7 @@ namespace Cornershop.Service.Application.Controllers
                 Stock = request.Stock,
                 Format = request.Format,
                 PublishedYear = request.PublishedYear,
-                AuthorsIds = request.AuthorsIds,
+                AuthorId = request.AuthorId,
                 PublisherId = request.PublisherId,
                 UploadImagesFiles = request.UploadedImagesFiles,
                 ProductImagesIds = request.ProductImagesIds

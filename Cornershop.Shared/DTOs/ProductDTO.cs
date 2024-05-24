@@ -45,9 +45,9 @@ namespace Cornershop.Shared.DTOs
 
         public ICollection<ReviewDTO> Reviews { get; set; }
 
-        public ICollection<string> AuthorsIds { get; set; }
+        public string AuthorId { get; set; }
 
-        public ICollection<AuthorDTO> Authors { get; set; }
+        public AuthorDTO Author { get; set; }
 
         public string PublisherId { get; set; }
 
