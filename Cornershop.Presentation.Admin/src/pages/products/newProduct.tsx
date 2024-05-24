@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useGet, usePut } from "../../api/service";
+import { useGet, useGetFrequent, usePut } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,14 +10,8 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
-import { Formats } from "../../utils/enums";
 
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface Subcategory {
+interface SimpleEntity {
   id: string;
   name: string;
 }
@@ -26,7 +20,6 @@ interface FormData {
   name: string;
   code: string;
   description: string;
-  categoryId: string;
   subcategoryId: string;
   price: number;
   originalPrice: number;
@@ -39,56 +32,36 @@ interface FormData {
   format: number;
   stock: number;
   publishedYear: number;
-  authorsIds: string[];
+  authorId: string;
   publisherId: string;
   isVisible: boolean;
 }
 
-const formats = [
-  {
-    name: "Paperback",
-    value: 0,
-  },
-  {
-    name: "Hardcover",
-    value: 1,
-  },
-  {
-    name: "Massmarket",
-    value: 2,
-  },
-];
-
-const visibilities = [
-  {
-    name: "Not visible",
-    value: false,
-  },
-  {
-    name: "Visible",
-    value: true,
-  },
-];
-
 const SubmitForm = async (formData: FormData) => {
-  return await usePut("/product", formData);
+  try {
+    return await usePut("/product", formData);
+  } catch (error: any) {
+    const message = error?.response?.data?.Message;
+    toast.error(message);
+  }
 };
 
 const NewProduct = () => {
   const navigate = useNavigate();
 
-  const [category, setCategory] = useState<Category | null>(null);
-  const [subcategory, setSubcategory] = useState<Subcategory | null>(null);
+  const [category, setCategory] = useState<SimpleEntity | null>(null);
+  const [subcategory, setSubcategory] = useState<SimpleEntity | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [mainImage, setMainImage] = useState<string>("");
   const [format, setFormat] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [author, setAuthor] = useState<SimpleEntity | null>(null);
+  const [publisher, setPublisher] = useState<SimpleEntity | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
     code: "",
     description: "",
-    categoryId: category?.id ?? "",
     subcategoryId: subcategory?.id ?? "",
     price: 0,
     originalPrice: 0,
@@ -101,8 +74,8 @@ const NewProduct = () => {
     format: 0,
     stock: 0,
     publishedYear: 0,
-    authorsIds: [],
-    publisherId: "",
+    authorId: author?.id ?? "",
+    publisherId: publisher?.id ?? "",
     isVisible: false,
   });
 
@@ -112,17 +85,23 @@ const NewProduct = () => {
   const [subcategoryQuery, setSubcategoryQuery] = useState("");
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
 
+  const [publisherQuery, setPublisherQuery] = useState("");
+  const [filteredPublishers, setFilteredPublishers] = useState([]);
+
+  const [authorQuery, setAuthorQuery] = useState("");
+  const [filteredAuthors, setFilteredAuthors] = useState([]);
+
   const page = 1;
   const pageSize = 128;
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleImagesChange = (e: { target: { files: any } }) => {
     const files = e.target.files;
+    console.log(files);
     const promises = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -145,8 +124,9 @@ const NewProduct = () => {
   };
 
   const handleMainImageChange = (e) => {
-    const file = e.target.file;
+    const file = e.target.files[0];
     const promise = new Promise((resolve, reject) => {
+      console.log(file);
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
@@ -177,14 +157,32 @@ const NewProduct = () => {
   if (categoryError) toast.error(categoryError.message);
 
   const { data: subcategoryData, error: subcategoryError } = useGet(
-    "/subcategory" + "?page=" + page + "&pageSize=" + pageSize
+    "/subcategory" +
+      "?page=" +
+      page +
+      "&pageSize=" +
+      pageSize +
+      "&categoryId=" +
+      category?.id
   );
 
   if (subcategoryError) toast.error(subcategoryError.message);
 
+  const { data: authorData, error: authorError } = useGetFrequent(
+    "/author" + "?page=" + page + "&pageSize=" + pageSize
+  );
+
+  if (authorError) toast.error(authorError.message);
+
+  const { data: publisherData, error: publisherError } = useGet(
+    "/publisher" + "?page=" + page + "&pageSize=" + pageSize
+  );
+
+  if (publisherError) toast.error(publisherError.message);
+
   useEffect(() => {
     const filteredData = categoryData?.categories.filter(
-      (category: Category) => {
+      (category: SimpleEntity) => {
         return category.name
           .toLowerCase()
           .includes(categoryQuery.toLowerCase());
@@ -195,7 +193,7 @@ const NewProduct = () => {
 
   useEffect(() => {
     const filteredData = subcategoryData?.subcategories.filter(
-      (subcategory: Subcategory) => {
+      (subcategory: SimpleEntity) => {
         return subcategory.name
           .toLowerCase()
           .includes(subcategoryQuery.toLowerCase());
@@ -203,6 +201,38 @@ const NewProduct = () => {
     );
     setFilteredSubcategories(filteredData);
   }, [subcategoryData?.subcategories, subcategoryQuery]);
+
+  useEffect(() => {
+    const filteredData = publisherData?.publishers.filter(
+      (publisher: SimpleEntity) => {
+        return publisher.name
+          .toLowerCase()
+          .includes(publisherQuery.toLowerCase());
+      }
+    );
+    setFilteredPublishers(filteredData);
+  }, [publisherData?.publishers, publisherQuery]);
+
+  useEffect(() => {
+    const filteredData = authorData?.authors.filter((author: SimpleEntity) => {
+      return author.name.toLowerCase().includes(authorQuery.toLowerCase());
+    });
+    setFilteredAuthors(filteredData);
+  }, [authorData?.authors, authorQuery]);
+
+  useEffect(() => {
+    setFormData((prevState) => ({
+      ...prevState,
+      uploadedImages: images,
+    }));
+  }, [images]);
+
+  useEffect(() => {
+    setFormData((prevState) => ({
+      ...prevState,
+      uploadedMainImage: mainImage,
+    }));
+  }, [mainImage]);
 
   return (
     <div className="w-full lg:w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -263,15 +293,18 @@ const NewProduct = () => {
             </label>
             <Combobox
               value={category}
-              onChange={(value) => setCategory(value)}
+              onChange={(value) => {
+                setCategory(value);
+                setSubcategory(null);
+              }}
               onClose={() => setCategoryQuery("")}
             >
               <div className="relative">
                 <ComboboxInput
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Choose category"
-                  displayValue={(category: Category) => category?.name}
-                  onInput={(event) => setCategoryQuery(event.target.value)}
+                  displayValue={(category: SimpleEntity) => category?.name}
+                  onInput={(event) => setCategoryQuery(event)}
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
@@ -282,7 +315,7 @@ const NewProduct = () => {
                 anchor="bottom"
                 className="empty:hidden overflow-hidden"
               >
-                {filteredCategories?.map((category: Category) => (
+                {filteredCategories?.map((category: SimpleEntity) => (
                   <ComboboxOption
                     key={category?.id}
                     value={category}
@@ -303,14 +336,23 @@ const NewProduct = () => {
             </label>
             <Combobox
               value={subcategory}
-              onChange={(value: Category) => setSubcategory(value)}
+              onChange={(value) => {
+                setSubcategory(value);
+                setFormData((prevState) => ({
+                  ...prevState,
+                  subcategoryId: value?.id ?? "",
+                }));
+              }}
               onClose={() => setSubcategoryQuery("")}
+              disabled={category ? false : true}
             >
               <div className="relative">
                 <ComboboxInput
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Choose subcategory"
-                  displayValue={(subcategory: Subcategory) => subcategory?.name}
+                  displayValue={(subcategory: SimpleEntity) =>
+                    subcategory?.name
+                  }
                   onInput={(event) => setCategoryQuery(event.target.value)}
                   required
                 />
@@ -322,7 +364,7 @@ const NewProduct = () => {
                 anchor="bottom"
                 className="empty:hidden overflow-hidden"
               >
-                {filteredSubcategories?.map((subcategory: Subcategory) => (
+                {filteredSubcategories?.map((subcategory: SimpleEntity) => (
                   <ComboboxOption
                     key={subcategory?.id}
                     value={subcategory}
@@ -337,13 +379,106 @@ const NewProduct = () => {
             </Combobox>
           </div>
 
-          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+          <div className="mb-4">
+            <label className="mb-2 block text-black dark:text-white">
+              Author <span className="text-meta-1">*</span>
+            </label>
+            <Combobox
+              value={author}
+              onChange={(value: SimpleEntity) => {
+                setAuthor(value);
+                setFormData((prevState) => ({
+                  ...prevState,
+                  authorId: value?.id ?? "",
+                }));
+              }}
+              onClose={() => setAuthorQuery("")}
+            >
+              <div className="relative">
+                <ComboboxInput
+                  className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  placeholder="Choose author"
+                  displayValue={(author: SimpleEntity) => author?.name}
+                  onInput={(event) => setAuthorQuery(event.target.value)}
+                  required
+                />
+                <ComboboxButton className="absolute inset-y-0 right-0 px-4">
+                  <i className="fa-solid fa-chevron-down"></i>
+                </ComboboxButton>
+              </div>
+              <ComboboxOptions
+                anchor="bottom"
+                className="empty:hidden overflow-hidden"
+              >
+                {filteredAuthors?.map((author: SimpleEntity) => (
+                  <ComboboxOption
+                    key={author?.id}
+                    value={author}
+                    className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
+                  >
+                    <div className="text-sm p-4 text-black dark:text-white">
+                      {author?.name}
+                    </div>
+                  </ComboboxOption>
+                ))}
+              </ComboboxOptions>
+            </Combobox>
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block text-black dark:text-white">
+              Publisher <span className="text-meta-1">*</span>
+            </label>
+            <Combobox
+              value={publisher}
+              onChange={(value: SimpleEntity) => {
+                setPublisher(value);
+                setFormData((prevState) => ({
+                  ...prevState,
+                  publisherId: value?.id ?? "",
+                }));
+              }}
+              onClose={() => setPublisherQuery("")}
+            >
+              <div className="relative">
+                <ComboboxInput
+                  className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  placeholder="Choose publisher"
+                  displayValue={(publisher: SimpleEntity) => publisher?.name}
+                  onInput={(event) => setPublisherQuery(event.target.value)}
+                  required
+                />
+                <ComboboxButton className="absolute inset-y-0 right-0 px-4">
+                  <i className="fa-solid fa-chevron-down"></i>
+                </ComboboxButton>
+              </div>
+              <ComboboxOptions
+                anchor="bottom"
+                className="empty:hidden overflow-hidden"
+              >
+                {filteredPublishers?.map((publisher: SimpleEntity) => (
+                  <ComboboxOption
+                    key={publisher?.id}
+                    value={publisher}
+                    className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
+                  >
+                    <div className="text-sm p-4 text-black dark:text-white">
+                      {publisher?.name}
+                    </div>
+                  </ComboboxOption>
+                ))}
+              </ComboboxOptions>
+            </Combobox>
+          </div>
+
+          <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Price <span className="text-meta-1">*</span>
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter price"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="price"
@@ -358,6 +493,7 @@ const NewProduct = () => {
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter original price"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="originalPrice"
@@ -368,13 +504,14 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 grid grid-rows-1 lg:grid-rows-3">
+          <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 lg:gap-4">
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Width (mm)<span className="text-meta-1">*</span>
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter width (mm)"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="width"
@@ -389,6 +526,7 @@ const NewProduct = () => {
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter length (mm)"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="length"
@@ -403,6 +541,7 @@ const NewProduct = () => {
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter height (mm)"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="height"
@@ -413,13 +552,14 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+          <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Pages <span className="text-meta-1">*</span>
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter pages count"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="pages"
@@ -434,6 +574,7 @@ const NewProduct = () => {
               </label>
               <input
                 type="number"
+                min="0"
                 placeholder="Enter stock count"
                 className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 name="stock"
@@ -444,43 +585,35 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+          <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Format <span className="text-meta-1">*</span>
               </label>
-              <div>
-                <Combobox
-                  value={format}
-                  name="format"
-                  onChange={(e: number) => setFormat(e)}
-                >
-                  <div className="relative">
-                    <ComboboxInput
-                      className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-pointer dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      placeholder="Choose format"
-                      displayValue={(format: number) => Formats[format]}
-                      required
-                      disabled
-                    />
-                    <ComboboxButton className="absolute inset-y-0 right-0 px-4">
-                      <i className="fa-solid fa-chevron-down"></i>
-                    </ComboboxButton>
-                  </div>
-                  <ComboboxOptions anchor="bottom">
-                    {formats?.map((format) => (
-                      <ComboboxOption
-                        key={format.value}
-                        value={format.value}
-                        className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
-                      >
-                        <div className="text-sm p-4 text-black dark:text-white">
-                          {format.name}
-                        </div>
-                      </ComboboxOption>
-                    ))}
-                  </ComboboxOptions>
-                </Combobox>
+              <div className="mb-4">
+                <div className="relative z-20 bg-transparent dark:bg-form-input">
+                  <select
+                    value={format}
+                    onChange={(e) => {
+                      setFormat(e.target.value);
+                    }}
+                    className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
+                  >
+                    <option value="0" className="text-body dark:text-bodydark">
+                      Paperback
+                    </option>
+                    <option value="1" className="text-body dark:text-bodydark">
+                      Hardcover
+                    </option>
+                    <option value="2" className="text-body dark:text-bodydark">
+                      Massmarket
+                    </option>
+                  </select>
+
+                  <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                    <i className="fa-solid fa-chevron-down"></i>
+                  </span>
+                </div>
               </div>
             </div>
             <div className="mb-4">
@@ -499,18 +632,27 @@ const NewProduct = () => {
             </div>
           </div>
 
-          <div className="mb-6 grid grid-rows-1 lg:grid-rows-2">
+          <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Main image <span className="text-meta-1">*</span>
               </label>
-              <input type="file" onChange={handleMainImageChange} />
+              <input
+                className="overflow-hidden"
+                type="file"
+                onChange={handleMainImageChange}
+              />
             </div>
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
                 Images (multiple) <span className="text-meta-1">*</span>
               </label>
-              <input type="file" multiple onChange={handleImagesChange} />
+              <input
+                className="overflow-hidden"
+                type="file"
+                multiple
+                onChange={handleImagesChange}
+              />
             </div>
           </div>
 
@@ -518,39 +660,31 @@ const NewProduct = () => {
             <label className="mb-2 block text-black dark:text-white">
               Visible to customers <span className="text-meta-1">*</span>
             </label>
-            <Combobox
-              value={isVisible}
-              name="isVisible"
-              onChange={(e) => setIsVisible(e)}
-            >
-              <div className="relative">
-                <ComboboxInput
-                  className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-pointer dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  placeholder="Choose format"
-                  displayValue={(isVisible: boolean) =>
-                    visibilities.find((v) => v.value === isVisible)?.name
-                  }
-                  required
-                  disabled
-                />
-                <ComboboxButton className="absolute inset-y-0 right-0 px-4">
-                  <i className="fa-solid fa-chevron-down"></i>
-                </ComboboxButton>
-              </div>
-              <ComboboxOptions anchor="bottom">
-                {visibilities?.map((visibility) => (
-                  <ComboboxOption
-                    key={visibility.name}
-                    value={visibility.value}
-                    className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
+            <div className="mb-4">
+              <div className="relative z-20 bg-transparent dark:bg-form-input">
+                <select
+                  value={isVisible}
+                  onChange={(e) => {
+                    setIsVisible(e.target.value);
+                  }}
+                  className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
+                >
+                  <option
+                    value="false"
+                    className="text-body dark:text-bodydark"
                   >
-                    <div className="text-sm p-4 text-black dark:text-white">
-                      {visibility.name}
-                    </div>
-                  </ComboboxOption>
-                ))}
-              </ComboboxOptions>
-            </Combobox>
+                    Not visible
+                  </option>
+                  <option value="true" className="text-body dark:text-bodydark">
+                    Visible
+                  </option>
+                </select>
+
+                <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                  <i className="fa-solid fa-chevron-down"></i>
+                </span>
+              </div>
+            </div>
           </div>
 
           <input
