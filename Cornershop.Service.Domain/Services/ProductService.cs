@@ -96,7 +96,7 @@ namespace Cornershop.Service.Domain.Services
             await dbContext.Products.AddAsync(product);
 
             List<ProductImage> productImages = [];
-            var mainFilePath = FileService.UploadFile(Directory.GetCurrentDirectory(), productDTO.UploadedMainImageFile);
+            var mainFilePath = FileService.UploadImageFile(Directory.GetCurrentDirectory(), productDTO.UploadedMainImageFile);
             var mainImage = new ProductImage
             {
                 Product = product,
@@ -108,7 +108,7 @@ namespace Cornershop.Service.Domain.Services
 
             foreach (var imageFile in productDTO.UploadImagesFiles)
             {
-                var filePath = FileService.UploadFile(Directory.GetCurrentDirectory(), imageFile);
+                var filePath = FileService.UploadImageFile(Directory.GetCurrentDirectory(), imageFile);
                 var image = new ProductImage
                 {
                     Product = product,
@@ -163,7 +163,7 @@ namespace Cornershop.Service.Domain.Services
 
             foreach (var imageFile in productDTO.UploadImagesFiles)
             {
-                var filePath = FileService.UploadFile(Directory.GetCurrentDirectory(), imageFile);
+                var filePath = FileService.UploadImageFile(Directory.GetCurrentDirectory(), imageFile);
                 var image = new ProductImage
                 {
                     Product = product,
