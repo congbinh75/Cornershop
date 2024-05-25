@@ -7,7 +7,6 @@ namespace Cornershop.Service.Infrastructure.Entities
     public class Category : BaseEntity
     {
         [Required]
-        [MaxLength(32)]
         public required string Name { get; set; }
 
         [Required]

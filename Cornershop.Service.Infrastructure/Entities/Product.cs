@@ -7,7 +7,6 @@ namespace Cornershop.Service.Infrastructure.Entities;
 public class Product : BaseEntity
 {
     [Required]
-    [MaxLength(32)]
     public required string Name { get; set; }
 
     [Required]
@@ -66,6 +65,8 @@ public class Product : BaseEntity
 
     [Required]
     public required bool IsVisible { get; set; } = false;
+
+    public ICollection<CartDetail> CartDetails { get; set; } = [];
 
     public ICollection<OrderDetail> OrderDetails { get; set; } = [];
 }
