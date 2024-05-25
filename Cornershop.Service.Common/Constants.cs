@@ -4,6 +4,11 @@
     {
         public const string AdminAndStaff = "Admin, Staff";
 
+        public const string ProductCodePrefix = "PRD";
+        public const string OrderCodePrefix = "ORD";
+
+        public const int PostfixStringLength = 8;
+
         public const string DefaultErrorMessage = "An unexpected error happened. Please try again later or contact our support team.";
 
         public const string ERR_EMAIL_ALREADY_REGISTERED = "ERR_EMAIL_ALREADY_REGISTERED";
