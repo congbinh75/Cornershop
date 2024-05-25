@@ -1,10 +1,4 @@
 export interface ErrorResponse {
+  status: string;
   message: string;
-  code: string;
-  response: {
-    data: {
-      status: string;
-      message: string;
-    };
-  };
 }

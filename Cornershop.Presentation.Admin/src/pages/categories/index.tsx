@@ -5,6 +5,7 @@ import { useGet } from "../../api/service";
 import { Link } from "react-router-dom";
 
 interface Category {
+  id: string,
   name: string;
   description: string;
 }
@@ -80,9 +81,9 @@ const Categories = () => {
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">
-                <button className="text-sm text-black dark:text-white line-clamp-1">
+                <Link to={`/categories/update/` + category.id} className="text-sm text-black dark:text-white line-clamp-1">
                   <i className="fa-solid fa-pen"></i>
-                </button>
+                </Link>
               </div>
             </div>
           ))

@@ -3,9 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import "./index.css";
-import Profile from "./pages/profile";
-import FormElements from "./pages/form/FormElements";
-import FormLayout from "./pages/form/FormLayout";
+import Profile from "./pages/users/profile";
 import Login from "./pages/login";
 import Products from "./pages/products";
 import Categories from "./pages/categories";
@@ -20,6 +18,7 @@ import Authors from "./pages/authors";
 import NewAuthor from "./pages/authors/newAuthor";
 import Publishers from "./pages/publishers";
 import NewPublisher from "./pages/publishers/newPublisher";
+import UpdateCategory from "./pages/categories/updateCategory";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +63,10 @@ const router = createBrowserRouter([
         element: <NewCategory />,
       },
       {
+        path: "/categories/update/:id",
+        element: <UpdateCategory />,
+      },
+      {
         path: "/subcategories",
         element: <Subcategories />,
       },
@@ -82,14 +85,6 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
-      },
-      {
-        path: "/forms/form-elements",
-        element: <FormElements />,
-      },
-      {
-        path: "/forms/form-layout",
-        element: <FormLayout />,
       }
     ],
   },
