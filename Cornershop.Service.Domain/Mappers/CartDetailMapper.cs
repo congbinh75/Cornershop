@@ -5,25 +5,25 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class CartDetailMapper
 {
-    public static CartDetailDTO Map(CartDetail cartDetail)
+    public static CartDetailDTO Map(this CartDetail cartDetail)
     {
         return new CartDetailDTO
         {
-            Cart = cartDetail.Cart.Map(),
-            Product = cartDetail.Product.Map(),
+            CartId = cartDetail.CartId,
+            ProductId = cartDetail.ProductId,
             Quantity = cartDetail.Quantity,
             AddedOn = cartDetail.AddedOn
         };
     }
 
-    public static CartDetail Map(CartDetailDTO cartDetailDTO)
+    public static CartDetail Map(this CartDetailDTO cartDetailDTO)
     {
         return new CartDetail
         {
             Cart = cartDetailDTO.Cart.Map(),
-            CartId = cartDetailDTO.Cart.Id,
+            CartId = cartDetailDTO.CartId,
             Product = cartDetailDTO.Product.Map(),
-            ProductId = cartDetailDTO.Product.Id,
+            ProductId = cartDetailDTO.ProductId,
             Quantity = cartDetailDTO.Quantity,
             AddedOn = cartDetailDTO.AddedOn
         };

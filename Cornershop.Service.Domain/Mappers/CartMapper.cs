@@ -10,7 +10,7 @@ public static class CartMapper
         return new CartDTO
         {
             User = cart.User.Map(),
-            CartDetails = cart.CartDetails.Select(CartDetailMapper.Map).ToList()
+            CartDetails = cart.CartDetails.Select(x => x.Map()).ToList()
         };
     }
 
@@ -20,7 +20,7 @@ public static class CartMapper
         {
             User = cartDTO.User.Map(),
             UserId = cartDTO.User.Id,
-            CartDetails = cartDTO.CartDetails.Select(CartDetailMapper.Map).ToList()
+            CartDetails = cartDTO.CartDetails.Select(x => x.Map()).ToList()
         };
     }
 }

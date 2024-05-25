@@ -10,7 +10,7 @@ public static class ProductImageMapper
         return new ProductImageDTO
         {
             Id = productImage.Id,
-            Product = productImage.Product.Map(),
+            ProductId = productImage.ProductId,
             ImageUrl = productImage.ImageUrl,
             IsMainImage = productImage.IsMainImage,
             CreatedOn = productImage.CreatedOn,
@@ -26,6 +26,7 @@ public static class ProductImageMapper
         {
             Id = productImageDTO.Id,
             Product = productImageDTO.Product.Map(),
+            ProductId = productImageDTO.Product.Id,
             ImageUrl = productImageDTO.ImageUrl,
             IsMainImage = productImageDTO.IsMainImage,
             CreatedOn = productImageDTO.CreatedOn,

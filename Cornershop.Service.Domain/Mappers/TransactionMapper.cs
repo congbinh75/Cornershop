@@ -5,7 +5,7 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class TransactionMapper
 {
-    public static TransactionDTO Map(Transaction transaction)
+    public static TransactionDTO Map(this Transaction transaction)
     {
         return new TransactionDTO
         {
@@ -19,7 +19,7 @@ public static class TransactionMapper
         };
     }
 
-    public static Transaction Map(TransactionDTO transactionDTO)
+    public static Transaction Map(this TransactionDTO transactionDTO)
     {
         return new Transaction
         {

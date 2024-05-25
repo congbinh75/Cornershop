@@ -55,7 +55,6 @@ namespace Cornershop.Service.Application.Controllers
         {
             var product = await productService.Add(new ProductDTO{
                 Name = request.Name,
-                Code = request.Code,
                 Description = request.Description,
                 SubcategoryId = request.SubcategoryId,
                 Price = request.Price,
