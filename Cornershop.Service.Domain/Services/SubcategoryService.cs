@@ -22,7 +22,8 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
     public async Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize).Include(s => s.Category).ToListAsync();
+        var subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize)
+            .OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
         return subcategories.ConvertAll(SubcategoryMapper.Map);
     }
 
