@@ -53,7 +53,7 @@ namespace Cornershop.Service.Infrastructure.Contexts
                             entity.UpdatedById = currentUser?.Id;
                             break;
                         case EntityState.Modified:
-                            Entry(entity).Property(x => x.CreatedBy).IsModified = false;
+                            //The CreatedBy is NotMapped, no need for changing Modified state
                             Entry(entity).Property(x => x.CreatedById).IsModified = false;
                             Entry(entity).Property(x => x.CreatedOn).IsModified = false;
                             entity.UpdatedOn = now;
