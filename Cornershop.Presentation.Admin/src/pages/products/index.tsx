@@ -2,11 +2,17 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGet } from "../../api/service";
 import { defaultPageSize } from "../../utils/constants";
+import { toast } from "react-toastify";
 
 interface Product {
   name: string;
   category: string;
-  subcategory: string;
+  subcategory: {
+    name: string;
+    category: {
+      name: string;
+    }
+  };
   price: number;
   stock: number;
 }
@@ -17,10 +23,12 @@ const Products = () => {
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const { data, error, mutate } = useGet(
-    "/product/admin" + "?page=" + page + "&pageSize=" + pageSize
+    "/product/admin" + "?page=" + page + "&pageSize=" + pageSize + "&isHiddenIncluded=true"
   );
 
   if (error) {
+    const message = error?.response?.data?.Message;
+    toast.error(message);
     if (error?.response?.status == 401) {
       navigate("/login");
     }
@@ -53,13 +61,13 @@ const Products = () => {
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="grid grid-cols-8 border border-stroke py-4 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8">
-          <div className="col-span-2 flex items-center">
+          <div className="col-span-4 flex items-center">
             <p className="font-medium">Name</p>
           </div>
-          <div className="col-span-2 flex items-center">
+          <div className="col-span-1 flex items-center">
             <p className="font-medium">Category</p>
           </div>
-          <div className="col-span-2 hidden items-center sm:flex">
+          <div className="col-span-1 hidden items-center sm:flex">
             <p className="font-medium">Subcategory</p>
           </div>
           <div className="col-span-1 flex items-center">
@@ -78,26 +86,26 @@ const Products = () => {
               className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-4 flex items-center">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <p className="text-sm text-black dark:text-white line-clamp-1">
-                    {product.name}
+                    {product?.name}
                   </p>
                 </div>
               </div>
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-1 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.category}
-                </p>
-              </div>
-              <div className="col-span-2 flex items-center">
-                <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.subcategory}
+                  {product?.subcategory?.category?.name}
                 </p>
               </div>
               <div className="col-span-1 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
-                  {product.stock}
+                  {product?.subcategory?.name}
+                </p>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {product?.stock}
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">
@@ -119,18 +127,9 @@ const Products = () => {
           }}
           className="inline-flex items-center justify-center rounded-md bg-transparent border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
         >
-          <option value="15">
-            15
-          </option>
-          <option value="30">
-            30
-          </option>
-          <option value="45">
-            45
-          </option>
-          <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-            <i className="fa-solid fa-chevron-down"></i>
-          </span>
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="45">45</option>
         </select>
         <button
           className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"

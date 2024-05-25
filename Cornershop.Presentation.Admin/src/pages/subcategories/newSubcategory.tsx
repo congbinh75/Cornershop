@@ -9,33 +9,46 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
+import { useNavigate } from "react-router-dom";
 
 interface Category {
   id: string;
   name: string;
 }
 
-const SubmitForm = async (
-  name: string,
-  categoryId: string | undefined,
-  description: string
-) => {
+interface FormData {
+  name: string;
+  categoryId: string;
+  description: string;
+}
+
+const SubmitForm = async (formData: FormData) => {
   return await usePut("/subcategory", {
-    name: name,
-    categoryId: categoryId,
-    description: description,
+    name: formData.name,
+    categoryId: formData.categoryId,
+    description: formData.description,
   });
 };
 
 const NewSubcategory = () => {
-  const [name, setName] = useState("");
+  const navigate = useNavigate();
   const [category, setCategory] = useState<Category | null>(null);
-  const [description, setDescription] = useState("");
   const [query, setQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState([]);
 
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    categoryId: "",
+    description: "",
+  });
+
   const page = 1;
   const pageSize = 128;
+
+  const handleChange = (e: { target: { name: string; value: string } }) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
 
   const { data, error } = useGet(
     "/category" + "?page=" + page + "&pageSize=" + pageSize
@@ -45,12 +58,10 @@ const NewSubcategory = () => {
 
   const onSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    const response = await SubmitForm(name, category?.id, description);
+    const response = await SubmitForm(formData);
     if (response?.data?.status === success) toast.success("Success");
 
-    setName("");
-    setCategory(null);
-    setDescription("");
+    navigate("/subcategories");
   };
 
   useEffect(() => {
@@ -77,8 +88,9 @@ const NewSubcategory = () => {
               type="text"
               placeholder="Enter subcategory name"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               required
             />
           </div>
@@ -88,7 +100,13 @@ const NewSubcategory = () => {
             </label>
             <Combobox
               value={category}
-              onChange={(value: Category) => setCategory(value)}
+              onChange={(value: Category) => {
+                setCategory(value);
+                setFormData((prevState) => ({
+                  ...prevState,
+                  categoryId: value.id,
+                }));
+              }}
               onClose={() => setQuery("")}
             >
               <div className="relative">
@@ -96,16 +114,16 @@ const NewSubcategory = () => {
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Enter category name"
                   displayValue={(category: Category) => category?.name}
-                  onInput={(event) => setQuery(event.target.value)}
+                  onInput={(event) =>
+                    setQuery((event.target as HTMLInputElement).value)
+                  }
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
                   <i className="fa-solid fa-chevron-down"></i>
                 </ComboboxButton>
               </div>
-              <ComboboxOptions
-                anchor="bottom"
-              >
+              <ComboboxOptions anchor="bottom">
                 {filteredCategories?.map((category: Category) => (
                   <ComboboxOption
                     key={category.id}
@@ -128,8 +146,9 @@ const NewSubcategory = () => {
               rows={6}
               placeholder="Enter subcategory description"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
             ></textarea>
           </div>
           <input

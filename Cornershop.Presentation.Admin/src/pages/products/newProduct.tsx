@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useGet, useGetFrequent, usePut } from "../../api/service";
+import { useGet, usePut } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 import {
@@ -18,13 +18,12 @@ interface SimpleEntity {
 
 interface FormData {
   name: string;
-  code: string;
   description: string;
   subcategoryId: string;
   price: number;
   originalPrice: number;
-  uploadedMainImage: string;
-  uploadedImages: string[];
+  uploadedMainImageFile: string;
+  uploadedImagesFiles: string[];
   width: number;
   height: number;
   length: number;
@@ -38,12 +37,7 @@ interface FormData {
 }
 
 const SubmitForm = async (formData: FormData) => {
-  try {
-    return await usePut("/product", formData);
-  } catch (error: any) {
-    const message = error?.response?.data?.Message;
-    toast.error(message);
-  }
+  return await usePut("/product", formData);
 };
 
 const NewProduct = () => {
@@ -60,13 +54,12 @@ const NewProduct = () => {
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
-    code: "",
     description: "",
     subcategoryId: subcategory?.id ?? "",
     price: 0,
     originalPrice: 0,
-    uploadedMainImage: mainImage,
-    uploadedImages: images,
+    uploadedMainImageFile: mainImage,
+    uploadedImagesFiles: images,
     width: 0,
     height: 0,
     length: 0,
@@ -99,37 +92,38 @@ const NewProduct = () => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleImagesChange = (e: { target: { files: any } }) => {
-    const files = e.target.files;
+  const handleImagesChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const files = (e.target as HTMLInputElement).files;
     console.log(files);
-    const promises = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      promises.push(
-        new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = (error) => reject(error);
+    const promises: Promise<string>[] = [];
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        promises.push(
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+          })
+        );
+      }
+      Promise.all(promises)
+        .then((base64Images: string[]) => {
+          setImages(base64Images);
         })
-      );
+        .catch((error) => {
+          console.error("Error encoding files: ", error);
+        });
     }
-    Promise.all(promises)
-      .then((base64Images) => {
-        setImages(base64Images);
-      })
-      .catch((error) => {
-        console.error("Error encoding files: ", error);
-      });
   };
 
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0];
-    const promise = new Promise((resolve, reject) => {
-      console.log(file);
+  const handleMainImageChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const file = (e.target as HTMLInputElement).files[0];
+    const promise: Promise<string> = new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
+      reader.onload = () => resolve(reader.result as string);
       reader.onerror = (error) => reject(error);
     });
     promise
@@ -142,11 +136,16 @@ const NewProduct = () => {
   };
 
   const onSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    const response = await SubmitForm(formData);
-    if (response?.data?.status === success) {
-      toast.success("Success");
-      navigate("/products");
+    try {
+      event.preventDefault();
+      const response = await SubmitForm(formData);
+      if (response?.data?.status === success) {
+        toast.success("Success");
+        navigate("/products");
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
   };
 
@@ -154,7 +153,11 @@ const NewProduct = () => {
     "/category" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (categoryError) toast.error(categoryError.message);
+  if (categoryError) {
+    const errorMessage =
+      categoryError?.response?.data?.message || categoryError?.message;
+    toast.error(errorMessage);
+  }
 
   const { data: subcategoryData, error: subcategoryError } = useGet(
     "/subcategory" +
@@ -166,13 +169,21 @@ const NewProduct = () => {
       category?.id
   );
 
-  if (subcategoryError) toast.error(subcategoryError.message);
+  if (subcategoryError) {
+    const errorMessage =
+      subcategoryError?.response?.data?.message || subcategoryError?.message;
+    toast.error(errorMessage);
+  }
 
-  const { data: authorData, error: authorError } = useGetFrequent(
+  const { data: authorData, error: authorError } = useGet(
     "/author" + "?page=" + page + "&pageSize=" + pageSize
   );
 
-  if (authorError) toast.error(authorError.message);
+  if (authorError) {
+    const errorMessage =
+      authorError?.response?.data?.message || authorError?.message;
+    toast.error(errorMessage);
+  }
 
   const { data: publisherData, error: publisherError } = useGet(
     "/publisher" + "?page=" + page + "&pageSize=" + pageSize
@@ -223,14 +234,14 @@ const NewProduct = () => {
   useEffect(() => {
     setFormData((prevState) => ({
       ...prevState,
-      uploadedImages: images,
+      UploadedImagesFiles: images,
     }));
   }, [images]);
 
   useEffect(() => {
     setFormData((prevState) => ({
       ...prevState,
-      uploadedMainImage: mainImage,
+      uploadedMainImageFile: mainImage,
     }));
   }, [mainImage]);
 
@@ -253,21 +264,6 @@ const NewProduct = () => {
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               name="name"
               value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="mb-2 block text-black dark:text-white">
-              Code <span className="text-meta-1">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter product code"
-              className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="code"
-              value={formData.code}
               onChange={handleChange}
               required
             />
@@ -353,7 +349,9 @@ const NewProduct = () => {
                   displayValue={(subcategory: SimpleEntity) =>
                     subcategory?.name
                   }
-                  onInput={(event) => setCategoryQuery(event.target.value)}
+                  onInput={(event) =>
+                    setCategoryQuery((event.target as HTMLInputElement).value)
+                  }
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
@@ -399,7 +397,9 @@ const NewProduct = () => {
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Choose author"
                   displayValue={(author: SimpleEntity) => author?.name}
-                  onInput={(event) => setAuthorQuery(event.target.value)}
+                  onInput={(event) =>
+                    setAuthorQuery((event.target as HTMLInputElement).value)
+                  }
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
@@ -445,7 +445,9 @@ const NewProduct = () => {
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Choose publisher"
                   displayValue={(publisher: SimpleEntity) => publisher?.name}
-                  onInput={(event) => setPublisherQuery(event.target.value)}
+                  onInput={(event) =>
+                    setPublisherQuery((event.target as HTMLInputElement).value)
+                  }
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
@@ -638,18 +640,21 @@ const NewProduct = () => {
                 Main image <span className="text-meta-1">*</span>
               </label>
               <input
-                className="overflow-hidden"
+                className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                 type="file"
+                accept="image/png, image/jpeg"
                 onChange={handleMainImageChange}
+                required
               />
             </div>
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
-                Images (multiple) <span className="text-meta-1">*</span>
+                Images (multiple)
               </label>
               <input
-                className="overflow-hidden"
+                className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                 type="file"
+                accept="image/png, image/gif, image/jpeg"
                 multiple
                 onChange={handleImagesChange}
               />
@@ -663,7 +668,7 @@ const NewProduct = () => {
             <div className="mb-4">
               <div className="relative z-20 bg-transparent dark:bg-form-input">
                 <select
-                  value={isVisible}
+                  value={isVisible.toString()}
                   onChange={(e) => {
                     setIsVisible(e.target.value);
                   }}

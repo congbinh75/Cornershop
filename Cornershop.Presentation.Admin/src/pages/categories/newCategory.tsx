@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 import { usePut } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
-
 const SubmitForm = async (name: string, description: string) => {
   return await usePut("/category", {
     name: name,
