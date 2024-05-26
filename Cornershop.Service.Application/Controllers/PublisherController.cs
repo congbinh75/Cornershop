@@ -55,8 +55,9 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpDelete]
+    [Route("{id}")]
     [Authorize(Roles = Constants.AdminAndStaff)]
-    public async Task<IActionResult> Remove([FromBody] string id)
+    public async Task<IActionResult> Remove(string id)
     {
         await publisherService.Remove(id);
         return Ok(new RemovePublisherResponse());

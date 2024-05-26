@@ -102,9 +102,6 @@ const Categories = () => {
           <option value="15">15</option>
           <option value="30">30</option>
           <option value="45">45</option>
-          <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-            <i className="fa-solid fa-chevron-down"></i>
-          </span>
         </select>
         <button
           className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"

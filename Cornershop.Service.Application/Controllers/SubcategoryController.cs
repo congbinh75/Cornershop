@@ -69,8 +69,9 @@ public class SubcategoryController(ISubCategoryService subcategoryService) : Con
     }
 
     [HttpDelete]
+    [Route("{id}")]
     [Authorize(Roles = Constants.AdminAndStaff)]
-    public async Task<IActionResult> Remove([FromBody] string id)
+    public async Task<IActionResult> Remove(string id)
     {
         await subcategoryService.Remove(id);
         return Ok(new RemoveCategoryResponse());

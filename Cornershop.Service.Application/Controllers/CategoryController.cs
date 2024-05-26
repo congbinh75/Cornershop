@@ -55,8 +55,9 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     }
 
     [HttpDelete]
+    [Route("{id}")]
     [Authorize(Roles = Constants.AdminAndStaff)]
-    public async Task<IActionResult> Remove([FromBody] string id)
+    public async Task<IActionResult> Remove(string id)
     {
         await categoryService.Remove(id);
         return Ok(new RemoveCategoryResponse());

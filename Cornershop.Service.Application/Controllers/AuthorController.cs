@@ -55,8 +55,9 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
     }
 
     [HttpDelete]
+    [Route("{id}")]
     [Authorize(Roles = Constants.AdminAndStaff)]
-    public async Task<IActionResult> Remove([FromBody] string id)
+    public async Task<IActionResult> Remove(string id)
     {
         await authorService.Remove(id);
         return Ok(new RemoveAuthorResponse());
