@@ -8,12 +8,15 @@ namespace Cornershop.Service.Infrastructure.Entities
     public class User : BaseEntity
     {
         [Required]
+        [MaxLength(20)]
         public required string Username { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public required string FirstName { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public required string LastName { get; set; }
 
         [Required]

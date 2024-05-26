@@ -7,6 +7,7 @@ namespace Cornershop.Service.Infrastructure.Entities
     public class Publisher : BaseEntity
     {
         [Required]
+        [MaxLength(100)]
         public required string Name { get; set; }
 
         [Required]

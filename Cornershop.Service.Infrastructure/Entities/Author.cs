@@ -7,9 +7,11 @@ namespace Cornershop.Service.Infrastructure.Entities
     public class Author : BaseEntity
     {
         [Required]
+        [MaxLength(128)]
         public required string Name { get; set; }
 
         [Required]
+        [MaxLength(1024)]
         public required string Description { get; set; }
 
         [Required]

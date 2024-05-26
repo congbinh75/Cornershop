@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Infrastructure.Entities
@@ -9,8 +10,12 @@ namespace Cornershop.Service.Infrastructure.Entities
 
         public required User User { get; set; }
 
+        [Required]
+        [Range(1, 5)]
         public required int Rating { get; set; }
 
+        [Required]
+        [MaxLength(200)]
         public required string Comment { get; set; }
     }
 }

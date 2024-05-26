@@ -10,6 +10,7 @@ namespace Cornershop.Service.Infrastructure.Entities
         public required Order Order { get; set; }
 
         [Required]
+        [Range(0, 1000000000)]
         public required decimal Amount { get; set; }
     }
 }
