@@ -20,7 +20,7 @@ const Login = () => {
   const handlePost = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const data = await SubmitForm(email, password);
-    if (data?.status === success) {
+    if (data?.data?.status === success) {
       navigate("/");
     }
   };

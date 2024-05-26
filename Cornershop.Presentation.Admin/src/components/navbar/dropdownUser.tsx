@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DarkModeSwitcher from "./darkModeSwitcher";
-import { useGet } from "../../api/service";
+import { useGet, usePost } from "../../api/service";
+
+
 
 const DropdownUser = () => {
   const navigate = useNavigate();
@@ -9,6 +11,12 @@ const DropdownUser = () => {
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+
+  const Logout = () => {
+    usePost("/user/logout", {});
+    navigate("/login");
+    return;
+  }
 
   // Close on click outside
   useEffect(() => {
@@ -76,7 +84,7 @@ const DropdownUser = () => {
               My Profile
             </Link>
           </li>
-          <button className="flex items-center gap-3.5 px-6 py-3 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button onClick={() => Logout()} className="flex items-center gap-3.5 px-6 py-3 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
             <i className="fa-solid fa-right-from-bracket"></i>
             Log Out
           </button>

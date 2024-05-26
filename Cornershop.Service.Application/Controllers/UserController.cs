@@ -96,6 +96,55 @@ public class UserController(IConfiguration configuration,
         }
     }
 
+    [HttpPut]
+    [Route("/admin")]
+    public async Task<IActionResult> AddStaff([FromBody] AddStaffUserRequest request)
+    {
+        if (!Enum.IsDefined(typeof(Enums.Role), request.Role))
+        {
+            return BadRequest(new RegisterUserResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[Constants.ERR_INVALID_ROLE_VALUE]
+            });
+        }
+
+        var userDTO = new UserDTO
+        {
+            Username = request.Username,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            PlainPassword = request.Password,
+            Role = request.Role
+        };
+        var result = await userService.Add(userDTO);
+
+        if (result.Success)
+        {
+            return Ok(new RegisterUserResponse { User = result.Value });
+        }
+        else
+        {
+            if (result.Error == Constants.ERR_EMAIL_ALREADY_REGISTERED)
+            {
+                return BadRequest(new RegisterUserResponse
+                {
+                    Status = Shared.Constants.Failure,
+                    Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED]
+                });
+            }
+            else
+            {
+                return BadRequest(new RegisterUserResponse
+                {
+                    Status = Shared.Constants.Failure,
+                    Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED]
+                });
+            }
+        }
+    }
+
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
@@ -169,5 +218,20 @@ public class UserController(IConfiguration configuration,
     {
         await userService.UpdatePassword(request.Id, request.OldPassword, request.NewPassword);
         return Ok(new UpdatePasswordUserResponse());
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        Response.Cookies.Append("AuthCookie", string.Empty, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.UtcDateTime.AddDays(-1)
+        });
+        return Ok();
     }
 }
