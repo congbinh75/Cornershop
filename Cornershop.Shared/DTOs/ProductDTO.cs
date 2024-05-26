@@ -33,10 +33,6 @@ namespace Cornershop.Shared.DTOs
 
         public int PublishedYear { get; set; }
 
-        public string UploadedMainImageFile { get; set; }
-
-        public ICollection<string> UploadImagesFiles { get; set; }
-
         public ICollection<ProductImageDTO> ProductImages { get; set; }
 
         public ICollection<string> ProductImagesIds { get; set; }

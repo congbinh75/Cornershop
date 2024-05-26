@@ -4,26 +4,34 @@ using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Service.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Cornershop.Service.Domain.Mappers;
-using Cornershop.Service.Infrastructure.Services;
 using Cornershop.Service.Common.Functions;
 using Cornershop.Service.Common;
-using Microsoft.Extensions.Configuration;
 
 namespace Cornershop.Service.Domain.Services;
 
-public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFactory, IConfiguration configuration) : IProductService
+public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IProductService
 {
     public async Task<ProductDTO?> GetById(string id, bool isHiddenIncluded = false)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         if (isHiddenIncluded)
         {
-            var product = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
+            var product = await dbContext.Products.Where(p => p.Id == id)
+                .Include(p => p.Author)
+                .Include(p => p.Publisher)
+                .Include(p => p.Subcategory).ThenInclude(s => s.Category)
+                .Include(p => p.ProductImages)
+                .FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
             return product.Map();
         }
         else
         {
-            var product = await dbContext.Products.Where(p => p.Id == id && p.IsVisible == true).FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
+            var product = await dbContext.Products.Where(p => p.Id == id && p.IsVisible == true)
+                .Include(p => p.Author)
+                .Include(p => p.Publisher)
+                .Include(p => p.Subcategory).ThenInclude(s => s.Category)
+                .Include(p => p.ProductImages)
+                .FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
             return product.Map();
         }
     }
@@ -112,24 +120,24 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         await dbContext.Products.AddAsync(product);
         await dbContext.SaveChangesAsync();
 
-        var mainFilePath = FileService.UploadImageFile(configuration["FilesPath:UploadedImages"]!, productDTO.UploadedMainImageFile);
+        var mainFile = productDTO.ProductImages.FirstOrDefault(p => p.IsMainImage == true);
         var mainImage = new ProductImage
         {
             Product = product,
             ProductId = product.Id,
-            ImageUrl = mainFilePath,
+            ImageUrl = mainFile?.ImageUrl ?? "",
             IsMainImage = true
         };
         await dbContext.ProductImages.AddAsync(mainImage);
+        productDTO.ProductImages.Remove(mainFile);
 
-        foreach (var imageFile in productDTO.UploadImagesFiles)
+        foreach (var imageFile in productDTO.ProductImages)
         {
-            var filePath = FileService.UploadImageFile(configuration["FilesPath:UploadedImages"]!, imageFile);
             var image = new ProductImage
             {
                 Product = product,
                 ProductId = product.Id,
-                ImageUrl = filePath,
+                ImageUrl = imageFile.ImageUrl,
                 IsMainImage = false
             };
             await dbContext.ProductImages.AddAsync(image);
@@ -142,16 +150,21 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
     public async Task<ProductDTO?> Update(ProductDTO productDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productDTO.Id) ?? throw new Exception(); //TO BE FIXED
+        var product = await dbContext.Products
+            .Include(p => p.Author)
+            .Include(p => p.Publisher)
+            .Include(p => p.Subcategory)
+            .Include(p => p.ProductImages)
+            .FirstOrDefaultAsync(p => p.Id == productDTO.Id) ?? throw new Exception(); //TO BE FIXED
+        var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(p => p.Id == productDTO.SubcategoryId);
         var author = await dbContext.Authors.FirstOrDefaultAsync(p => p.Id == productDTO.AuthorId);
-        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.PublisherId); //TO BE FIXED
+        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.PublisherId);
 
         product.Name = productDTO.Name ?? product.Name;
         product.Description = productDTO.Description ?? product.Description;
         product.Code = productDTO.Code ?? product.Code;
         product.Price = productDTO.Price;
-        product.Subcategory = productDTO.Subcategory.Map();
-        product.SubcategoryId = productDTO.Subcategory.Id;
+        product.Subcategory = subcategory ?? product.Subcategory;
         product.OriginalPrice = productDTO.OriginalPrice;
         product.Width = productDTO.Width;
         product.Length = productDTO.Length;
@@ -161,33 +174,30 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         product.Stock = productDTO.Stock;
         product.PublishedYear = productDTO.PublishedYear;
         product.Rating = productDTO.Rating;
-        product.Reviews = productDTO.Reviews.Select(ReviewMapper.Map).ToList() ?? product.Reviews;
         product.IsVisible = productDTO.IsVisible;
         product.Author = author ?? product.Author;
         product.Publisher = publisher ?? product.Publisher;
 
-        var deletedProductImages = await dbContext.ProductImages.Where(p => !productDTO.ProductImagesIds.Any(p2 => p2 == p.Id)).ToListAsync();
-        // foreach (var deletedProductImage in deletedProductImages)
-        // {
-        //     if (File.Exists(deletedProductImage.ImageUrl))
-        //     {
-        //         File.Delete(deletedProductImage.ImageUrl);
-        //     }
-        // }
+        var deletedProductImages = new List<ProductImage>();
+        foreach (var item in product.ProductImages)
+        {
+            if (!productDTO.ProductImagesIds.Contains(item.Id))
+            {
+                deletedProductImages.Add(item);
+            }
+        }
         dbContext.ProductImages.RemoveRange(deletedProductImages);
 
-        foreach (var imageFile in productDTO.UploadImagesFiles)
+        foreach (var imageFile in productDTO.ProductImages)
         {
-            var filePath = FileService.UploadImageFile(Directory.GetCurrentDirectory(), imageFile);
             var image = new ProductImage
             {
                 Product = product,
                 ProductId = product.Id,
-                ImageUrl = filePath,
-                IsMainImage = false
+                ImageUrl = imageFile.ImageUrl,
+                IsMainImage = imageFile.IsMainImage
             };
             await dbContext.ProductImages.AddAsync(image);
-            product.ProductImages.Add(image);
         }
 
         await dbContext.SaveChangesAsync();

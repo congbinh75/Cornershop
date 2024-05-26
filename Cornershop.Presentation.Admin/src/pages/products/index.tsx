@@ -5,13 +5,14 @@ import { defaultPageSize } from "../../utils/constants";
 import { toast } from "react-toastify";
 
 interface Product {
+  id: string;
   name: string;
   category: string;
   subcategory: {
     name: string;
     category: {
       name: string;
-    }
+    };
   };
   price: number;
   stock: number;
@@ -23,7 +24,12 @@ const Products = () => {
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const { data, error, mutate } = useGet(
-    "/product/admin" + "?page=" + page + "&pageSize=" + pageSize + "&isHiddenIncluded=true"
+    "/product/admin" +
+      "?page=" +
+      page +
+      "&pageSize=" +
+      pageSize +
+      "&isHiddenIncluded=true"
   );
 
   if (error) {
@@ -109,9 +115,12 @@ const Products = () => {
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">
-                <button className="text-sm text-black dark:text-white line-clamp-1">
+                <Link
+                  to={`/products/update/` + product.id}
+                  className="text-sm text-black dark:text-white line-clamp-1"
+                >
                   <i className="fa-solid fa-pen"></i>
-                </button>
+                </Link>
               </div>
             </div>
           ))

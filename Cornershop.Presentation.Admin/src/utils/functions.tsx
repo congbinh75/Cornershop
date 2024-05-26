@@ -5,6 +5,6 @@ export const getDateFromString = (str: string) => {
 
   const day = localDate.getDate();
   const month = localDate.getMonth() + 1;
-  const year = localDate.getFullYear(); 
+  const year = localDate.getFullYear();
   return day + "/" + month + "/" + year;
 };

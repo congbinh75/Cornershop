@@ -12,7 +12,6 @@ public static class PublisherMapper
             Id = publisher.Id,
             Name = publisher.Name,
             Description = publisher.Description,
-            Products = publisher.Products.Select(x => x.Map()).ToList(),
             CreatedOn = publisher.CreatedOn,
             CreatedBy = publisher.CreatedBy?.Map(),
             UpdatedOn = publisher.UpdatedOn,

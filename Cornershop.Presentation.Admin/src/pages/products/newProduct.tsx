@@ -10,6 +10,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
+import { UploadImage } from "../../utils/firebase";
 
 interface SimpleEntity {
   id: string;
@@ -22,8 +23,8 @@ interface FormData {
   subcategoryId: string;
   price: number;
   originalPrice: number;
-  uploadedMainImageFile: string;
-  uploadedImagesFiles: string[];
+  mainImageUrl: string;
+  otherImagesUrls: (string | undefined)[];
   width: number;
   height: number;
   length: number;
@@ -45,8 +46,8 @@ const NewProduct = () => {
 
   const [category, setCategory] = useState<SimpleEntity | null>(null);
   const [subcategory, setSubcategory] = useState<SimpleEntity | null>(null);
-  const [images, setImages] = useState<string[]>([]);
-  const [mainImage, setMainImage] = useState<string>("");
+  const [mainImage, setMainImage] = useState<File>(null);
+  const [images, setImages] = useState<File[]>([]);
   const [format, setFormat] = useState(0);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [author, setAuthor] = useState<SimpleEntity | null>(null);
@@ -58,8 +59,8 @@ const NewProduct = () => {
     subcategoryId: subcategory?.id ?? "",
     price: 0,
     originalPrice: 0,
-    uploadedMainImageFile: mainImage,
-    uploadedImagesFiles: images,
+    mainImageUrl: "",
+    otherImagesUrls: [],
     width: 0,
     height: 0,
     length: 0,
@@ -92,52 +93,38 @@ const NewProduct = () => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleImagesChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const files = (e.target as HTMLInputElement).files;
-    console.log(files);
-    const promises: Promise<string>[] = [];
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        promises.push(
-          new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = (error) => reject(error);
-          })
-        );
+  const onUpload = async (event: { preventDefault: () => void }) => {
+    try {
+      event.preventDefault();
+
+      let uploadedMainImageData = null;
+      if (mainImage) {
+        uploadedMainImageData = await UploadImage(mainImage);
       }
-      Promise.all(promises)
-        .then((base64Images: string[]) => {
-          setImages(base64Images);
-        })
-        .catch((error) => {
-          console.error("Error encoding files: ", error);
-        });
+
+      const uploadPromises = Array.from(images).map((image) =>
+        UploadImage(image)
+      );
+      let uploadedFilesData = await Promise.all(uploadPromises);
+      uploadedFilesData = uploadedFilesData.filter(
+        (url): url is string => url !== undefined
+      );
+
+      if (uploadedFilesData && uploadedMainImageData) {
+        setFormData((prevState) => ({
+          ...prevState,
+          otherImagesUrls: uploadedFilesData,
+          mainImageUrl: uploadedMainImageData,
+        }));
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
   };
 
-  const handleMainImageChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const file = (e.target as HTMLInputElement).files[0];
-    const promise: Promise<string> = new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-    promise
-      .then((base64Image) => {
-        setMainImage(base64Image);
-      })
-      .catch((error) => {
-        console.error("Error encoding file: ", error);
-      });
-  };
-
-  const onSubmit = async (event: { preventDefault: () => void }) => {
+  const onSubmit = async () => {
     try {
-      event.preventDefault();
       const response = await SubmitForm(formData);
       if (response?.data?.status === success) {
         toast.success("Success");
@@ -147,7 +134,16 @@ const NewProduct = () => {
       const errorMessage = error?.response?.data?.message || error?.message;
       toast.error(errorMessage);
     }
-  };
+  }
+
+  useEffect(() => {
+    if (mainImage && formData.mainImageUrl) {
+      if ((images.length > 0 && formData.otherImagesUrls.length == images.length) || images.length <= 0) {
+        onSubmit();
+      }
+    }
+
+  }, [formData.mainImageUrl, formData.otherImagesUrls, images.length, mainImage]);
 
   const { data: categoryData, error: categoryError } = useGet(
     "/category" + "?page=" + page + "&pageSize=" + pageSize
@@ -158,6 +154,17 @@ const NewProduct = () => {
       categoryError?.response?.data?.message || categoryError?.message;
     toast.error(errorMessage);
   }
+
+  useEffect(() => {
+    const filteredData = categoryData?.categories.filter(
+      (category: SimpleEntity) => {
+        return category.name
+          .toLowerCase()
+          .includes(categoryQuery.toLowerCase());
+      }
+    );
+    setFilteredCategories(filteredData);
+  }, [categoryData?.categories, categoryQuery]);
 
   const { data: subcategoryData, error: subcategoryError } = useGet(
     "/subcategory" +
@@ -175,33 +182,6 @@ const NewProduct = () => {
     toast.error(errorMessage);
   }
 
-  const { data: authorData, error: authorError } = useGet(
-    "/author" + "?page=" + page + "&pageSize=" + pageSize
-  );
-
-  if (authorError) {
-    const errorMessage =
-      authorError?.response?.data?.message || authorError?.message;
-    toast.error(errorMessage);
-  }
-
-  const { data: publisherData, error: publisherError } = useGet(
-    "/publisher" + "?page=" + page + "&pageSize=" + pageSize
-  );
-
-  if (publisherError) toast.error(publisherError.message);
-
-  useEffect(() => {
-    const filteredData = categoryData?.categories.filter(
-      (category: SimpleEntity) => {
-        return category.name
-          .toLowerCase()
-          .includes(categoryQuery.toLowerCase());
-      }
-    );
-    setFilteredCategories(filteredData);
-  }, [categoryData?.categories, categoryQuery]);
-
   useEffect(() => {
     const filteredData = subcategoryData?.subcategories.filter(
       (subcategory: SimpleEntity) => {
@@ -212,6 +192,29 @@ const NewProduct = () => {
     );
     setFilteredSubcategories(filteredData);
   }, [subcategoryData?.subcategories, subcategoryQuery]);
+
+  const { data: authorData, error: authorError } = useGet(
+    "/author" + "?page=" + page + "&pageSize=" + pageSize
+  );
+
+  if (authorError) {
+    const errorMessage =
+      authorError?.response?.data?.message || authorError?.message;
+    toast.error(errorMessage);
+  }
+
+  useEffect(() => {
+    const filteredData = authorData?.authors.filter((author: SimpleEntity) => {
+      return author.name.toLowerCase().includes(authorQuery.toLowerCase());
+    });
+    setFilteredAuthors(filteredData);
+  }, [authorData?.authors, authorQuery]);
+
+  const { data: publisherData, error: publisherError } = useGet(
+    "/publisher" + "?page=" + page + "&pageSize=" + pageSize
+  );
+
+  if (publisherError) toast.error(publisherError.message);
 
   useEffect(() => {
     const filteredData = publisherData?.publishers.filter(
@@ -224,27 +227,6 @@ const NewProduct = () => {
     setFilteredPublishers(filteredData);
   }, [publisherData?.publishers, publisherQuery]);
 
-  useEffect(() => {
-    const filteredData = authorData?.authors.filter((author: SimpleEntity) => {
-      return author.name.toLowerCase().includes(authorQuery.toLowerCase());
-    });
-    setFilteredAuthors(filteredData);
-  }, [authorData?.authors, authorQuery]);
-
-  useEffect(() => {
-    setFormData((prevState) => ({
-      ...prevState,
-      UploadedImagesFiles: images,
-    }));
-  }, [images]);
-
-  useEffect(() => {
-    setFormData((prevState) => ({
-      ...prevState,
-      uploadedMainImageFile: mainImage,
-    }));
-  }, [mainImage]);
-
   return (
     <div className="w-full lg:w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b border-stroke py-4 px-6 dark:border-strokedark">
@@ -252,7 +234,7 @@ const NewProduct = () => {
           Create new product
         </h3>
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onUpload}>
         <div className="p-6">
           <div className="mb-4">
             <label className="mb-2 block text-black dark:text-white">
@@ -643,7 +625,7 @@ const NewProduct = () => {
                 className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                 type="file"
                 accept="image/png, image/jpeg"
-                onChange={handleMainImageChange}
+                onChange={(e) => setMainImage(e.target.files[0])}
                 required
               />
             </div>
@@ -656,7 +638,7 @@ const NewProduct = () => {
                 type="file"
                 accept="image/png, image/gif, image/jpeg"
                 multiple
-                onChange={handleImagesChange}
+                onChange={(e) => setImages(e.target.files)}
               />
             </div>
           </div>
