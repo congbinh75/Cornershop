@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Service.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Service.Common", "Cornershop.Service.Common\Cornershop.Service.Common.csproj", "{187A0A77-3ADA-43FF-B78C-3BB8DD8BB22F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Presentation.Consumer", "Cornershop.Presentation.Consumer\Cornershop.Presentation.Consumer.csproj", "{C7B6A370-001E-46A6-8C0C-7F0A60C17EE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Presentation.Customer", "Cornershop.Presentation.Customer\Cornershop.Presentation.Customer.csproj", "{C7B6A370-001E-46A6-8C0C-7F0A60C17EE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Shared", "Cornershop.Shared\Cornershop.Shared.csproj", "{9299E966-3F2E-4D26-9A0A-25FD8B71CCF1}"
 EndProject
