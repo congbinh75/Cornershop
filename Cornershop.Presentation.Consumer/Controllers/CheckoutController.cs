@@ -2,15 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Controllers;
 
-public class CheckoutController : Controller
+public class CheckoutController(ILogger<CheckoutController> logger) : Controller
 {
-    private readonly ILogger<CheckoutController> _logger;
-
-    public CheckoutController(ILogger<CheckoutController> logger)
-    {
-        _logger = logger;
-    }
-
     public IActionResult Index()
     {
         return View();

@@ -33,7 +33,7 @@
 html,
 body {
 	height: 100%;
-	font-family: "Cairo", sans-serif;
+	font-family: "Montserrat", sans-serif;
 	-webkit-font-smoothing: antialiased;
 	font-smoothing: antialiased;
 }
@@ -47,7 +47,7 @@ h6 {
 	margin: 0;
 	color: #111111;
 	font-weight: 400;
-	font-family: "Cairo", sans-serif;
+	font-family: "Montserrat", sans-serif;
 }
 
 h1 {
@@ -76,7 +76,7 @@ h6 {
 
 p {
 	font-size: 16px;
-	font-family: "Cairo", sans-serif;
+	font-family: "Montserrat", sans-serif;
 	color: #6f6f6f;
 	font-weight: 400;
 	line-height: 26px;
@@ -93,6 +93,10 @@ button:focus,
 textarea:focus {
 	outline: none;
 }
+
+a:link { 
+	text-decoration: none; 
+} 
 
 a:hover,
 a:focus {
@@ -1273,12 +1277,16 @@ ol {
 	width: 100%;
 }
 
+.product__discount__item__pic {
+	background-size: cover;
+}
+
 .product__discount__item:hover .product__discount__item__pic .product__item__pic__hover {
 	bottom: 20px;
 }
 
 .product__discount__item__pic {
-	height: 270px;
+	height: 12rem;
 	position: relative;
 	overflow: hidden;
 }
@@ -1359,12 +1367,12 @@ ol {
 }
 
 .product__discount__item__text {
-	text-align: center;
-	padding-top: 20px;
+	text-align: left;
+	padding-top: 1rem;
 }
 
 .product__discount__item__text span {
-	font-size: 14px;
+	font-size: 1rem;
 	color: #b2b2b2;
 	display: block;
 	margin-bottom: 4px;
@@ -1379,7 +1387,7 @@ ol {
 }
 
 .product__discount__item__text .product__item__price {
-	font-size: 18px;
+	font-size: 1rem;
 	color: #1c1c1c;
 	font-weight: 700;
 }
@@ -1418,8 +1426,6 @@ ol {
 }
 
 .filter__item {
-	padding-top: 45px;
-	border-top: 1px solid #ebebeb;
 	padding-bottom: 20px;
 }
 
