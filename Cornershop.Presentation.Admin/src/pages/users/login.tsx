@@ -27,10 +27,10 @@ const Login = () => {
 
   return (
     <>
-      <div className="bg-white dark:bg-slate-800">
-        <div className="w-full mx-auto p-12 sm:w-1/2 xl:w-1/3">
+      <div className="bg-white dark:bg-slate-800 flex items-center h-screen">
+        <div className="mx-auto p-8 w-[32rem] rounded-sm sm:border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <h2 className="mb-9 mx-auto w-fit text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-            Login
+            Log in
           </h2>
 
           <form onSubmit={handlePost}>
@@ -73,9 +73,9 @@ const Login = () => {
                 className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
               />
             </div>
-            <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+            {/* <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
               Sign in with Google
-            </button>
+            </button> */}
           </form>
         </div>
         <ToastContainer />
