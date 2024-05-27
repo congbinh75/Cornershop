@@ -179,7 +179,7 @@ public class UserController(IConfiguration configuration,
                 Expires = DateTimeOffset.UtcNow.UtcDateTime.AddDays(7)
             });
 
-            return Ok(new LoginUserResponse());
+            return Ok(new LoginUserResponse{ Token = tokenString });
         }
         else
         {
