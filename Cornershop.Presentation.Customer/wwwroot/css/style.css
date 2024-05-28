@@ -640,7 +640,7 @@ ol {
 }
 
 .hero__search__form {
-	width: 610px;
+	width: 100%;
 	height: 50px;
 	border: 1px solid #ebebeb;
 	position: relative;
@@ -648,7 +648,7 @@ ol {
 }
 
 .hero__search__form form .hero__search__categories {
-	width: 30%;
+	width: 100%;
 	float: left;
 	font-size: 16px;
 	color: #1c1c1c;
@@ -812,42 +812,12 @@ ol {
 -----------------------*/
 
 .featured {
-	padding-top: 80px;
-	padding-bottom: 40px;
+	padding-top: 5rem;
 }
 
-.featured__controls {
-	text-align: center;
-	margin-bottom: 50px;
-}
-
-.featured__controls ul li {
-	list-style: none;
-	font-size: 18px;
-	color: #1c1c1c;
-	display: inline-block;
-	margin-right: 25px;
-	position: relative;
-	cursor: pointer;
-}
-
-.featured__controls ul li.active:after {
-	opacity: 1;
-}
-
-.featured__controls ul li:after {
-	position: absolute;
-	left: 0;
-	bottom: -2px;
-	width: 100%;
-	height: 2px;
-	background: #7fad39;
-	content: "";
-	opacity: 0;
-}
-
-.featured__controls ul li:last-child {
-	margin-right: 0;
+.featured__product {
+	max-height: 35rem;
+	overflow: hidden;
 }
 
 .featured__item {
@@ -2918,7 +2888,7 @@ ol {
 		margin-right: 45px;
 	}
 	.hero__search__form {
-		width: 490px;
+		width: 100%;
 	}
 	.hero__categories__all {
 		padding: 10px 25px 10px 20px;
@@ -2947,7 +2917,11 @@ ol {
 		margin-bottom: 30px;
 	}
 	.hero__search__form {
-		width: 485px;
+		width: 100%;
+		margin-right: 2rem;
+	}
+	.hero__search__phone{
+		display: none;
 	}
 	.categories__slider.owl-carousel .owl-nav button {
 		left: -20px;
@@ -3182,8 +3156,7 @@ ol {
 		display: none;
 	}
 	.hero__search__phone {
-		float: left;
-		margin-top: 30px;
+		display: none;
 	}
 	.categories__slider.owl-carousel .owl-nav {
 		text-align: center;
@@ -3424,11 +3397,44 @@ ol {
 /* Small Device = 320px */
 
 @media only screen and (max-width: 479px) {
-	.hero__search__form form .hero__search__categories {
+	.hero__text span {
+		display: table;
+		margin: 0 auto;
+		font-size: 14px;
+		text-transform: uppercase;
+		font-weight: 700;
+		letter-spacing: 4px;
+		color: #7fad39;
+		text-align: center;
+	}
+	.hero__text h2 {
+		width: 100%;
+		font-size: 46px;
+		color: #252525;
+		line-height: 52px;
+		font-weight: 700;
+		margin: 10px 0;
+		text-align: center;
+	}
+	.hero__text p {
+		margin-bottom: 35px;
+		text-align: center;
+	}
+	.hero__text a {
+		margin: auto;
+	}
+	.hero__a {
+		width: 100%;
+		text-align: center;
+	}
+	.hero__search__form {
+		width: 100%;
+	}
+	.hero__search__phone{
 		display: none;
 	}
-	.featured__controls ul li {
-		margin-bottom: 10px;
+	.hero__search__form form .hero__search__categories {
+		display: none;
 	}
 	.product__details__text ul li b {
 		width: 100px;
