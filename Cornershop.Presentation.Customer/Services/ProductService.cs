@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Cornershop.Presentation.Customer.Intefaces;
 using Cornershop.Shared.DTOs;
+using Cornershop.Shared.Requests;
 using Microsoft.Net.Http.Headers;
 
 namespace Cornershop.Presentation.Customer.Services;
@@ -11,12 +12,12 @@ public class ProductService(IHttpClientFactory httpClientFactory, IConfiguration
     {
         throw new NotImplementedException();
     }
-    
-    public async Task<ICollection<ProductDTO>> GetAll(int page, int pageSize, bool isHiddenIncluded = false)
+
+    public async Task<ICollection<ProductDTO>> GetAll(int page, int pageSize)
     {
         var httpRequestMessage = new HttpRequestMessage(
             HttpMethod.Get,
-            configuration["Service:BaseUrl"] + "/product" +  "?page=" + page + "&pageSize=" + pageSize)
+            "https://localhost:5000/api/product?page=1&pageSize=15")
         {
             Headers =
             {
@@ -31,23 +32,23 @@ public class ProductService(IHttpClientFactory httpClientFactory, IConfiguration
         if (httpResponseMessage.IsSuccessStatusCode)
         {
             using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-            
-            var result = await JsonSerializer.DeserializeAsync <ICollection<ProductDTO>>(contentStream);
-            
-            if (result != null) 
+
+            var result = await JsonSerializer.DeserializeAsync<GetAllProductResponse>(contentStream);
+
+            if (result != null && result.Products != null) 
             {
-                return result;
+                return result.Products;
             }
         }
         return [];
     }
 
-    public Task<ICollection<ProductDTO>> GetAllByCategory(string categoryId, int page, int pageSize, bool isHiddenIncluded = false)
+    public Task<ICollection<ProductDTO>> GetAllByCategory(string categoryId, int page, int pageSize)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize, bool isHiddenIncluded = false)
+    public Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize)
     {
         throw new NotImplementedException();
     }

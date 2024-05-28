@@ -1,11 +1,13 @@
+using Cornershop.Presentation.Customer.Intefaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Controllers;
 
-public class CategoryController(ILogger<CategoryController> logger) : Controller
+public class CategoryController(IProductService productService) : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 20)
     {
-        return View();
+        var products = await productService.GetAll(page, pageSize);
+        return View(products);
     }
 }

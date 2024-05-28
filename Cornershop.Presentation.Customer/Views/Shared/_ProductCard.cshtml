@@ -1,15 +1,20 @@
+@model Cornershop.Shared.DTOs.ProductDTO
+
 <div class="col mb-4">
     <div class="product__discount__item">
         <a href="#">
             <div class="product__discount__item__pic">
-                @* <div class="product__discount__percent">-20%</div> *@
-                <img src="img/product/discount/pd-1.jpg" />
+                @{
+                    var percentage = Math.Floor(@Model.Price / @Model.OriginalPrice * 100);
+                    <div class="product__discount__percent">-@percentage%</div>
+                }
+                <img src="@Model.ProductImages.FirstOrDefault(x => x.IsMainImage = true)" />
             </div>
         </a>
         <div class="product__discount__item__text">
-            <h5><a href="#">Raisin’n’nuts</a></h5>
-            <div class="product__item__price">$30.00
-                @* <span>$36.00</span> *@
+            <h5><a href="#">@Model.Name</a></h5>
+            <div class="product__item__price">@Model.Price
+                <span>@Model.OriginalPrice</span>
             </div>
         </div>
     </div>

@@ -1,8 +1,13 @@
+using Cornershop.Presentation.Customer.Intefaces;
+using Cornershop.Presentation.Customer.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 

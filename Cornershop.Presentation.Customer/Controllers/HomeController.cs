@@ -1,19 +1,16 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Cornershop.Presentation.Models;
+using Cornershop.Presentation.Customer.Intefaces;
 
 namespace Cornershop.Presentation.Controllers;
 
-public class HomeController(ILogger<HomeController> logger) : Controller
+public class HomeController(IProductService productService) : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
+        var products = await productService.GetAll(1, 10);
+        return View(products);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
