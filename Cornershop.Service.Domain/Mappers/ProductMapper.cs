@@ -28,6 +28,7 @@ public static class ProductMapper
             Reviews = product.Reviews.Select(x => x.Map()).ToList(),
             Author = product.Author.Map(),
             Publisher = product.Publisher.Map(),
+            IsVisible = product.IsVisible,
             CreatedOn = product.CreatedOn,
             CreatedBy = product.CreatedBy?.Map(),
             UpdatedOn = product.UpdatedOn,

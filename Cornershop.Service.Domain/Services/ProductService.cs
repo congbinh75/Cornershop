@@ -113,7 +113,7 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
             Stock = productDTO.Stock,
             PublishedYear = productDTO.PublishedYear,
             Rating = 0,
-            IsVisible = false,
+            IsVisible = productDTO.IsVisible,
             Author = author,
             Publisher = publisher
         };

@@ -88,7 +88,8 @@ public class ProductController(IProductService productService) : ControllerBase
             PublishedYear = request.PublishedYear,
             AuthorId = request.AuthorId,
             PublisherId = request.PublisherId,
-            ProductImages = productImageDTOs
+            ProductImages = productImageDTOs,
+            IsVisible = request.IsVisible,
         });
         return Ok(new AddProductResponse { Product = product });
     }
@@ -135,7 +136,8 @@ public class ProductController(IProductService productService) : ControllerBase
             AuthorId = request.AuthorId,
             PublisherId = request.PublisherId,
             ProductImages = productImages,
-            ProductImagesIds = request.ProductImagesIds
+            ProductImagesIds = request.ProductImagesIds,
+            IsVisible = request.IsVisible,
         });
         return Ok(new UpdateProductResponse { Product = product });
     }
