@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 interface Product {
   id: string;
   name: string;
+  code: string;
   category: string;
   subcategory: {
     name: string;
@@ -16,6 +17,7 @@ interface Product {
   };
   price: number;
   stock: number;
+  isVisible: boolean;
 }
 
 const Products = () => {
@@ -67,17 +69,23 @@ const Products = () => {
       </div>
       <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="grid grid-cols-8 border border-stroke py-4 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8">
-          <div className="col-span-4 flex items-center">
+          <div className="col-span-2 flex items-center">
             <p className="font-medium">Name</p>
+          </div>
+          <div className="col-span-1 flex items-center">
+            <p className="font-medium">Code</p>
           </div>
           <div className="col-span-1 flex items-center">
             <p className="font-medium">Category</p>
           </div>
-          <div className="col-span-1 hidden items-center sm:flex">
+          <div className="col-span-1 flex items-center">
             <p className="font-medium">Subcategory</p>
           </div>
-          <div className="col-span-1 flex items-center">
+          <div className="col-span-1 hidden items-center sm:flex">
             <p className="font-medium">Stock</p>
+          </div>
+          <div className="col-span-1 flex items-center">
+            <p className="font-medium">Is Visible</p>
           </div>
           <div className="col-span-1 flex items-center"></div>
         </div>
@@ -92,10 +100,17 @@ const Products = () => {
               className="grid grid-cols-8 py-4 px-4 border border-stroke dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-8"
               key={key}
             >
-              <div className="col-span-4 flex items-center">
+              <div className="col-span-2 flex items-center">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <p className="text-sm text-black dark:text-white line-clamp-1">
                     {product?.name}
+                  </p>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <p className="text-sm text-black dark:text-white line-clamp-1">
+                    {product?.code}
                   </p>
                 </div>
               </div>
@@ -112,6 +127,11 @@ const Products = () => {
               <div className="col-span-1 flex items-center">
                 <p className="text-sm text-black dark:text-white line-clamp-1">
                   {product?.stock}
+                </p>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <p className="text-sm text-black dark:text-white line-clamp-1">
+                  {product?.isVisible === true ? "Yes" : "No"}
                 </p>
               </div>
               <div className="col-span-1 flex items-center justify-center">

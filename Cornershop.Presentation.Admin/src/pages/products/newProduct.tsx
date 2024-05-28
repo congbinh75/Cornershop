@@ -11,6 +11,7 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import { UploadImage } from "../../utils/firebase";
+import Loader from "../../components/loader";
 
 interface SimpleEntity {
   id: string;
@@ -43,13 +44,13 @@ const SubmitForm = async (formData: FormData) => {
 
 const NewProduct = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [category, setCategory] = useState<SimpleEntity | null>(null);
   const [subcategory, setSubcategory] = useState<SimpleEntity | null>(null);
   const [mainImage, setMainImage] = useState<File>(null);
   const [images, setImages] = useState<File[]>([]);
   const [format, setFormat] = useState(0);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [author, setAuthor] = useState<SimpleEntity | null>(null);
   const [publisher, setPublisher] = useState<SimpleEntity | null>(null);
 
@@ -96,6 +97,7 @@ const NewProduct = () => {
   const onUpload = async (event: { preventDefault: () => void }) => {
     try {
       event.preventDefault();
+      setLoading(true);
 
       let uploadedMainImageData = null;
       if (mainImage) {
@@ -128,9 +130,11 @@ const NewProduct = () => {
       const response = await SubmitForm(formData);
       if (response?.data?.status === success) {
         toast.success("Success");
+        setLoading(false);
         navigate("/products");
       }
     } catch (error) {
+      setLoading(false);
       const errorMessage = error?.response?.data?.message || error?.message;
       toast.error(errorMessage);
     }
@@ -227,7 +231,9 @@ const NewProduct = () => {
     setFilteredPublishers(filteredData);
   }, [publisherData?.publishers, publisherQuery]);
 
-  return (
+  return loading ? (
+      <Loader />
+    ) : (
     <div className="w-full lg:w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b border-stroke py-4 px-6 dark:border-strokedark">
         <h3 className="font-medium text-black dark:text-white">
@@ -650,9 +656,13 @@ const NewProduct = () => {
             <div className="mb-4">
               <div className="relative z-20 bg-transparent dark:bg-form-input">
                 <select
-                  value={isVisible.toString()}
+                  name="isVisible"
+                  value={formData.isVisible}
                   onChange={(e) => {
-                    setIsVisible(e.target.value);
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      isVisible: (e.target.value === 'true'),
+                    }));
                   }}
                   className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
                 >

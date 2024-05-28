@@ -11,6 +11,7 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import { UploadImage } from "../../utils/firebase";
+import Loader from "../../components/loader";
 
 interface SimpleEntity {
   id: string;
@@ -55,6 +56,7 @@ const DeleteThisProduct = async (id: string) => {
 
 const UpdateProduct = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
 
   const [category, setCategory] = useState<SimpleEntity | null>(null);
@@ -63,7 +65,6 @@ const UpdateProduct = () => {
   const [newMainImage, setNewMainImage] = useState<File>();
   const [currentProductImages, setCurrentProductImages] = useState<Image[]>([]);
   const [format, setFormat] = useState(0);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [author, setAuthor] = useState<SimpleEntity | null>(null);
   const [publisher, setPublisher] = useState<SimpleEntity | null>(null);
   const [uploaded, setUploaded] = useState<boolean>(false);
@@ -154,6 +155,7 @@ const UpdateProduct = () => {
       let uploadedMainImageData = null;
       if (!newMainImage && newImages.length <= 0) {
         setUploaded(true);
+        return;
       }
 
       if (newMainImage) {
@@ -218,19 +220,16 @@ const UpdateProduct = () => {
           onSubmit();
         }
       }
-
       if (newMainImage && newImages.length <= 0) {
         if (formData.newMainImageUrl && formData.newMainImageUrl !== "") {
           onSubmit();
         }
       }
-
       if (!newMainImage && newImages.length > 0) {
         if (formData.newOtherImagesUrls.length > 0) {
           onSubmit();
         }
       }
-
       if (!newMainImage && newImages.length <= 0) {
         onSubmit();
       }
@@ -416,7 +415,9 @@ const UpdateProduct = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="w-full lg:w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex flex-row items-center border-b border-stroke py-4 px-6 dark:border-strokedark">
         <h3 className="grow font-medium text-black dark:text-white">
@@ -842,7 +843,7 @@ const UpdateProduct = () => {
                     (productImage: Image) => productImage.isMainImage === false
                   ).length <= 0 ? (
                     <div className="flex items-center justify-center w-full h-32 lg:h-56">
-                        <p className="text-center">No data</p>
+                      <p className="text-center">No data</p>
                     </div>
                   ) : (
                     currentProductImages
@@ -908,9 +909,13 @@ const UpdateProduct = () => {
             <div className="mb-4">
               <div className="relative z-20 bg-transparent dark:bg-form-input">
                 <select
-                  value={isVisible.toString()}
+                  name="isVisible"
+                  value={formData.isVisible?.toString()}
                   onChange={(e) => {
-                    setIsVisible(e.target.value);
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      isVisible: (e.target.value === 'true'),
+                    }));
                   }}
                   className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
                 >
