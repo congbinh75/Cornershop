@@ -2,7 +2,6 @@ using System.Text.Json;
 using Cornershop.Presentation.Customer.Intefaces;
 using Cornershop.Shared.DTOs;
 using Cornershop.Shared.Requests;
-using Microsoft.Net.Http.Headers;
 
 namespace Cornershop.Presentation.Customer.Services;
 
@@ -15,37 +14,46 @@ public class ProductService(IHttpClientFactory httpClientFactory, IConfiguration
 
     public async Task<ICollection<ProductDTO>> GetAll(int page, int pageSize)
     {
-        var httpRequestMessage = new HttpRequestMessage(
-            HttpMethod.Get,
-            "https://localhost:5000/api/product?page=1&pageSize=15")
-        {
-            Headers =
-            {
-                { HeaderNames.Accept, "application/json" },
-                { HeaderNames.UserAgent, "CostumerClient" }
-            }
-        };
-
         var httpClient = httpClientFactory.CreateClient();
-        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+        httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
+        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/product" + "?page=" + page + "&pageSize=" + pageSize);
 
         if (httpResponseMessage.IsSuccessStatusCode)
         {
-            using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-
-            var result = await JsonSerializer.DeserializeAsync<GetAllProductResponse>(contentStream);
-
-            if (result != null && result.Products != null) 
+            var data = await httpResponseMessage.Content.ReadAsStringAsync();
+            var response = JsonSerializer.Deserialize<GetAllProductResponse>(data, new JsonSerializerOptions
             {
-                return result.Products;
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            if (response != null && response.Products != null)
+            {
+                return response.Products;
             }
         }
         return [];
     }
 
-    public Task<ICollection<ProductDTO>> GetAllByCategory(string categoryId, int page, int pageSize)
+    public async Task<ICollection<ProductDTO>> GetAllByCategory(string categoryId, int page, int pageSize)
     {
-        throw new NotImplementedException();
+        var httpClient = httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
+        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/product" + "?page=" + page + "&pageSize=" + pageSize);
+
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            var data = await httpResponseMessage.Content.ReadAsStringAsync();
+            var response = JsonSerializer.Deserialize<GetAllProductResponse>(data, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            if (response != null && response.Products != null)
+            {
+                return response.Products;
+            }
+        }
+        return [];
     }
 
     public Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize)
