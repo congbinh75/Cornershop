@@ -5,16 +5,16 @@
         <a href="#">
             <div class="product__discount__item__pic">
                 @{
-                    var percentage = Math.Floor(@Model.Price / @Model.OriginalPrice * 100);
+                    var percentage = Math.Floor(100 - (@Model.Price / @Model.OriginalPrice * 100));
                     <div class="product__discount__percent">-@percentage%</div>
                 }
-                <img src="@Model.ProductImages.FirstOrDefault(x => x.IsMainImage = true)" />
+                <img src="@Model.ProductImages.FirstOrDefault(x => x.IsMainImage == true)?.ImageUrl" />
             </div>
         </a>
         <div class="product__discount__item__text">
             <h5><a href="#">@Model.Name</a></h5>
-            <div class="product__item__price">@Model.Price
-                <span>@Model.OriginalPrice</span>
+            <div class="product__item__price">@string.Format("{0:C}", @Model.Price)
+                <span>@string.Format("{0:C}", @Model.OriginalPrice)</span>
             </div>
         </div>
     </div>

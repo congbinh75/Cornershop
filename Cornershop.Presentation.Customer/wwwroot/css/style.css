@@ -816,7 +816,6 @@ ol {
 }
 
 .featured__product {
-	max-height: 35rem;
 	overflow: hidden;
 }
 
@@ -1248,7 +1247,7 @@ ol {
 }
 
 .product__discount__item__pic {
-	background-size: cover;
+	background-size: contain;
 }
 
 .product__discount__item:hover .product__discount__item__pic .product__item__pic__hover {
@@ -1256,7 +1255,7 @@ ol {
 }
 
 .product__discount__item__pic {
-	height: 12rem;
+	height: 14rem;
 	position: relative;
 	overflow: hidden;
 }
@@ -1350,6 +1349,7 @@ ol {
 
 .product__discount__item__text h5 {
 	margin-bottom: 6px;
+	min-height: 4rem;
 }
 
 .product__discount__item__text h5 a {
@@ -1363,10 +1363,10 @@ ol {
 }
 
 .product__discount__item__text .product__item__price span {
-	display: inline-block;
+	font-size: 0.8rem;
+	display: block;
 	font-weight: 400;
 	text-decoration: line-through;
-	margin-left: 10px;
 }
 
 .product__discount__slider .col-lg-4 {
