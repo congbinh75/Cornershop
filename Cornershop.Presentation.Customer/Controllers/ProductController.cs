@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Controllers;
 
-public class ProductController(ILogger<ProductController> logger) : Controller
+public class ProductController : Controller
 {
     public IActionResult Index()
     {
