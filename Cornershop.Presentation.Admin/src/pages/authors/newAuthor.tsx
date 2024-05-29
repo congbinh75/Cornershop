@@ -1,17 +1,15 @@
-import { useState } from "react";
 import { toast } from "react-toastify";
 import { usePut } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface Author {
   name: string;
   description: string;
 }
 
-const SubmitForm = async (
-    formData: Author
-) => {
+const SubmitForm = async (formData: Author) => {
   return await usePut("/author", {
     name: formData.name,
     description: formData.description,
@@ -20,23 +18,16 @@ const SubmitForm = async (
 
 const NewAuthor = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<Author>({
-    name: "",
-    description: ""
-  });
 
-  const onSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    const response = await SubmitForm(formData);
+  const { register, handleSubmit } = useForm<Author>();
+  const onSubmit: SubmitHandler<Author> = (data) => submit(data);
+
+  const submit = async (data: Author) => {
+    const response = await SubmitForm(data);
     if (response?.data?.status === success) {
       toast.success("Success");
       navigate("/authors");
     }
-  };
-
-  const handleChange = (e: { target: { name: string; value: string; }; }) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -46,7 +37,7 @@ const NewAuthor = () => {
           Create new author
         </h3>
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="p-6">
           <div className="mb-4">
             <label className="mb-2 block text-black dark:text-white">
@@ -56,10 +47,7 @@ const NewAuthor = () => {
               type="text"
               placeholder="Enter author name"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
+              {...register("name", { required: true, maxLength: 100 })}
             />
           </div>
           <div className="mb-6">
@@ -70,9 +58,7 @@ const NewAuthor = () => {
               rows={6}
               placeholder="Enter author description"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              {...register("description", { required: true, maxLength: 1000 })}
             ></textarea>
           </div>
           <input

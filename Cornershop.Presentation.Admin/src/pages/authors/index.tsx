@@ -2,7 +2,6 @@ import { toast } from "react-toastify";
 import { defaultPageSize } from "../../utils/constants";
 import { useState } from "react";
 import { useGet } from "../../api/service";
-import { Select } from "@headlessui/react";
 import { Link } from "react-router-dom";
 
 interface Author {
