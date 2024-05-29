@@ -30,23 +30,25 @@ public class ProductController(IProductService productService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
+    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize,
+         string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
     {
-        var result = await productService.GetAll(page, pageSize);
-        var count = await productService.GetCount();
+        (ICollection<ProductDTO> products, int count) = await productService.GetAll(page, pageSize, false,
+            categoryId, subcategoryId, isOrderedByPriceAscending);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
-        return Ok(new GetAllProductResponse { Products = result, PagesCount = pagesCount });
+        return Ok(new GetAllProductResponse { Products = products, PagesCount = pagesCount });
     }
 
     [HttpGet]
     [Route("admin")]
     [Authorize(Roles = Constants.AdminAndStaff)]
-    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, bool isHiddenIncluded)
+    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, bool isHiddenIncluded, 
+         string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
     {
-        var result = await productService.GetAll(page, pageSize, isHiddenIncluded);
-        var count = await productService.GetCount();
+        (ICollection<ProductDTO> products, int count) = await productService.GetAll(page, pageSize, isHiddenIncluded,
+            categoryId, subcategoryId, isOrderedByPriceAscending);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
-        return Ok(new GetAllProductResponse { Products = result, PagesCount = pagesCount });
+        return Ok(new GetAllProductResponse { Products = products, PagesCount = pagesCount });
     }
 
     [HttpPut]

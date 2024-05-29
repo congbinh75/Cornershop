@@ -36,55 +36,48 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         }
     }
 
-    public async Task<ICollection<ProductDTO>> GetAll(int page, int pageSize, bool isHiddenIncluded = false)
+    public async Task<(ICollection<ProductDTO> products, int count)> GetAll(int page, int pageSize, bool isHiddenIncluded = false, 
+        string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync();
         if (isHiddenIncluded)
         {
-            var products = await dbContext.Products
-                .Skip((page - 1) * pageSize).Take(pageSize)
-                .Include(p => p.Author).Include(p => p.Publisher).Include(p => p.Subcategory).ThenInclude(p => p.Category)
-                .OrderByDescending(a => a.CreatedOn).ToListAsync();
-            return products.ConvertAll(ProductMapper.Map);
-        }
-        else
-        {
-            var products = await dbContext.Products.Where(p => p.IsVisible == true)
-                .Skip((page - 1) * pageSize).Take(pageSize)
-                .Include(p => p.Author).Include(p => p.Publisher).Include(p => p.Subcategory).ThenInclude(p => p.Category)
-                .OrderByDescending(a => a.CreatedOn).ToListAsync();
-            return products.ConvertAll(ProductMapper.Map);
-        }
-    }
+            var query = dbContext.Products
+                .Where(p => (categoryId == null || p.Subcategory.Category.Id == categoryId)
+                    && (subcategoryId == null || p.Subcategory.Id == subcategoryId))
+                .Include(p => p.Author)
+                .Include(p => p.Publisher)
+                .Include(p => p.Subcategory).ThenInclude(p => p.Category)
+                .Include(p => p.ProductImages)
+                .OrderByDescending(a => a.CreatedOn);
 
-    public async Task<int> GetCount(bool isHiddenIncluded = false)
-    {
-        if (isHiddenIncluded)
-        {
-            using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            return dbContext.Products.Where(p => p.IsVisible == true).Count();
-        }
-        else
-        {
-            using var dbContext = await dbContextFactory.CreateDbContextAsync();
-            return dbContext.Products.Count();
-        }
-    }
+            if (isOrderedByPriceAscending != null) 
+            {
+                query = (bool)isOrderedByPriceAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+            }
+            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-    public async Task<ICollection<ProductDTO>> GetAllBySubcategory(string subcategoryId, int page, int pageSize, bool isHiddenIncluded = false)
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        if (isHiddenIncluded)
-        {
-            var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId)
-                .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-            return products.ConvertAll(ProductMapper.Map);
+            return (products.ConvertAll(ProductMapper.Map), query.Count());
         }
         else
         {
-            var products = await dbContext.Products.Where(p => p.Subcategory.Id == subcategoryId && p.IsVisible == true)
-                .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-            return products.ConvertAll(ProductMapper.Map);
+            var query = dbContext.Products
+                .Where(p => p.IsVisible == true 
+                    && (categoryId == null || p.Subcategory.Category.Id == categoryId)
+                    && (subcategoryId == null || p.Subcategory.Id == subcategoryId))
+                .Include(p => p.Author)
+                .Include(p => p.Publisher)
+                .Include(p => p.Subcategory).ThenInclude(p => p.Category)
+                .Include(p => p.ProductImages)
+                .OrderByDescending(a => a.CreatedOn);
+            
+            if (isOrderedByPriceAscending != null) 
+            {
+                query = (bool)isOrderedByPriceAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+            }
+            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return (products.ConvertAll(ProductMapper.Map), query.Count());
         }
     }
 
