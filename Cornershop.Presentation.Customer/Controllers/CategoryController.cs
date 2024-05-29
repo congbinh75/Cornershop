@@ -7,7 +7,7 @@ public class CategoryController(IProductService productService) : Controller
 {
     public async Task<IActionResult> Index(string id, int page = 1, int pageSize = 20)
     {
-        var products = await productService.GetAll(page, pageSize);
+        var products = await productService.GetAll(page, pageSize, id);
         return View(products);
     }
 }
