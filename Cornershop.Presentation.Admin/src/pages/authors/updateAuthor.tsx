@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import { useDelete, useGet, usePatch } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import Loader from "../../components/loader";
 
 interface Author {
   id: string;
@@ -10,58 +12,49 @@ interface Author {
   description: string;
 }
 
-const SubmitForm = async (formData: Author) => {
+const SubmitPatch = async (formData: Author) => {
   return await usePatch("/author", formData);
 };
 
-const DeleteThisAuthor = async (id: string) => {
+const SubmitDelete = async (id: string) => {
   return await useDelete("/author/" + id);
 };
 
 const UpdateAuthor = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [loading, setLoading] = useState(true);
 
-  const [formData, setFormData] = useState<Author>({
-    id: "",
-    name: "",
-    description: "",
-  });
+  const { data, error } = useGet("/author/" + id);
 
-  const handleChange = (e: { target: { name: string; value: string } }) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
+  if (error) {
+    setLoading(false);
+    const message = error?.response?.data?.Message;
+    toast.error(message);
+  }
 
-  const onSubmit = async (event: { preventDefault: () => void }) => {
+  const { register, handleSubmit, reset } = useForm<Author>();
+
+  useEffect(() => {
+    setLoading(false);
+    if (data) reset(data?.author);
+  }, [reset, data]);
+
+  const submit = async (data: Author) => {
     try {
-      event.preventDefault();
-      const response = await SubmitForm(formData);
+      const response = await SubmitPatch(data);
       if (response?.data?.status === success) {
         toast.success("Success");
         navigate("/authors");
       }
     } catch (error) {
+      if (error?.response?.status == 401) {
+        navigate("/login");
+      }
       const errorMessage = error?.response?.data?.Message || error?.message;
       toast.error(errorMessage);
     }
   };
-
-  const { data, error } = useGet("/author/" + id);
-
-  useEffect(() => {
-    if (data?.author)
-      setFormData({
-        id: data?.author?.id,
-        name: data?.author?.name,
-        description: data?.author?.description,
-      });
-  }, [data]);
-
-  if (error) {
-    const message = error?.response?.data?.Message;
-    toast.error(message);
-  }
 
   const handleDelete = async () => {
     const confirmation = window.confirm(
@@ -69,7 +62,7 @@ const UpdateAuthor = () => {
     );
     if (confirmation) {
       try {
-        const response = await DeleteThisAuthor(id);
+        const response = await SubmitDelete(id);
         if (response?.data?.status === success) {
           toast.success("Success");
           navigate("/authors");
@@ -81,7 +74,9 @@ const UpdateAuthor = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex flex-row items-center border-b border-stroke py-4 px-6 dark:border-strokedark">
         <h3 className="grow font-medium text-black dark:text-white">
@@ -92,19 +87,17 @@ const UpdateAuthor = () => {
           className="flex items-center justify-center rounded bg-danger p-3 font-medium text-gray hover:bg-opacity-90 cursor-pointer"
         >
           <i className="fa-solid fa-trash"></i>
-          <span className="ml-2">Delete this category</span>
+          <span className="ml-2">Delete this author</span>
         </button>
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(submit)}>
         <div className="p-6">
           <div className="mb-4">
             <div>
               <input
                 type="text"
                 className="hidden"
-                value={formData.id}
-                required
-                disabled
+                {...register("id", { required: true })}
               />
             </div>
 
@@ -115,10 +108,7 @@ const UpdateAuthor = () => {
               type="text"
               placeholder="Enter author name"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
+              {...register("name", { required: true, maxLength: 100 })}
             />
           </div>
           
@@ -130,9 +120,7 @@ const UpdateAuthor = () => {
               rows={6}
               placeholder="Enter author description"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              {...register("description", { required: true, maxLength: 1000 })}
             ></textarea>
           </div>
           

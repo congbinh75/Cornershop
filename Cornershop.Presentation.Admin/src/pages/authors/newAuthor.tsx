@@ -9,7 +9,7 @@ interface Author {
   description: string;
 }
 
-const SubmitForm = async (formData: Author) => {
+const SubmitPut = async (formData: Author) => {
   return await usePut("/author", {
     name: formData.name,
     description: formData.description,
@@ -23,10 +23,18 @@ const NewAuthor = () => {
   const onSubmit: SubmitHandler<Author> = (data) => submit(data);
 
   const submit = async (data: Author) => {
-    const response = await SubmitForm(data);
-    if (response?.data?.status === success) {
-      toast.success("Success");
-      navigate("/authors");
+    try {
+      const response = await SubmitPut(data);
+      if (response?.data?.status === success) {
+        toast.success("Success");
+        navigate("/authors");
+      }
+    } catch (error) {
+      if (error?.response?.status == 401) {
+        navigate("/login");
+      }
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
   };
 

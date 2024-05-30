@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useDelete, useGet, usePatch } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate, useParams } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+import Loader from "../../components/loader";
+import { useEffect, useState } from "react";
 
 interface Publisher {
   id: string;
@@ -10,44 +12,39 @@ interface Publisher {
   description: string;
 }
 
-const SubmitForm = async (formData: Publisher) => {
+const SubmitPatch = async (formData: Publisher) => {
   return await usePatch("/publisher", formData);
 };
 
-const DeleteThisPublisher = async (id: string) => {
-  return await useDelete("/category/" + id);
+const SubmitDelete = async (id: string) => {
+  return await useDelete("/publisher/" + id);
 };
 
 const UpdatePublisher = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  
-  const [formData, setFormData] = useState<Publisher>({
-    id: "",
-    name: "",
-    description: "",
-  });
+  const [loading, setLoading] = useState(true);
 
   const { data, error } = useGet("/publisher/" + id);
 
-  useEffect(() => {
-    if (data?.publisher)
-      setFormData({
-        id: data?.publisher?.id,
-        name: data?.publisher?.name,
-        description: data?.publisher?.description,
-      });
-  }, [data]);
-
   if (error) {
+    setLoading(false);
     const message = error?.response?.data?.Message;
     toast.error(message);
   }
 
-  const onSubmit = async (event: { preventDefault: () => void }) => {
+  const { register, handleSubmit, reset } = useForm<Publisher>();
+
+  useEffect(() => {
+    setLoading(false);
+    if (data) reset(data?.publisher);
+  }, [reset, data]);
+
+  const onSubmit: SubmitHandler<Publisher> = (data) => submit(data);
+
+  const submit = async (data: Publisher) => {
     try {
-      event.preventDefault();
-      const response = await SubmitForm(formData);
+      const response = await SubmitPatch(data);
       if (response?.data?.status === success) {
         toast.success("Success");
         navigate("/publishers");
@@ -58,30 +55,30 @@ const UpdatePublisher = () => {
     }
   };
 
-  const handleChange = (e: { target: { name: string; value: string } }) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
-
   const handleDelete = async () => {
     const confirmation = window.confirm(
       "Are you sure you want to delete this publisher?"
     );
     if (confirmation) {
       try {
-        const response = await DeleteThisPublisher(id);
+        const response = await SubmitDelete(id);
         if (response?.data?.status === success) {
           toast.success("Success");
-          navigate("/categories");
+          navigate("/publishers");
         }
       } catch (error) {
+        if (error?.response?.status == 401) {
+          navigate("/login");
+        }
         const errorMessage = error?.response?.data?.Message || error?.message;
         toast.error(errorMessage);
       }
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex flex-row items-center border-b border-stroke py-4 px-6 dark:border-strokedark">
         <h3 className="grow font-medium text-black dark:text-white">
@@ -95,18 +92,14 @@ const UpdatePublisher = () => {
           <span className="ml-2">Delete this publisher</span>
         </button>
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="p-6">
           <div className="mb-4">
-            <div>
-              <input
-                type="text"
-                className="hidden"
-                value={formData.id}
-                required
-                disabled
-              />
-            </div>
+            <input
+              type="text"
+              className="hidden"
+              {...register("id", { required: true })}
+            />
 
             <label className="mb-2 block text-black dark:text-white">
               Name <span className="text-meta-1">*</span>
@@ -115,10 +108,7 @@ const UpdatePublisher = () => {
               type="text"
               placeholder="Enter publisher name"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
+              {...register("name", { required: true, maxLength: 100 })}
             />
           </div>
 
@@ -130,12 +120,10 @@ const UpdatePublisher = () => {
               rows={6}
               placeholder="Enter publisher description"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              {...register("description", { required: true, maxLength: 100 })}
             ></textarea>
           </div>
-          
+
           <input
             type="submit"
             className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90 cursor-pointer"

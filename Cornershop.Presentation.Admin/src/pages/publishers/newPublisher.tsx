@@ -1,17 +1,15 @@
-import { useState } from "react";
 import { toast } from "react-toastify";
 import { usePut } from "../../api/service";
 import { success } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface Publisher {
   name: string;
   description: string;
 }
 
-const SubmitForm = async (
-    formData: Publisher
-) => {
+const SubmitPut = async (formData: Publisher) => {
   return await usePut("/publisher", {
     name: formData.name,
     description: formData.description,
@@ -20,23 +18,23 @@ const SubmitForm = async (
 
 const NewPublisher = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<Publisher>({
-    name: "",
-    description: ""
-  });
+  const { register, handleSubmit } = useForm<Publisher>();
+  const onSubmit: SubmitHandler<Publisher> = (data) => submit(data);
 
-  const onSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    const response = await SubmitForm(formData);
-    if (response?.data?.status === success) {
-       toast.success("Success");
-       navigate("/publishers");
+  const submit = async (data: Publisher) => {
+    try {
+      const response = await SubmitPut(data);
+      if (response?.data?.status === success) {
+        toast.success("Success");
+        navigate("/publishers");
+      }
+    } catch (error) {
+      if (error?.response?.status == 401) {
+        navigate("/login");
+      }
+      const errorMessage = error?.response?.data?.message || error?.message;
+      toast.error(errorMessage);
     }
-  };
-
-  const handleChange = (e: { target: { name: string; value: string; }; }) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -46,7 +44,7 @@ const NewPublisher = () => {
           Create new publisher
         </h3>
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="p-6">
           <div className="mb-4">
             <label className="mb-2 block text-black dark:text-white">
@@ -56,10 +54,7 @@ const NewPublisher = () => {
               type="text"
               placeholder="Enter publisher name"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
+              {...register("name", { required: true, maxLength: 100 })}
             />
           </div>
           <div className="mb-6">
@@ -70,9 +65,7 @@ const NewPublisher = () => {
               rows={6}
               placeholder="Enter publisher description"
               className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              {...register("description", { required: true, maxLength: 1000 })}
             ></textarea>
           </div>
           <input
