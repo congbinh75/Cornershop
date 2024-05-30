@@ -585,7 +585,7 @@ ol {
 .hero__categories__all {
 	background: #7fad39;
 	position: relative;
-	padding: 10px 25px 10px 40px;
+	padding: 1rem;
 	cursor: pointer;
 }
 
@@ -613,9 +613,7 @@ ol {
 
 .hero__categories ul {
 	border: 1px solid #ebebeb;
-	padding-left: 40px;
-	padding-top: 10px;
-	padding-bottom: 12px;
+	padding: 1rem;
 }
 
 .hero__categories ul li {
@@ -1006,38 +1004,22 @@ ol {
 .breadcrumb-section {
 	display: flex;
 	align-items: center;
-	padding: 45px 0 40px;
-}
-
-.breadcrumb__text h2 {
-	font-size: 46px;
-	color: #ffffff;
-	font-weight: 700;
 }
 
 .breadcrumb__option a {
 	display: inline-block;
-	font-size: 16px;
-	color: #ffffff;
-	font-weight: 700;
-	margin-right: 20px;
+	font-size: 1rem;
+	margin-right: 1rem;
 	position: relative;
-}
-
-.breadcrumb__option a:after {
-	position: absolute;
-	right: -12px;
-	top: 13px;
-	height: 1px;
-	width: 10px;
-	background: #ffffff;
-	content: "";
+	text-decoration: none;
+	color: black;
 }
 
 .breadcrumb__option span {
+	margin-right: 1rem;
 	display: inline-block;
-	font-size: 16px;
-	color: #ffffff;
+	font-size: 1rem;
+	color: black;
 }
 
 /*---------------------
@@ -1241,16 +1223,13 @@ ol {
 	width: 100%;
 }
 
-.product__discount__item__pic {
-	background-size: contain;
-}
-
 .product__discount__item:hover .product__discount__item__pic .product__item__pic__hover {
 	bottom: 20px;
 }
 
 .product__discount__item__pic {
 	height: 14rem;
+	background-size: contain;
 	position: relative;
 	overflow: hidden;
 }
@@ -1627,24 +1606,25 @@ ol {
   Shop Details
 -----------------------*/
 
-.product-details {
-	padding-top: 80px;
-}
-
 .product__details__pic__item {
-	margin-bottom: 20px;
+	width: fit-content;
+	margin: 0 auto 1rem auto;
 }
 
 .product__details__pic__item img {
-	min-width: 100%;
+	max-height: 30rem;
+	text-align: center;
 }
 
 .product__details__pic__slider img {
 	cursor: pointer;
+	object-fit: cover;
 }
 
 .product__details__pic__slider.owl-carousel .owl-item img {
 	width: auto;
+	max-height: 6rem;
+	object-fit: cover;
 }
 
 .product__details__text h3 {
@@ -1669,10 +1649,18 @@ ol {
 }
 
 .product__details__text .product__details__price {
-	font-size: 30px;
+	font-size: 2rem;
 	color: #dd2222;
 	font-weight: 600;
-	margin-bottom: 15px;
+	margin-bottom: 1rem;
+}
+
+.product__details__original__price {
+	font-size: 1rem;
+	color: gray;
+	font-weight: 600;
+	margin-bottom: 2rem;
+	text-decoration: line-through;
 }
 
 .product__details__text p {

@@ -129,8 +129,10 @@
     <section class="hero hero-normal">
         <div class="container">
             <div class="row">
-                @await Component.InvokeAsync("CategoryDropdown")
-                <div class="col-lg-9">
+                <div class="col-lg-4">
+                    @await Component.InvokeAsync("CategoryDropdown")
+                </div>
+                <div class="col-lg-8">
                     <div class="hero__search">
                         <div class="hero__search__form">
                             <form action="#">
