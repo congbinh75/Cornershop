@@ -60,7 +60,7 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
-        var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception();
+        var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Id) ?? throw new Exception();
 
         subcategory.Name = subcategoryDTO.Name ?? subcategory.Name;
         subcategory.Description = subcategoryDTO.Description ?? subcategory.Description;
