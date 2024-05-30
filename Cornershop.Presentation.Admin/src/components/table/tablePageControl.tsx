@@ -29,7 +29,7 @@ const TablePageControl = (props: Props) => {
         <button
           className="inline-flex items-center justify-center rounded-md border border-stroke p-4 text-center font-medium text-black dark:border-form-strokedark dark:text-white"
           onClick={() => {
-            if (page > 1) {
+            if (props.page > 1) {
               props.setPage(props.page - 1);
               props.mutate();
             }
