@@ -22,7 +22,7 @@ interface FormData {
   description: string;
 }
 
-const SubmitForm = async (formData: FormData) => {
+const SubmitPut = async (formData: FormData) => {
   return await usePut("/subcategory", {
     name: formData.name,
     categoryId: formData.categoryId,
@@ -58,7 +58,7 @@ const NewSubcategory = () => {
 
   const onSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    const response = await SubmitForm(formData);
+    const response = await SubmitPut(formData);
     if (response?.data?.status === success) toast.success("Success");
 
     navigate("/subcategories");

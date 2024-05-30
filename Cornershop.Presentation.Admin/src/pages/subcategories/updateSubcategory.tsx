@@ -23,11 +23,11 @@ interface FormData {
   description: string;
 }
 
-const SubmitForm = async (formData: FormData) => {
+const SubmitPatch = async (formData: FormData) => {
   return await usePatch("/subcategory", formData);
 };
 
-const DeleteThisSubcategory = async (id: string) => {
+const SubmitDelete = async (id: string) => {
   return await useDelete("/subcategory/" + id);
 };
 
@@ -96,7 +96,7 @@ const UpdateSubcategory = () => {
   const onSubmit = async (event: { preventDefault: () => void }) => {
     try {
       event.preventDefault();
-      const response = await SubmitForm(formData);
+      const response = await SubmitPatch(formData);
       if (response?.data?.status === success) {
         toast.success("Success");
         navigate("/subcategories");
@@ -113,7 +113,7 @@ const UpdateSubcategory = () => {
     );
     if (confirmation) {
       try {
-        const response = await DeleteThisSubcategory(id);
+        const response = await SubmitDelete(id);
         if (response?.data?.status === success) {
           toast.success("Success");
           navigate("/subcategories");
