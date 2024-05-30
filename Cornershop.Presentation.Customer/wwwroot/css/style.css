@@ -112,12 +112,44 @@ ol {
 }
 
 /*---------------------
+  Login CSS
+-----------------------*/
+
+.login__container {
+	width: fit-content;
+	padding: 2rem;
+	margin: 2rem auto 2rem auto;
+}
+
+.login__container h3 {
+	font-weight: 700;
+}
+
+.login__container input {
+	display: block;
+	width: 25rem;
+	font-size: 1rem;
+	padding-left: 20px;
+	color: #1c1c1c;
+	height: 46px;
+	border: 1px solid #ededed;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+/*---------------------
+  Register CSS
+-----------------------*/
+
+
+/*---------------------
   Helper CSS
 -----------------------*/
 
 .section-title {
 	margin-bottom: 50px;
 	text-align: center;
+	margin: auto;
 }
 
 .section-title h2 {
@@ -585,8 +617,8 @@ ol {
 .hero__categories__all {
 	background: #7fad39;
 	position: relative;
-	padding: 1rem;
 	cursor: pointer;
+	padding: 0.7rem;
 }
 
 .hero__categories__all i {
@@ -1653,6 +1685,12 @@ ol {
 	color: #dd2222;
 	font-weight: 600;
 	margin-bottom: 1rem;
+}
+
+.product__details__rating i {
+	font-size: 2rem;
+	margin-right: -2px;
+	color: #EDBB0E;
 }
 
 .product__details__original__price {
