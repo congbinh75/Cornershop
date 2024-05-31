@@ -98,6 +98,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app.UseCors();
 
 app.UseAuthentication();

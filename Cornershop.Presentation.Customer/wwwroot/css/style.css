@@ -137,10 +137,16 @@ ol {
 	margin-bottom: 1rem;
 }
 
-/*---------------------
-  Register CSS
------------------------*/
+.login__container a {
+	text-decoration: underline;
+	color: #999999;
+    display: inline-block;
+	margin:0 auto;
+}
 
+.login__container label {
+	text-align: left;
+}
 
 /*---------------------
   Helper CSS
@@ -187,6 +193,10 @@ ol {
 .text-white li,
 .text-white a {
 	color: #fff;
+}
+
+.text-center {
+	text-align: center;
 }
 
 /* buttons */
