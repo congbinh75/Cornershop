@@ -5,19 +5,31 @@ using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Cornershop.Service.Common;
+using Microsoft.Extensions.Localization;
 
 namespace Cornershop.Service.Application.Controllers;
 
 [Route("api/product")]
 [ApiController]
-public class ProductController(IProductService productService) : ControllerBase
+public class ProductController(IProductService productService, IStringLocalizer<SharedResources> stringLocalizer) : ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
         var result = await productService.GetById(id);
-        return Ok(new GetProductResponse { Product = result });
+        if (result.Success)
+        {
+            return Ok(new GetProductResponse { Product = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetProductResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
@@ -26,7 +38,18 @@ public class ProductController(IProductService productService) : ControllerBase
     public async Task<IActionResult> Get(string id, [FromQuery] bool isHiddenIncluded)
     {
         var result = await productService.GetById(id, isHiddenIncluded);
-        return Ok(new GetProductResponse { Product = result });
+        if (result.Success)
+        {
+            return Ok(new GetProductResponse { Product = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetProductResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
@@ -74,7 +97,7 @@ public class ProductController(IProductService productService) : ControllerBase
             }));
         }
 
-        var product = await productService.Add(new ProductDTO
+        var result = await productService.Add(new ProductDTO
         {
             Name = request.Name,
             Description = request.Description,
@@ -93,7 +116,19 @@ public class ProductController(IProductService productService) : ControllerBase
             ProductImages = productImageDTOs,
             IsVisible = request.IsVisible,
         });
-        return Ok(new AddProductResponse { Product = product });
+
+        if (result.Success)
+        {
+            return Ok(new AddProductResponse { Product = result.Value });
+        }
+        else
+        {
+            return BadRequest(new AddProductResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpPatch]
@@ -119,7 +154,7 @@ public class ProductController(IProductService productService) : ControllerBase
             }));
         }
 
-        var product = await productService.Update(new ProductDTO
+        var result = await productService.Update(new ProductDTO
         {
             Id = request.Id,
             Name = request.Name,
@@ -141,7 +176,19 @@ public class ProductController(IProductService productService) : ControllerBase
             ProductImagesIds = request.ProductImagesIds,
             IsVisible = request.IsVisible,
         });
-        return Ok(new UpdateProductResponse { Product = product });
+
+        if (result.Success)
+        {
+            return Ok(new UpdateProductResponse { Product = result.Value });
+        }
+        else
+        {
+            return BadRequest(new UpdateProductResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpDelete]

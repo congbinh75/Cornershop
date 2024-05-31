@@ -1,14 +1,13 @@
+using Cornershop.Service.Common;
 using Cornershop.Shared.DTOs;
 
 namespace Cornershop.Service.Domain.Interfaces;
 
-public interface ISubCategoryService
+public interface ISubcategoryService
 {
-    public Task<SubcategoryDTO?> GetById(string id);
-    public Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize);
-    public Task<ICollection<SubcategoryDTO>> GetAllByCategory(int page, int pageSize, string categoryId);
-    public Task<int> GetCount();
-    public Task<SubcategoryDTO?> Add(SubcategoryDTO categoryDTO);
-    public Task<SubcategoryDTO?> Update(SubcategoryDTO categoryDTO);
-    public Task<bool> Remove(string id);
+    public Task<Result<SubcategoryDTO?, string?>> GetById(string id);
+    public Task<(ICollection<SubcategoryDTO> subcategories, int count)> GetAll(int page, int pageSize, string? categoryId = null);
+    public Task<Result<SubcategoryDTO?, string?>> Add(SubcategoryDTO categoryDTO);
+    public Task<Result<SubcategoryDTO?, string?>> Update(SubcategoryDTO categoryDTO);
+    public Task<Result<bool, string?>> Remove(string id);
 }

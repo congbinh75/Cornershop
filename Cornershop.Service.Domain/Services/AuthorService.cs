@@ -1,3 +1,4 @@
+using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Domain.Mappers;
 using Cornershop.Service.Infrastructure.Contexts;
@@ -9,27 +10,23 @@ namespace Cornershop.Service.Domain.Services;
 
 public class AuthorService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IAuthorService
 {
-    public async Task<AuthorDTO?> GetById(string id)
+    public async Task<Result<AuthorDTO?, string?>> GetById(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Id == id) ?? throw new Exception(); //TO BE FIXED
+        var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Id == id);
+        if (author == null) return Constants.ERR_AUTHOR_NOT_FOUND;
         return author.Map();
     }
 
-    public async Task<ICollection<AuthorDTO>> GetAll(int page, int pageSize)
+    public async Task<(ICollection<AuthorDTO> authors, int count)> GetAll(int page, int pageSize)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var authors = await dbContext.Authors.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync();
-        return authors.ConvertAll(AuthorMapper.Map);
+        var count = dbContext.Authors.Count();
+        return (authors.ConvertAll(AuthorMapper.Map), count);
     }
 
-    public async Task<int> GetCount()
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        return dbContext.Authors.Count();
-    }
-
-    public async Task<AuthorDTO?> Add(AuthorDTO authorDTO)
+    public async Task<Result<AuthorDTO?, string?>> Add(AuthorDTO authorDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var author = new Author
@@ -42,10 +39,11 @@ public class AuthorService(IDbContextFactory<CornershopDbContext> dbContextFacto
         return author.Map();
     }
 
-    public async Task<AuthorDTO?> Update(AuthorDTO authorDTO)
+    public async Task<Result<AuthorDTO?, string?>> Update(AuthorDTO authorDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var author = await dbContext.Authors.FirstOrDefaultAsync(c => c.Id == authorDTO.Id) ?? throw new Exception(); //TO BE FIXED
+        var author = await dbContext.Authors.FirstOrDefaultAsync(c => c.Id == authorDTO.Id) ;
+        if (author == null) return Constants.ERR_AUTHOR_NOT_FOUND;
 
         author.Name = authorDTO.Name ?? author.Name;
         author.Description = authorDTO.Description ?? author.Description;
@@ -55,11 +53,12 @@ public class AuthorService(IDbContextFactory<CornershopDbContext> dbContextFacto
         return author.Map();
     }
 
-    public async Task<bool> Remove(string id)
+    public async Task<Result<bool, string?>> Remove(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var result = await dbContext.Authors.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception();
-        dbContext.Authors.Remove(result);
+        var author = await dbContext.Authors.FirstOrDefaultAsync(c => c.Id == id);
+        if (author == null) return Constants.ERR_AUTHOR_NOT_FOUND;
+        dbContext.Authors.Remove(author);
         await dbContext.SaveChangesAsync();
         return true;
     }

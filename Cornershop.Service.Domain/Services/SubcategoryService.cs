@@ -1,3 +1,4 @@
+using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Domain.Mappers;
 using Cornershop.Service.Infrastructure.Contexts;
@@ -7,44 +8,44 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services;
 
-public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContextFactory) : ISubCategoryService
+public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContextFactory) : ISubcategoryService
 {
-    public async Task<SubcategoryDTO?> GetById(string id)
+    public async Task<Result<SubcategoryDTO?, string?>> GetById(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var subcategory = await dbContext.Subcategories
             .Where(c => c.Id == id)
             .Include(c => c.Category)
-            .FirstOrDefaultAsync() ?? throw new Exception(); //TO BE FIXED
+            .FirstOrDefaultAsync();
+        if (subcategory == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;
         return subcategory.Map();
     }
 
-    public async Task<ICollection<SubcategoryDTO>> GetAll(int page, int pageSize)
+    public async Task<(ICollection<SubcategoryDTO> subcategories, int count)> GetAll(int page, int pageSize, string? categoryId = null)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize)
-            .OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
-        return subcategories.ConvertAll(SubcategoryMapper.Map);
+        List<Subcategory> subcategories = [];
+        int count = 0;
+        if (string.IsNullOrEmpty(categoryId))
+        {
+            subcategories = await dbContext.Subcategories.Where(s => s.Category.Id == categoryId)
+                .Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
+            count = dbContext.Subcategories.Where(s => s.Category.Id == categoryId).Count();
+        }
+        else
+        {
+            subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize)
+                .OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
+            count = dbContext.Subcategories.Count();
+        }
+        return (subcategories.ConvertAll(SubcategoryMapper.Map), count);
     }
 
-    public async Task<ICollection<SubcategoryDTO>> GetAllByCategory(int page, int pageSize, string categoryId)
+    public async Task<Result<SubcategoryDTO?, string?>> Add(SubcategoryDTO subcategoryDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var subcategories = await dbContext.Subcategories.Where(s => s.Category.Id == categoryId)
-            .Skip((page - 1) * pageSize).Take(pageSize).Include(s => s.Category).ToListAsync();
-        return subcategories.ConvertAll(SubcategoryMapper.Map);
-    }
-
-    public async Task<int> GetCount()
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        return dbContext.Subcategories.Count();
-    }
-
-    public async Task<SubcategoryDTO?> Add(SubcategoryDTO subcategoryDTO)
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id);
+        if (category == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;
         var subcategory = new Subcategory
         {
             Name = subcategoryDTO.Name,
@@ -56,11 +57,13 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
         return subcategory.Map();
     }
 
-    public async Task<SubcategoryDTO?> Update(SubcategoryDTO subcategoryDTO)
+    public async Task<Result<SubcategoryDTO?, string?>> Update(SubcategoryDTO subcategoryDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id) ?? throw new Exception(); //TO BE FIXED
-        var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Id) ?? throw new Exception();
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id);
+        if (category == null) return Constants.ERR_CATEGORY_NOT_FOUND;
+        var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Id);
+        if (subcategory == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;
 
         subcategory.Name = subcategoryDTO.Name ?? subcategory.Name;
         subcategory.Description = subcategoryDTO.Description ?? subcategory.Description;
@@ -71,11 +74,12 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
         return subcategory.Map();
     }
 
-    public async Task<bool> Remove(string id)
+    public async Task<Result<bool, string?>> Remove(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var result = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception();
-        dbContext.Subcategories.Remove(result);
+        var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == id);
+        if (subcategory == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;
+        dbContext.Subcategories.Remove(subcategory);
         await dbContext.SaveChangesAsync();
         return true;
     }

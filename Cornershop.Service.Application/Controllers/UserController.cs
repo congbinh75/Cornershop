@@ -33,9 +33,21 @@ public class UserController(IConfiguration configuration,
     [Route("current")]
     public async Task<IActionResult> GetCurrentUser()
     {
-        string userId = tokenInfoProvider.Id ?? throw new Exception(); //TO BE FIXED
-        var user = await userService.GetById(userId);
-        return Ok(new GetCurrentUserResponse { User = user });
+        string? userId = tokenInfoProvider.Id;
+        if (userId == null) return Unauthorized();
+        var result = await userService.GetById(userId);
+        if (result.Success)
+        {
+            return Ok(new GetCurrentUserResponse { User = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetCurrentUserResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR]
+            });
+        }
     }
 
     [HttpGet]
@@ -43,16 +55,27 @@ public class UserController(IConfiguration configuration,
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> GetCurrentUserAdmin()
     {
-        string userId = tokenInfoProvider.Id ?? throw new Exception(); //TO BE FIXED
-        var user = await userService.GetById(userId);
-        return Ok(new GetCurrentUserResponse { User = user });
+        string? userId = tokenInfoProvider.Id;
+        if (userId == null) return Unauthorized();
+        var result = await userService.GetById(userId);
+        if (result.Success)
+        {
+            return Ok(new GetCurrentUserResponse { User = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetCurrentUserResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page = Shared.Constants.Page, int pageSize = Shared.Constants.PageSize)
     {
-        var users = await userService.GetAll(page, pageSize);
-        var count = await userService.GetCount();
+        var (users, count) = await userService.GetAll(page, pageSize);
         var pageCount = (int)Math.Ceiling((double)count / pageSize);
         return Ok(new GetAllUserResponse { Users = users, PagesCount = pageCount });
     }
@@ -77,22 +100,11 @@ public class UserController(IConfiguration configuration,
         }
         else
         {
-            if (result.Error == Constants.ERR_EMAIL_ALREADY_REGISTERED)
+            return BadRequest(new RegisterUserResponse
             {
-                return BadRequest(new RegisterUserResponse
-                {
-                    Status = Shared.Constants.Failure,
-                    Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED]
-                });
-            }
-            else
-            {
-                return BadRequest(new RegisterUserResponse
-                {
-                    Status = Shared.Constants.Failure,
-                    Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED]
-                });
-            }
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
         }
     }
 
@@ -105,7 +117,7 @@ public class UserController(IConfiguration configuration,
             return BadRequest(new RegisterUserResponse
             {
                 Status = Shared.Constants.Failure,
-                Message = stringLocalizer[Constants.ERR_INVALID_ROLE_VALUE]
+                Message = stringLocalizer[Constants.ERR_INVALID_ROLE_VALUE].Value
             });
         }
 
@@ -126,22 +138,11 @@ public class UserController(IConfiguration configuration,
         }
         else
         {
-            if (result.Error == Constants.ERR_EMAIL_ALREADY_REGISTERED)
+            return BadRequest(new RegisterUserResponse
             {
-                return BadRequest(new RegisterUserResponse
-                {
-                    Status = Shared.Constants.Failure,
-                    Message = stringLocalizer[Constants.ERR_EMAIL_ALREADY_REGISTERED]
-                });
-            }
-            else
-            {
-                return BadRequest(new RegisterUserResponse
-                {
-                    Status = Shared.Constants.Failure,
-                    Message = stringLocalizer[Constants.ERR_USERNAME_ALREADY_REGISTERED]
-                });
-            }
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
         }
     }
 
@@ -149,17 +150,17 @@ public class UserController(IConfiguration configuration,
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
     {
-        var user = await userService.GetByCredentials(request.Email, request.Password);
+        var result = await userService.GetByCredentials(request.Email, request.Password);
 
-        if (user != null)
+        if (result.Success)
         {
             var claims = new[]
             {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id ?? ""),
-                    new Claim(ClaimTypes.Email, user.Email ?? ""),
-                    new Claim(ClaimTypes.Role, ((Role)user.Role).ToString())
+                    new Claim(ClaimTypes.NameIdentifier, result.Value?.Id ?? ""),
+                    new Claim(ClaimTypes.Email, result.Value?.Email ?? ""),
+                    new Claim(ClaimTypes.Role, ((Role)result.Value?.Role).ToString())
                 };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? ""));
@@ -179,7 +180,7 @@ public class UserController(IConfiguration configuration,
                 Expires = DateTimeOffset.UtcNow.UtcDateTime.AddDays(7)
             });
 
-            return Ok(new LoginUserResponse{ Token = tokenString });
+            return Ok(new LoginUserResponse { Token = tokenString });
         }
         else
         {
@@ -201,7 +202,19 @@ public class UserController(IConfiguration configuration,
             LastName = request.LastName
         };
         var result = await userService.Update(userDTO);
-        return Ok(new UpdateUserResponse { User = result });
+        if (result.Success)
+        {
+            return Ok(new UpdateUserResponse { User = result.Value });
+        }
+        else
+        {
+            return BadRequest(new UpdateUserResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
+        
     }
 
     [HttpPost]

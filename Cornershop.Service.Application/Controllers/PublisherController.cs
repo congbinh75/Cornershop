@@ -5,53 +5,86 @@ using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Cornershop.Service.Common;
+using Microsoft.Extensions.Localization;
 
 namespace Cornershop.Service.Application.Controllers;
 
 [Route("api/publisher")]
 [ApiController]
-public class PublisherController(IPublisherService publisherService) : ControllerBase
+public class PublisherController(IPublisherService publisherService, IStringLocalizer<SharedResources> stringLocalizer) : ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var publisher = await publisherService.GetById(id);
-        return Ok(new GetPublisherResponse { Publisher = publisher });
+        var result = await publisherService.GetById(id);
+        if (result.Success)
+        {
+            return Ok(new GetPublisherResponse { Publisher = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetPublisherResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
     {
-        var authors = await publisherService.GetAll(page, pageSize);
-        var count = await publisherService.GetCount();
+        var (publishers, count) = await publisherService.GetAll(page, pageSize);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
-        return Ok(new GetAllPublisherResponse { Publishers = authors, PagesCount = pagesCount });
+        return Ok(new GetAllPublisherResponse { Publishers = publishers, PagesCount = pagesCount });
     }
 
     [HttpPut]
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Add([FromBody] AddPublisherRequest request)
     {
-        var publisher = await publisherService.Add(new PublisherDTO
+        var result = await publisherService.Add(new PublisherDTO
         {
             Name = request.Name,
             Description = request.Description
         });
-        return Ok(new AddPublisherResponse { Publisher = publisher });
+        if (result.Success)
+        {
+            return Ok(new AddPublisherResponse { Publisher = result.Value });
+        }
+        else
+        {
+            return BadRequest(new AddPublisherResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpPatch]
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Update([FromBody] UpdatePublisherRequest request)
     {
-        var publisher = await publisherService.Update(new PublisherDTO
+        var result = await publisherService.Update(new PublisherDTO
         {
             Id = request.Id,
             Name = request.Name,
             Description = request.Description
         });
-        return Ok(new UpdatePublisherResponse { Publisher = publisher });
+        if (result.Success)
+        {
+            return Ok(new UpdatePublisherResponse { Publisher = result.Value });
+        }
+        else
+        {
+            return BadRequest(new UpdatePublisherResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpDelete]
@@ -59,7 +92,18 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Remove(string id)
     {
-        await publisherService.Remove(id);
-        return Ok(new RemovePublisherResponse());
+        var result = await publisherService.Remove(id);
+        if (result.Success)
+        {
+            return Ok(new RemovePublisherResponse());
+        }
+        else
+        {
+            return BadRequest(new RemovePublisherResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 }

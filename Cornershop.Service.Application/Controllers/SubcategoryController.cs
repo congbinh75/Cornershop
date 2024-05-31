@@ -5,35 +5,37 @@ using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Cornershop.Service.Common;
+using Microsoft.Extensions.Localization;
 
 namespace Cornershop.Service.Application.Controllers;
 
 [Route("api/subcategory")]
 [ApiController]
-public class SubcategoryController(ISubCategoryService subcategoryService) : ControllerBase
+public class SubcategoryController(ISubcategoryService subcategoryService, IStringLocalizer<SharedResources> stringLocalizer) : ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var subcategory = await subcategoryService.GetById(id);
-        return Ok(new GetSubcategoryResponse { Subcategory = subcategory });
+        var result = await subcategoryService.GetById(id);
+        if (result.Success)
+        {
+            return Ok(new GetSubcategoryResponse { Subcategory = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetSubcategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, string? categoryId)
     {
-        ICollection<SubcategoryDTO> subcategories;
-        if (string.IsNullOrEmpty(categoryId))
-        {
-            subcategories = await subcategoryService.GetAll(page, pageSize);
-        }
-        else
-        {
-            subcategories = await subcategoryService.GetAllByCategory(page, pageSize, categoryId);
-        }
-
-        var count = await subcategoryService.GetCount();
+        var (subcategories, count) = await subcategoryService.GetAll(page, pageSize, categoryId);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
         return Ok(new GetAllSubcategoryResponse { Subcategories = subcategories, PagesCount = pagesCount });
     }
@@ -42,7 +44,7 @@ public class SubcategoryController(ISubCategoryService subcategoryService) : Con
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Add([FromBody] AddSubcategoryRequest request)
     {
-        var subcategory = await subcategoryService.Add(new SubcategoryDTO
+        var result = await subcategoryService.Add(new SubcategoryDTO
         {
             Name = request.Name,
             Description = request.Description,
@@ -51,21 +53,43 @@ public class SubcategoryController(ISubCategoryService subcategoryService) : Con
                 Id = request.CategoryId
             }
         });
-        return Ok(new AddSubcategoryResponse { Subcategory = subcategory });
+        if (result.Success)
+        {
+            return Ok(new AddSubcategoryResponse { Subcategory = result.Value });
+        }
+        else
+        {
+            return BadRequest(new AddSubcategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpPatch]
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Update([FromBody] UpdateSubcategoryRequest request)
     {
-        var subcategory = await subcategoryService.Update(new SubcategoryDTO
+        var result = await subcategoryService.Update(new SubcategoryDTO
         {
             Id = request.Id,
             Name = request.Name,
             Category = new CategoryDTO { Id = request.CategoryId },
             Description = request.Description
         });
-        return Ok(new UpdateSubcategoryResponse { Subcategory = subcategory });
+        if (result.Success)
+        {
+            return Ok(new UpdateSubcategoryResponse { Subcategory = result.Value });
+        }
+        else
+        {
+            return BadRequest(new UpdateSubcategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpDelete]
@@ -73,7 +97,18 @@ public class SubcategoryController(ISubCategoryService subcategoryService) : Con
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Remove(string id)
     {
-        await subcategoryService.Remove(id);
-        return Ok(new RemoveCategoryResponse());
+        var result = await subcategoryService.Remove(id);
+        if (result.Success)
+        {
+            return Ok(new RemoveSubcategoryResponse());
+        }
+        else
+        {
+            return BadRequest(new RemoveSubcategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 }

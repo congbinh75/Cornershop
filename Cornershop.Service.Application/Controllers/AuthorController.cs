@@ -5,26 +5,37 @@ using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Cornershop.Service.Common;
+using Microsoft.Extensions.Localization;
 
 namespace Cornershop.Service.Application.Controllers;
 
 [Route("api/author")]
 [ApiController]
-public class AuthorController(IAuthorService authorService) : ControllerBase
+public class AuthorController(IAuthorService authorService, IStringLocalizer<SharedResources> stringLocalizer) : ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var author = await authorService.GetById(id);
-        return Ok(new GetAuthorResponse { Author = author });
+        var result = await authorService.GetById(id);
+        if (result.Success)
+        {
+            return Ok(new GetAuthorResponse { Author = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetAuthorResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
     {
-        var authors = await authorService.GetAll(page, pageSize);
-        var count = await authorService.GetCount();
+        var (authors, count) = await authorService.GetAll(page, pageSize);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
         return Ok(new GetAllAuthorResponse { Authors = authors, PagesCount = pagesCount });
     }
@@ -33,25 +44,47 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Add([FromBody] AddAuthorRequest request)
     {
-        var author = await authorService.Add(new AuthorDTO
+        var result = await authorService.Add(new AuthorDTO
         {
             Name = request.Name,
             Description = request.Description
         });
-        return Ok(new AddAuthorResponse { Author = author });
+        if (result.Success)
+        {
+            return Ok(new AddAuthorResponse { Author = result.Value });
+        }
+        else
+        {
+            return BadRequest(new AddAuthorResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpPatch]
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Update([FromBody] UpdateAuthorRequest request)
     {
-        var author = await authorService.Update(new AuthorDTO
+        var result = await authorService.Update(new AuthorDTO
         {
             Id = request.Id,
             Name = request.Name,
             Description = request.Description
         });
-        return Ok(new UpdateAuthorResponse { Author = author });
+        if (result.Success)
+        {
+            return Ok(new UpdateAuthorResponse { Author = result.Value });
+        }
+        else
+        {
+            return BadRequest(new UpdateAuthorResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpDelete]
@@ -59,7 +92,18 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Remove(string id)
     {
-        await authorService.Remove(id);
-        return Ok(new RemoveAuthorResponse());
+        var result = await authorService.Remove(id);
+        if (result.Success)
+        {
+            return Ok(new RemoveAuthorResponse());
+        }
+        else
+        {
+            return BadRequest(new RemoveAuthorResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 }

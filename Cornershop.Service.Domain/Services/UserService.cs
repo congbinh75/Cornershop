@@ -12,27 +12,35 @@ namespace Cornershop.Service.Domain.Services;
 
 public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IUserService
 {
-    public async Task<UserDTO?> GetById(string id)
+    public async Task<Result<UserDTO?, string?>> GetById(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception(); //TO BE FIXED
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null) return Constants.ERR_USER_NOT_FOUND;
         return user.Map();
     }
 
-    public async Task<ICollection<UserDTO>> GetAll(int page, int pageSize)
+    public async Task<(ICollection<UserDTO> users, int count)> GetAll(int page, int pageSize, bool IsCustomerOnly = false)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var users = await dbContext.Users.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync() ?? throw new Exception(); //TO BE FIXED
-        return users.ConvertAll(UserMapper.Map);
+        List<User> users = [];
+        int count = 0;
+        if (IsCustomerOnly)
+        {
+            users = await dbContext.Users.Where(u => u.Role == (int)Enums.Role.Customer).Skip((page - 1) * pageSize).Take(pageSize)
+                .OrderByDescending(a => a.CreatedOn).ToListAsync();
+            count = dbContext.Users.Where(u => u.Role == (int)Enums.Role.Customer).Count();
+        }
+        else
+        {
+            users = await dbContext.Users.Where(u => u.Role == (int)Enums.Role.Customer).Skip((page - 1) * pageSize).Take(pageSize)
+                .OrderByDescending(a => a.CreatedOn).ToListAsync();
+            count = dbContext.Users.Count();
+        }
+        return (users.ConvertAll(UserMapper.Map), count);
     }
 
-    public async Task<int> GetCount()
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        return dbContext.Users.Count();
-    }
-
-    public async Task<UserDTO?> GetByCredentials(string email, string password)
+    public async Task<Result<UserDTO?, string?>> GetByCredentials(string email, string password)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -40,7 +48,7 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
         {
             return user.Map();
         }
-        return null;
+        return Constants.ERR_USER_NOT_FOUND;
     }
 
     public async Task<Result<UserDTO?, string?>> Add(UserDTO userDTO)
@@ -81,10 +89,11 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
         return user.Map();
     }
 
-    public async Task<UserDTO?> Update(UserDTO userDTO)
+    public async Task<Result<UserDTO?, string?>> Update(UserDTO userDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id) ?? throw new Exception(); //TO BE FIXED
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id);
+        if (user == null) return Constants.ERR_USER_NOT_FOUND;
         user.FirstName = userDTO.FirstName ?? user.FirstName;
         user.LastName = userDTO.LastName ?? user.LastName;
         user.Role = userDTO.Role;
@@ -93,10 +102,11 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
         return user.Map();
     }
 
-    public async Task<bool> UpdatePassword(string id, string oldPassword, string newPassword)
+    public async Task<Result<bool, string?>> UpdatePassword(string id, string oldPassword, string newPassword)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception();
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null) return Constants.ERR_USER_NOT_FOUND;
         if (!string.IsNullOrEmpty(oldPassword) && HashPassword(oldPassword, user.Salt).hashedPassword.Equals(user.Password))
         {
             (string hashed, byte[] salt) = HashPassword(newPassword);
@@ -108,30 +118,13 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
         return false;
     }
 
-    public async Task<bool> Remove(string id)
+    public async Task<Result<bool, string?>> Remove(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception();
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null) return Constants.ERR_USER_NOT_FOUND;
         dbContext.Users.Remove(user);
         return true;
-    }
-
-    public Task<bool> SendEmailConfirmation(string id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<bool> ConfirmEmail(string id, string token)
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception();
-        if (user.EmailConfirmationToken == token)
-        {
-            user.IsEmailConfirmed = true;
-            await dbContext.SaveChangesAsync();
-            return true;
-        }
-        return false;
     }
 
     private static (string hashedPassword, byte[] salt) HashPassword(string password, byte[]? salt = null)

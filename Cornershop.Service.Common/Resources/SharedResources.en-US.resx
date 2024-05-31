@@ -141,4 +141,36 @@
     <value>Username already registered</value>
     <comment/>
   </data>
+  <data name="ERR_USER_NOT_FOUND" xml:space="preserve">
+    <value>User not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_CATEGORY_NOT_FOUND" xml:space="preserve">
+    <value>Category not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_SUBCATEGORY_NOT_FOUND" xml:space="preserve">
+    <value>Subcategory not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_PRODUCT_NOT_FOUND" xml:space="preserve">
+    <value>Product not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_AUTHOR_NOT_FOUND" xml:space="preserve">
+    <value>Author not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_PUBLISHER_NOT_FOUND" xml:space="preserve">
+    <value>Publisher not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_REVIEW_NOT_FOUND" xml:space="preserve">
+    <value>Review not found</value>
+    <comment/>
+  </data>
+  <data name="ERR_ORDER_NOT_FOUND" xml:space="preserve">
+    <value>Order not found</value>
+    <comment/>
+  </data>
 </root>

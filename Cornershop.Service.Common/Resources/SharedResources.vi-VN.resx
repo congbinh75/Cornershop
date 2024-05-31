@@ -141,4 +141,36 @@
     <value>Username đã được đăng ký</value>
     <comment/>
   </data>
+  <data name="ERR_USER_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy người dùng</value>
+    <comment/>
+  </data>
+  <data name="ERR_ORDER_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy đơn hàng</value>
+    <comment/>
+  </data>
+  <data name="ERR_REVIEW_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy bài đánh giá</value>
+    <comment/>
+  </data>
+  <data name="ERR_PUBLISHER_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy nhà phát hành</value>
+    <comment/>
+  </data>
+  <data name="ERR_AUTHOR_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy tác giả</value>
+    <comment/>
+  </data>
+  <data name="ERR_PRODUCT_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy sản phẩm</value>
+    <comment/>
+  </data>
+  <data name="ERR_CATEGORY_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy thể loại</value>
+    <comment/>
+  </data>
+  <data name="ERR_SUBCATEGORY_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy thể loại con</value>
+    <comment/>
+  </data>
 </root>

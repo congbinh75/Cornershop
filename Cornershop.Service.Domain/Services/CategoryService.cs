@@ -4,32 +4,29 @@ using Cornershop.Service.Domain.Mappers;
 using Cornershop.Service.Infrastructure.Contexts;
 using Cornershop.Service.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Cornershop.Service.Common;
 
 namespace Cornershop.Service.Domain.Services;
 
 public class CategoryService(IDbContextFactory<CornershopDbContext> dbContextFactory) : ICategoryService
 {
-    public async Task<CategoryDTO?> GetById(string id)
+    public async Task<Result<CategoryDTO?, string?>> GetById(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception(); //TO BE FIXED
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        if (category == null) return Constants.ERR_CATEGORY_NOT_FOUND;
         return category.Map();
     }
 
-    public async Task<ICollection<CategoryDTO>> GetAll(int page, int pageSize)
+    public async Task<(ICollection<CategoryDTO> categories, int count)> GetAll(int page, int pageSize)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var categories = await dbContext.Categories.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync();
-        return categories.ConvertAll(CategoryMapper.Map);
+        var count = dbContext.Categories.Count();
+        return (categories.ConvertAll(CategoryMapper.Map), count);
     }
 
-    public async Task<int> GetCount()
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        return dbContext.Categories.Count();
-    }
-
-    public async Task<CategoryDTO?> Add(CategoryDTO categoryDTO)
+    public async Task<Result<CategoryDTO?, string?>> Add(CategoryDTO categoryDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var category = new Category
@@ -42,10 +39,11 @@ public class CategoryService(IDbContextFactory<CornershopDbContext> dbContextFac
         return category.Map();
     }
 
-    public async Task<CategoryDTO?> Update(CategoryDTO categoryDTO)
+    public async Task<Result<CategoryDTO?, string?>> Update(CategoryDTO categoryDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryDTO.Id) ?? throw new Exception(); //TO BE FIXED
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryDTO.Id);
+        if (category == null) return Constants.ERR_CATEGORY_NOT_FOUND;
 
         category.Name = categoryDTO.Name ?? category.Name;
         category.Description = categoryDTO.Description ?? category.Description;
@@ -55,11 +53,12 @@ public class CategoryService(IDbContextFactory<CornershopDbContext> dbContextFac
         return category.Map();
     }
 
-    public async Task<bool> Remove(string id)
+    public async Task<Result<bool, string?>> Remove(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var result = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception();
-        dbContext.Categories.Remove(result);
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        if (category == null) return Constants.ERR_CATEGORY_NOT_FOUND;
+        dbContext.Categories.Remove(category);
         await dbContext.SaveChangesAsync();
         return true;
     }

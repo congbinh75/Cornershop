@@ -5,15 +5,12 @@ namespace Cornershop.Service.Domain.Interfaces
 {
     public interface IUserService
     {
-        public Task<UserDTO?> GetById(string id);
-        public Task<ICollection<UserDTO>> GetAll(int page, int pageSize);
-        public Task<int> GetCount();
-        public Task<UserDTO?> GetByCredentials(string email, string password);
+        public Task<Result<UserDTO?, string?>> GetById(string id);
+        public Task<(ICollection<UserDTO> users, int count)> GetAll(int page, int pageSize, bool IsCustomerOnly = false);
+        public Task<Result<UserDTO?, string?>> GetByCredentials(string email, string password);
         public Task<Result<UserDTO?, string?>> Add(UserDTO userDTO);
-        public Task<UserDTO?> Update(UserDTO userDTO);
-        public Task<bool> UpdatePassword(string id, string oldPassword, string newPassword);
-        public Task<bool> Remove(string id);
-        public Task<bool> SendEmailConfirmation(string id);
-        public Task<bool> ConfirmEmail(string id, string token);
+        public Task<Result<UserDTO?, string?>> Update(UserDTO userDTO);
+        public Task<Result<bool, string?>> UpdatePassword(string id, string oldPassword, string newPassword);
+        public Task<Result<bool, string?>> Remove(string id);
     }
 }

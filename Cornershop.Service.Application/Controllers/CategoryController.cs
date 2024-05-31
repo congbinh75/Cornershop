@@ -5,26 +5,37 @@ using Microsoft.AspNetCore.Mvc;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Cornershop.Service.Common;
+using Microsoft.Extensions.Localization;
 
 namespace Cornershop.Service.Application.Controllers;
 
 [Route("api/category")]
 [ApiController]
-public class CategoryController(ICategoryService categoryService) : ControllerBase
+public class CategoryController(ICategoryService categoryService, IStringLocalizer<SharedResources> stringLocalizer) : ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var category = await categoryService.GetById(id);
-        return Ok(new GetCategoryResponse { Category = category });
+        var result = await categoryService.GetById(id);
+        if (result.Success)
+        {
+            return Ok(new GetCategoryResponse { Category = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetCategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize)
     {
-        var categories = await categoryService.GetAll(page, pageSize);
-        var count = await categoryService.GetCount();
+        var (categories, count) = await categoryService.GetAll(page, pageSize);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
         return Ok(new GetAllCategoryResponse { Categories = categories, PagesCount = pagesCount });
     }
@@ -33,25 +44,47 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Add([FromBody] AddCategoryRequest request)
     {
-        var category = await categoryService.Add(new CategoryDTO
+        var result = await categoryService.Add(new CategoryDTO
         {
             Name = request.Name,
             Description = request.Description
         });
-        return Ok(new AddCategoryResponse { Category = category });
+        if (result.Success)
+        {
+            return Ok(new AddCategoryResponse { Category = result.Value });
+        }
+        else
+        {
+            return BadRequest(new AddCategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpPatch]
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Update([FromBody] UpdateCategoryRequest request)
     {
-        var category = await categoryService.Update(new CategoryDTO
+        var result = await categoryService.Update(new CategoryDTO
         {
             Id = request.Id,
             Name = request.Name,
             Description = request.Description
         });
-        return Ok(new UpdateCategoryResponse { Category = category });
+        if (result.Success)
+        {
+            return Ok(new UpdateCategoryResponse { Category = result.Value });
+        }
+        else
+        {
+            return BadRequest(new UpdateCategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 
     [HttpDelete]
@@ -59,7 +92,18 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     [Authorize(Roles = Constants.AdminAndStaff)]
     public async Task<IActionResult> Remove(string id)
     {
-        await categoryService.Remove(id);
-        return Ok(new RemoveCategoryResponse());
+        var result = await categoryService.Remove(id);
+        if (result.Success)
+        {
+            return Ok(new RemoveCategoryResponse());
+        }
+        else
+        {
+            return BadRequest(new RemoveCategoryResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR].Value
+            });
+        }
     }
 }

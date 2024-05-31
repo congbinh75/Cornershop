@@ -1,3 +1,4 @@
+using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Domain.Mappers;
 using Cornershop.Service.Infrastructure.Contexts;
@@ -9,27 +10,23 @@ namespace Cornershop.Service.Domain.Services;
 
 public class PublisherService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IPublisherService
 {
-    public async Task<PublisherDTO?> GetById(string id)
+    public async Task<Result<PublisherDTO?, string?>> GetById(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(a => a.Id == id) ?? throw new Exception(); //TO BE FIXED
+        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(a => a.Id == id);
+        if (publisher == null) return Constants.ERR_PUBLISHER_NOT_FOUND;
         return publisher.Map();
     }
 
-    public async Task<ICollection<PublisherDTO>> GetAll(int page, int pageSize)
+    public async Task<(ICollection<PublisherDTO> publishers, int count)> GetAll(int page, int pageSize)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var publishers = await dbContext.Publishers.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync();
-        return publishers.ConvertAll(PublisherMapper.Map);
+        var count = dbContext.Publishers.Count();
+        return (publishers.ConvertAll(PublisherMapper.Map), count);
     }
 
-    public async Task<int> GetCount()
-    {
-        using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        return dbContext.Publishers.Count();
-    }
-
-    public async Task<PublisherDTO?> Add(PublisherDTO publisherDTO)
+    public async Task<Result<PublisherDTO?, string?>> Add(PublisherDTO publisherDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var publisher = new Publisher
@@ -42,10 +39,11 @@ public class PublisherService(IDbContextFactory<CornershopDbContext> dbContextFa
         return publisher.Map();
     }
 
-    public async Task<PublisherDTO?> Update(PublisherDTO publisherDTO)
+    public async Task<Result<PublisherDTO?, string?>> Update(PublisherDTO publisherDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(c => c.Id == publisherDTO.Id) ?? throw new Exception(); //TO BE FIXED
+        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(c => c.Id == publisherDTO.Id);
+        if (publisher == null) return Constants.ERR_PUBLISHER_NOT_FOUND;
 
         publisher.Name = publisherDTO.Name ?? publisher.Name;
         publisher.Description = publisherDTO.Description ?? publisher.Description;
@@ -55,11 +53,12 @@ public class PublisherService(IDbContextFactory<CornershopDbContext> dbContextFa
         return publisher.Map();
     }
 
-    public async Task<bool> Remove(string id)
+    public async Task<Result<bool, string?>> Remove(string id)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var result = await dbContext.Publishers.FirstOrDefaultAsync(c => c.Id == id) ?? throw new Exception();
-        dbContext.Publishers.Remove(result);
+        var publisher = await dbContext.Publishers.FirstOrDefaultAsync(c => c.Id == id);
+        if (publisher == null) return Constants.ERR_PUBLISHER_NOT_FOUND;
+        dbContext.Publishers.Remove(publisher);
         await dbContext.SaveChangesAsync();
         return true;
     }
