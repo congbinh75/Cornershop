@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 builder.Services.AddRazorPages();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -35,7 +36,6 @@ var localizationOptions = new RequestLocalizationOptions
 
 app.UseRequestLocalization(localizationOptions);
 
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -43,10 +43,10 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();

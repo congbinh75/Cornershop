@@ -25,8 +25,19 @@ public class UserController(IConfiguration configuration,
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var user = await userService.GetById(id);
-        return Ok(user);
+        var result = await userService.GetById(id);
+        if (result.Success)
+        {
+            return Ok(new GetUserResponse { User = result.Value });
+        }
+        else
+        {
+            return BadRequest(new GetCurrentUserResponse
+            {
+                Status = Shared.Constants.Failure,
+                Message = stringLocalizer[result.Error ?? Constants.ERR_UNEXPECTED_ERROR]
+            });
+        }
     }
 
     [HttpGet]

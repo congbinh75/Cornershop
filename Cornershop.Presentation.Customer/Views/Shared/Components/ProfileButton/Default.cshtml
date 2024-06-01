@@ -1,0 +1,14 @@
+@model Cornershop.Shared.DTOs.UserDTO
+
+<div class="header__top__right__auth">
+    @{
+        if (Model != null)
+        {
+            <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.Id"><i class="fa fa-user"></i> @Model.Username</a>
+        }
+        else
+        {
+            <a asp-page="/Login"><i class="fa fa-user"></i> Login</a>
+        }
+    }
+</div>

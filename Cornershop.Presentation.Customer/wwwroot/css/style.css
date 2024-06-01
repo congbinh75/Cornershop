@@ -199,6 +199,10 @@ ol {
 	text-align: center;
 }
 
+.text-bold {
+	font-weight: 700;
+}
+
 /* buttons */
 
 .primary-btn {
@@ -851,6 +855,7 @@ ol {
 }
 
 .featured__product {
+	padding-top: 3rem;
 	overflow: hidden;
 }
 

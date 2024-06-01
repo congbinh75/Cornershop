@@ -1,0 +1,22 @@
+@model Cornershop.Shared.DTOs.UserDTO
+@{
+    ViewData["Title"] = Model?.Username;
+}
+
+<div class="container px-auto">
+    <div class="w-100 mx-auto row row-cols-2">
+        <div class="col">
+            <div class="my-4 text-bold">First name</div>
+            <div class="my-4 text-bold">Last name</div>
+            <div class="my-4 text-bold">Username</div>
+            <div class="my-4 text-bold">Email</div>
+        </div>
+        <div class="col">
+            <div class="my-4">@Model?.FirstName</div>
+            <div class="my-4">@Model?.LastName</div>
+            <div class="my-4">@Model?.Username</div>
+            <div class="my-4">@Model?.Email</div>
+        </div>
+    </div>
+    <a asp-controller="User" asp-action="Logout" class="site-btn text-white mt-4">Log out</a>
+</div>

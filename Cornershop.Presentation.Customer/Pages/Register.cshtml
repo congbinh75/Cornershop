@@ -1,0 +1,54 @@
+@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Cornershop.Presentation.Customer.Pages.RegisterModel;
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<div class="border login__container">
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div class="text-center">
+            <h3 class="mb-3">Register</h3>
+        </div>
+        <div>
+            <label>First name</label>
+            <input asp-for="User!.FirstName" type="text" data-val-required="Please enter first name" />
+            <span asp-validation-for="User!.FirstName" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Last name</label>
+            <input asp-for="User!.LastName" type="text" data-val-required="Please enter last name" />
+            <span asp-validation-for="User!.LastName" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Email</label>
+            <input asp-for="User!.Email" type="email" data-val-email="Email is not valid"
+                data-val-required="Please enter email" />
+            <span asp-validation-for="User!.Email" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Username</label>
+            <input asp-for="User!.Username" type="text" data-val-required="Please enter username" />
+            <span asp-validation-for="User!.Username" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Password</label>
+            <input asp-for="User!.PlainPassword" type="password" data-val-required="Please enter password" />
+            <span asp-validation-for="User!.PlainPassword" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Confirm password</label>
+            <input asp-for="ConfirmPassword" type="password" data-val-required="Please enter confirmation password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <div class="ps-3">@Html.ValidationSummary(true, "", new { @class = "text-danger" })</div>
+        <div>
+            <input type="submit" class="site-btn text-white" value="Submit" />
+        </div>
+    </form>
+    <div class="text-center">
+        <a asp-page="Login">Already have an account? Login</a>
+    </div>
+</div>

@@ -1,32 +1,25 @@
 using Cornershop.Presentation.Customer.Intefaces;
-using Cornershop.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Controllers;
 
 public class UserController(IUserService userService) : Controller
 {
-    public async Task<IActionResult> Login()
+    public async Task<IActionResult> Detail(string id)
     {
-        return View();
+        var user = await userService.GetById(id);
+        return View(user);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(UserDTO userDTO)
+    public IActionResult Logout()
     {
-        if (ModelState.IsValid)
+        Response.Cookies.Append("AuthCookie", string.Empty, new CookieOptions
         {
-            var token = await userService.Login(userDTO);
-
-            Response.Cookies.Append("AuthCookie", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.UtcDateTime.AddDays(7)
-            });
-        }
-        return View();
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.UtcDateTime.AddDays(-1)
+        });
+        return RedirectToAction("Index", "Home");
     }
 }
