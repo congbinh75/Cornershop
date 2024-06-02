@@ -38,49 +38,34 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         }
     }
 
-    public async Task<(ICollection<ProductDTO> products, int count)> GetAll(int page, int pageSize, bool isHiddenIncluded = false, 
-        string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
+    public async Task<(ICollection<ProductDTO> products, int count)> GetAll(int page, int pageSize, bool isHiddenIncluded = false,
+        string? keyword = null, string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
     {
         var dbContext = await dbContextFactory.CreateDbContextAsync();
-        if (isHiddenIncluded)
+
+        IQueryable<Product> query = (IQueryable<Product>)dbContext.Products;
+
+        if (!isHiddenIncluded) query = query.Where(p => p.IsVisible == true);
+        if (categoryId != null) query = query.Where(p => p.Subcategory.Category.Id == categoryId);
+        if (subcategoryId != null) query = query.Where(p => p.Subcategory.Id == subcategoryId);
+        if (keyword != null) query = query.Where(p => p.Name.ToLower().Contains(keyword.ToLower()) ||
+                                                    p.Subcategory.Category.Name.ToLower().Contains(keyword.ToLower()) ||
+                                                    p.Subcategory.Name.ToLower().Contains(keyword.ToLower()) ||
+                                                    p.Author.Name.ToLower().Contains(keyword.ToLower()) ||
+                                                    p.Publisher.Name.ToLower().Contains(keyword.ToLower()));
+        if (isOrderedByPriceAscending != null)
         {
-            var query = dbContext.Products
-                .Where(p => (categoryId == null || p.Subcategory.Category.Id == categoryId)
-                    && (subcategoryId == null || p.Subcategory.Id == subcategoryId))
-                .Include(p => p.Author)
-                .Include(p => p.Publisher)
-                .Include(p => p.Subcategory).ThenInclude(p => p.Category)
-                .Include(p => p.ProductImages)
-                .OrderByDescending(a => a.CreatedOn);
-
-            if (isOrderedByPriceAscending != null) 
-            {
-                query = (bool)isOrderedByPriceAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
-            }
-            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
-            return (products.ConvertAll(ProductMapper.Map), query.Count());
+            query = (bool)isOrderedByPriceAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
         }
-        else
-        {
-            var query = dbContext.Products
-                .Where(p => p.IsVisible == true 
-                    && (categoryId == null || p.Subcategory.Category.Id == categoryId)
-                    && (subcategoryId == null || p.Subcategory.Id == subcategoryId))
-                .Include(p => p.Author)
-                .Include(p => p.Publisher)
-                .Include(p => p.Subcategory).ThenInclude(p => p.Category)
-                .Include(p => p.ProductImages)
-                .OrderByDescending(a => a.CreatedOn);
-            
-            if (isOrderedByPriceAscending != null) 
-            {
-                query = (bool)isOrderedByPriceAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
-            }
-            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            return (products.ConvertAll(ProductMapper.Map), query.Count());
-        }
+        query = query.Include(p => p.Author)
+                    .Include(p => p.Publisher)
+                    .Include(p => p.Subcategory).ThenInclude(p => p.Category)
+                    .Include(p => p.ProductImages)
+                    .OrderByDescending(p => p.CreatedOn);
+
+        var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return (products.ConvertAll(ProductMapper.Map), query.Count());
     }
 
     public async Task<Result<ProductDTO?, string?>> Add(ProductDTO productDTO)

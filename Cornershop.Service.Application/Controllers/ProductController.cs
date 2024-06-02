@@ -53,11 +53,11 @@ public class ProductController(IProductService productService, IStringLocalizer<
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize,
+    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, string? keyword = null,
          string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
     {
         (ICollection<ProductDTO> products, int count) = await productService.GetAll(page, pageSize, false,
-            categoryId, subcategoryId, isOrderedByPriceAscending);
+            keyword, categoryId, subcategoryId, isOrderedByPriceAscending);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
         return Ok(new GetAllProductResponse { Products = products, PagesCount = pagesCount });
     }
@@ -65,11 +65,11 @@ public class ProductController(IProductService productService, IStringLocalizer<
     [HttpGet]
     [Route("admin")]
     [Authorize(Roles = Constants.AdminAndStaff)]
-    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, bool isHiddenIncluded, 
+    public async Task<IActionResult> GetAll([FromQuery] int page, int pageSize, bool isHiddenIncluded, string? keyword = null,
          string? categoryId = null, string? subcategoryId = null, bool? isOrderedByPriceAscending = null)
     {
         (ICollection<ProductDTO> products, int count) = await productService.GetAll(page, pageSize, isHiddenIncluded,
-            categoryId, subcategoryId, isOrderedByPriceAscending);
+            keyword, categoryId, subcategoryId, isOrderedByPriceAscending);
         var pagesCount = (int)Math.Ceiling((double)count / pageSize);
         return Ok(new GetAllProductResponse { Products = products, PagesCount = pagesCount });
     }
