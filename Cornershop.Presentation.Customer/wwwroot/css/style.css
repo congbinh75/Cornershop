@@ -1685,9 +1685,16 @@ ol {
 	margin-bottom: 16px;
 }
 
+.rating {
+	color: #dd2222;
+	font-size: 1.2rem;
+}
+
 .product__details__text .product__details__rating {
 	font-size: 14px;
 	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
 }
 
 .product__details__text .product__details__rating i {
@@ -1871,7 +1878,7 @@ ol {
 }
 
 .product__details__tab .product__details__tab__desc p {
-	color: #666666;
+	color: #333333;
 }
 
 /*---------------------

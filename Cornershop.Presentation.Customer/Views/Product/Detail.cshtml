@@ -29,11 +29,15 @@
                     <div class="product__details__text">
                         <h3>@Model.Name</h3>
                         <div class="product__details__rating">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-half-o"></i>
+                            @for (int i = 1; i <= Model.Rating; i++)
+                            {
+                                <i class="fa fa-star"></i>
+                                if (Model.Rating - i > 0 && Model.Rating - i < 1)
+                                {
+                                    <i class="fa fa-star-half-o"></i>
+                                }
+                            }
+                            <span class="ms-2 rating">@Model.Rating.ToString("0.0")</span>
                         </div>
                         <div class="product__details__price">@string.Format("{0:C}", @Model.Price)</div>
                         <div class="product__details__original__price">@string.Format("{0:C}", @Model.OriginalPrice)
@@ -82,21 +86,8 @@
                         </ul>
                         <div class="tab-content">
                             <div>
-                                <div class="d-flex product__details__tab__desc">
-                                    <div class="d-flex flex-column justify-content-between align-items-center">
-                                        <div class="d-flex m-3 product__details__rating">
-                                            <div id="star1" role="button"><i class="fa fa-star-o"></i></div>
-                                            <div id="star2" role="button"><i class="fa fa-star-o"></i></div>
-                                            <div id="star3" role="button"><i class="fa fa-star-o"></i></div>
-                                            <div id="star4" role="button"><i class="fa fa-star-o"></i></div>
-                                            <div id="star5" role="button"><i class="fa fa-star-o"></i></div>   
-                                        </div>
-                                        <form id="reviewForm" class="mb-3">
-                                            <input class="d-none" type="number" id="rating" required/>
-                                            <input class="site-btn" type="submit" value="Submit" />
-                                        </form>
-                                    </div>
-                                    <textarea rows="3" class="w-100 p-2" form="reviewForm" required></textarea>
+                                <div class="d-flex flex-column product__details__tab__desc">
+                                   @await Component.InvokeAsync("ProductReview", new { productId = Model.Id, page = 1 })
                                 </div>
                             </div>
                         </div>
@@ -183,25 +174,3 @@
     </section> *@
     <!-- Related Product Section End -->
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stars = document.querySelectorAll('.product__details__rating div');
-        const ratingInput = document.getElementById('rating');
-
-        stars.forEach((star, index) => {
-            star.addEventListener('click', function() {
-                // Update the hidden input value
-                ratingInput.value = index + 1;
-
-                // Reset all stars
-                stars.forEach(s => s.innerHTML = '<i class="fa fa-star-o"></i>');
-
-                // Highlight the clicked star and all previous stars
-                for (let i = 0; i <= index; i++) {
-                    stars[i].innerHTML = '<i class="fa fa-star"></i>';
-                }
-            });
-        });
-    });
-</script>
