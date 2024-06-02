@@ -29,11 +29,13 @@ public class ProductService(IHttpClientFactory httpClientFactory, IConfiguration
         return null;
     }
 
-    public async Task<ICollection<ProductDTO>> GetAll(int page, int pageSize, string? categoryId = null, string? subcategoryId = null)
+    public async Task<(ICollection<ProductDTO> products, int count)> GetAll(int page, int pageSize, string? keyword = null,
+        string? categoryId = null, string? subcategoryId = null)
     {
         var httpClient = httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
-        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/product" + "?page=" + page + "&pageSize=" + pageSize + "&categoryId=" + categoryId + "&subcategoryId=" + subcategoryId);
+        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/product" + 
+            "?page=" + page + "&pageSize=" + pageSize + "&keyword=" + keyword + "&categoryId=" + categoryId + "&subcategoryId=" + subcategoryId);
 
         if (httpResponseMessage.IsSuccessStatusCode)
         {
@@ -45,9 +47,9 @@ public class ProductService(IHttpClientFactory httpClientFactory, IConfiguration
 
             if (response != null && response.Products != null)
             {
-                return response.Products;
+                return (response.Products, response.PagesCount);
             }
         }
-        return [];
+        return ([], 0);
     }
 }

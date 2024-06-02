@@ -5,9 +5,13 @@ namespace Cornershop.Presentation.Controllers;
 
 public class ProductController(IProductService productService) : Controller
 {
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string? categoryId = null, string? subcategoryId = null)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string? keyword = null, string? categoryId = null, string? subcategoryId = null)
     {
-        var products = await productService.GetAll(page, pageSize, categoryId, subcategoryId);
+        var (products, count) = await productService.GetAll(page, pageSize, keyword, categoryId, subcategoryId);
+        ViewData["keyword"] = keyword;
+        ViewData["pagesCount"] = count;
+        ViewData["categoryId"] = categoryId;
+        ViewData["subcategoryId"] = subcategoryId;
         return View(products);
     }
 

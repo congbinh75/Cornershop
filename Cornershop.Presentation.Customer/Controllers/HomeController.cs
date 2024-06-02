@@ -9,7 +9,7 @@ public class HomeController(IProductService productService) : Controller
 {
     public async Task<IActionResult> Index()
     {
-        var products = await productService.GetAll(1, 10);
+        var (products, count) = await productService.GetAll(1, 10);
         return View(products);
     }
 
