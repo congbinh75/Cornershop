@@ -33,7 +33,7 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
         }
         else
         {
-            users = await dbContext.Users.Where(u => u.Role == (int)Enums.Role.Customer).Skip((page - 1) * pageSize).Take(pageSize)
+            users = await dbContext.Users.Skip((page - 1) * pageSize).Take(pageSize)
                 .OrderByDescending(a => a.CreatedOn).ToListAsync();
             count = dbContext.Users.Count();
         }

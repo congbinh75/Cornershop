@@ -176,7 +176,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </span>
                   <span>Orders</span>
                 </Link>
-              </li>
+                </li>*/}
 
               <li>
                 <Link
@@ -191,7 +191,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </span>
                   <span>Users</span>
                 </Link>
-              </li> */}
+              </li> 
             </ul>
           </div>
         </nav>
