@@ -23,6 +23,7 @@
         public const string ERR_TRANSACTION_NOT_FOUND = "ERR_TRANSACTION_NOT_FOUND";
         public const string ERR_PRODUCT_IMAGE_NOT_FOUND = "ERR_PRODUCT_IMAGE_NOT_FOUND";
         public const string ERR_CART_NOT_FOUND = "ERR_CART_NOT_FOUND";
+        public const string ERR_CART_DETAIL_NOT_FOUND = "ERR_CART_DETAIL_NOT_FOUND";
         public const string ERR_USER_NOT_FOUND = "ERR_USER_NOT_FOUND";
         public const string ERR_INVALID_CREDENTIALS = "ERR_INVALID_CREDENTIALS";
         public const string ERR_INVALID_INPUT_DATA = "ERR_INVALID_INPUT_DATA";

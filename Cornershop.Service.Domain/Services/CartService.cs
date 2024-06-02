@@ -1,29 +1,67 @@
+using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
+using Cornershop.Service.Domain.Mappers;
 using Cornershop.Service.Infrastructure.Contexts;
+using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services;
 
-public class CartService : ICartService
+public class CartService(IDbContextFactory<CornershopDbContext> dbContextFactory) : ICartService
 {
-    public Task<CartDTO?> AddItem(string userId, string productId, int quantity)
+    public async Task<Result<CartDTO?, string?>> GetByUserId(string userId)
     {
-        throw new NotImplementedException();
+        using var dbContext = await dbContextFactory.CreateDbContextAsync();
+        var cart = await dbContext.Carts.FirstOrDefaultAsync(c => c.User.Id == userId);
+        if (cart == null) return Constants.ERR_CART_NOT_FOUND;
+        return cart.Map();
     }
 
-    public Task<CartDTO?> GetByUserId(string userId)
+    public async Task<Result<CartDTO?, string?>> AddItem(string userId, string productId, int quantity)
     {
-        throw new NotImplementedException();
+        using var dbContext = await dbContextFactory.CreateDbContextAsync();
+        var cart = await dbContext.Carts.Where(c => c.User.Id == userId).Include(c => c.CartDetails).FirstOrDefaultAsync();
+        if (cart == null) return Constants.ERR_CART_NOT_FOUND;
+        var existingCartDetail = cart.CartDetails.FirstOrDefault(c => c.Product.Id == productId);
+        if (existingCartDetail == null) 
+        {
+            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
+            cart.CartDetails.Add(new CartDetail 
+            {
+                Cart = cart,
+                CartId = userId,
+                Quantity = quantity,
+                Product = product,
+                ProductId = product.Id,
+                AddedOn = DateTime.UtcNow
+            });
+        }
+        else
+        {
+            existingCartDetail.Quantity += quantity;
+        }
+        await dbContext.SaveChangesAsync();
+        return cart.Map();
     }
 
-    public Task<bool> RemoveAll(string userId)
+    public async Task<Result<CartDTO?, string?>> RemoveItem(string userId, string productId, int quantity)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> RemoveItem(string userId, string productId)
-    {
-        throw new NotImplementedException();
+        using var dbContext = await dbContextFactory.CreateDbContextAsync();
+        var cart = await dbContext.Carts.Where(c => c.User.Id == userId).Include(c => c.CartDetails).FirstOrDefaultAsync();
+        if (cart == null) return Constants.ERR_CART_NOT_FOUND;
+        var existingCartDetail = cart.CartDetails.FirstOrDefault(c => c.Product.Id == productId);
+        if (existingCartDetail == null) return Constants.ERR_CART_DETAIL_NOT_FOUND;
+        if (existingCartDetail.Quantity > quantity)
+        {
+            existingCartDetail.Quantity -= quantity;
+        }
+        else
+        {
+            dbContext.CartDetails.Remove(existingCartDetail);
+        }
+        await dbContext.SaveChangesAsync();
+        return cart.Map();
     }
 }

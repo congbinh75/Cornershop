@@ -173,4 +173,8 @@
     <value>Không tìm thấy thể loại con</value>
     <comment/>
   </data>
+  <data name="ERR_CART_DETAIL_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy sản phẩm trong giỏ hàng</value>
+    <comment/>
+  </data>
 </root>
