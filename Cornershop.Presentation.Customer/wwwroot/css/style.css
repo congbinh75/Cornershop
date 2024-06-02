@@ -203,6 +203,10 @@ ol {
 	font-weight: 700;
 }
 
+.text-small {
+	font-size: 0.5rem;
+}
+
 /* buttons */
 
 .primary-btn {
@@ -632,7 +636,7 @@ ol {
 	background: #7fad39;
 	position: relative;
 	cursor: pointer;
-	padding: 0.7rem;
+	padding: 0.7rem 2rem 0.7rem 2rem;
 }
 
 .hero__categories__all i {
@@ -647,7 +651,7 @@ ol {
 	color: #ffffff;
 }
 
-.hero__categories__all:after {
+/* .hero__categories__all:after {
 	position: absolute;
 	right: 18px;
 	top: 9px;
@@ -655,11 +659,11 @@ ol {
 	font-family: "ElegantIcons";
 	font-size: 18px;
 	color: #ffffff;
-}
+} */
 
 .hero__categories ul {
 	border: 1px solid #ebebeb;
-	padding: 1rem;
+	padding: 1rem 2rem;
 }
 
 .hero__categories ul li {
@@ -676,6 +680,7 @@ ol {
 .hero__search {
 	overflow: hidden;
 	margin-bottom: 30px;
+	width: 100%;
 }
 
 .hero__search__form {
@@ -1092,7 +1097,7 @@ ol {
 }
 
 .sidebar__item ul li a {
-	font-size: 16px;
+	font-size: 0.9rem;
 	color: #1c1c1c;
 	line-height: 39px;
 	display: block;

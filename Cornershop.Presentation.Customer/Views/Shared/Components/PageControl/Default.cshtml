@@ -1,0 +1,13 @@
+<div class="product__pagination">
+    @if (ViewData["pagesCount"] != null)
+    {
+        <div class="product__pagination">
+            @for (int i = 1; i <= (int)ViewData["pagesCount"]; i++)
+            {
+                var urlParams = new RouteValueDictionary(ViewContext.RouteData.Values);
+                urlParams["page"] = i;
+                <a href="@Url.Action(null, urlParams)">@i</a>
+            }
+        </div>
+    }
+</div>
