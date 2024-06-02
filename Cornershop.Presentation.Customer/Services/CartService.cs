@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Cornershop.Service.Domain.Interfaces;
+using Cornershop.Presentation.Customer.Interfaces;
 using Cornershop.Shared.DTOs;
 using Cornershop.Shared.Requests;
 using Cornershop.Shared.Responses;

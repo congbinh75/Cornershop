@@ -1,4 +1,4 @@
-using Cornershop.Service.Domain.Interfaces;
+using Cornershop.Presentation.Customer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Controllers;

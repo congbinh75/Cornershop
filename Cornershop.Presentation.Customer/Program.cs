@@ -1,5 +1,5 @@
 using System.Globalization;
-using Cornershop.Presentation.Customer.Intefaces;
+using Cornershop.Presentation.Customer.Interfaces;
 using Cornershop.Presentation.Customer.Services;
 using Microsoft.AspNetCore.Localization;
 
@@ -14,6 +14,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();

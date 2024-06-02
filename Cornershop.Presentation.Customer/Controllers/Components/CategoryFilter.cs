@@ -1,4 +1,4 @@
-using Cornershop.Presentation.Customer.Intefaces;
+using Cornershop.Presentation.Customer.Interfaces;
 using Cornershop.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

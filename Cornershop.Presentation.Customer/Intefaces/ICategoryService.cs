@@ -1,6 +1,6 @@
 using Cornershop.Shared.DTOs;
 
-namespace Cornershop.Presentation.Customer.Intefaces;
+namespace Cornershop.Presentation.Customer.Interfaces;
 
 public interface ICategoryService
 {

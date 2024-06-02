@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Cornershop.Presentation.Models;
-using Cornershop.Presentation.Customer.Intefaces;
+using Cornershop.Presentation.Customer.Interfaces;
 
 namespace Cornershop.Presentation.Controllers;
 

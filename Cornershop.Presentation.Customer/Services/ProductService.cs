@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Cornershop.Presentation.Customer.Intefaces;
+using Cornershop.Presentation.Customer.Interfaces;
 using Cornershop.Shared.DTOs;
 using Cornershop.Shared.Requests;
 
