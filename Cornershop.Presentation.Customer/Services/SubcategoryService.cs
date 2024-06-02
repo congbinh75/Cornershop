@@ -12,8 +12,26 @@ public class SubcategoryService(IHttpClientFactory httpClientFactory, IConfigura
         throw new NotImplementedException();
     }
 
-    public Task<ICollection<SubcategoryDTO>> GetAllByCategory(string categoryId, int page, int pageSize)
+    public async Task<ICollection<SubcategoryDTO>> GetAllByCategory(string categoryId, int page, int pageSize)
     {
-        throw new NotImplementedException();
+        var httpClient = httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
+        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/subcategory" + "?page=" + page + "&pageSize=" + pageSize 
+            + "&categoryId=" + categoryId);
+
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            var data = await httpResponseMessage.Content.ReadAsStringAsync();
+            var response = JsonSerializer.Deserialize<GetAllSubcategoryResponse>(data, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            if (response != null && response.Subcategories != null)
+            {
+                return response.Subcategories;
+            }
+        }
+        return [];
     }
 }

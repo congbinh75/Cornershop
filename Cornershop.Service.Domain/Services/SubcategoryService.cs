@@ -24,20 +24,13 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
     public async Task<(ICollection<SubcategoryDTO> subcategories, int count)> GetAll(int page, int pageSize, string? categoryId = null)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        List<Subcategory> subcategories = [];
-        int count = 0;
-        if (string.IsNullOrEmpty(categoryId))
-        {
-            subcategories = await dbContext.Subcategories.Where(s => s.Category.Id == categoryId)
-                .Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
-            count = dbContext.Subcategories.Where(s => s.Category.Id == categoryId).Count();
-        }
-        else
-        {
-            subcategories = await dbContext.Subcategories.Skip((page - 1) * pageSize).Take(pageSize)
-                .OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
-            count = dbContext.Subcategories.Count();
-        }
+        IQueryable<Subcategory> query = dbContext.Subcategories;
+        if (!string.IsNullOrEmpty(categoryId)) query = query.Where(c => c.Category.Id == categoryId);
+
+        var subcategories = await query.Skip((page - 1) * pageSize).Take(pageSize)
+            .OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
+        var count = query.Count();
+
         return (subcategories.ConvertAll(SubcategoryMapper.Map), count);
     }
 
