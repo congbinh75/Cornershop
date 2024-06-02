@@ -5,7 +5,6 @@ using Cornershop.Presentation.Customer.Intefaces;
 using Cornershop.Shared.DTOs;
 using Cornershop.Shared.Requests;
 using Cornershop.Shared.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Customer.Services;
 
