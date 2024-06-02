@@ -104,7 +104,7 @@ const NewSubcategory = () => {
                 setCategory(value);
                 setFormData((prevState) => ({
                   ...prevState,
-                  categoryId: value.id,
+                  categoryId: value?.id,
                 }));
               }}
               onClose={() => setQuery("")}
@@ -126,7 +126,7 @@ const NewSubcategory = () => {
               <ComboboxOptions anchor="bottom">
                 {filteredCategories?.map((category: Category) => (
                   <ComboboxOption
-                    key={category.id}
+                    key={category?.id}
                     value={category}
                     className="w-[var(--input-width)] [--anchor-gap:var(--spacing-1)] cursor-pointer bg-slate-100 data-[focus]:bg-slate-200 dark:bg-slate-800 dark:data-[focus]:bg-slate-700"
                   >
