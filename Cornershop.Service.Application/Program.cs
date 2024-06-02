@@ -22,6 +22,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IReviewService, ReviewSerivce>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddTransient<ITokenInfoProvider, TokenInfoProvider>();

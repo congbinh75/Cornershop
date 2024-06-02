@@ -177,4 +177,8 @@
     <value>Product in cart not found</value>
     <comment/>
   </data>
+  <data name="ERR_REVIEW_FOR_PRODUCT_BY_USER_EXISTED" xml:space="preserve">
+    <value>Review for this product by current user is already existed</value>
+    <comment/>
+  </data>
 </root>

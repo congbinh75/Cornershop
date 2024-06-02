@@ -19,6 +19,7 @@
         public const string ERR_AUTHOR_NOT_FOUND = "ERR_AUTHOR_NOT_FOUND";
         public const string ERR_PUBLISHER_NOT_FOUND = "ERR_PUBLISHER_NOT_FOUND";
         public const string ERR_REVIEW_NOT_FOUND = "ERR_REVIEW_NOT_FOUND";
+        public const string ERR_REVIEW_FOR_PRODUCT_BY_USER_EXISTED = "ERR_REVIEW_FOR_PRODUCT_BY_USER_EXISTED";
         public const string ERR_ORDER_NOT_FOUND = "ERR_ORDER_NOT_FOUND";
         public const string ERR_TRANSACTION_NOT_FOUND = "ERR_TRANSACTION_NOT_FOUND";
         public const string ERR_PRODUCT_IMAGE_NOT_FOUND = "ERR_PRODUCT_IMAGE_NOT_FOUND";

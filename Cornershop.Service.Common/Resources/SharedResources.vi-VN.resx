@@ -177,4 +177,8 @@
     <value>Không tìm thấy sản phẩm trong giỏ hàng</value>
     <comment/>
   </data>
+  <data name="ERR_REVIEW_FOR_PRODUCT_BY_USER_EXISTED" xml:space="preserve">
+    <value>Người dùng hiện tại đã từng đánh giá sản phẩm này</value>
+    <comment/>
+  </data>
 </root>

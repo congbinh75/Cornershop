@@ -10,7 +10,6 @@ public static class ReviewMapper
         return new ReviewDTO
         {
             Id = review.Id,
-            Product = review.Product.Map(),
             User = review.User.Map(),
             Rating = review.Rating,
             Comment = review.Comment,
