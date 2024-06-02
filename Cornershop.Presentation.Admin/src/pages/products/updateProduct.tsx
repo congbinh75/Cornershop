@@ -12,6 +12,7 @@ import {
 } from "@headlessui/react";
 import { UploadImage } from "../../utils/firebase";
 import Loader from "../../components/loader";
+import { getDateAndTimeFromString } from "../../utils/functions";
 
 interface SimpleEntity {
   id: string;
@@ -934,6 +935,32 @@ const UpdateProduct = () => {
                   <i className="fa-solid fa-chevron-down"></i>
                 </span>
               </div>
+            </div>
+          </div>
+
+          <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
+            <div className="mb-4">
+              <label className="mb-2 block text-black dark:text-white">
+                Created on
+              </label>
+              <input
+                type="text"
+                className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                value={getDateAndTimeFromString(productData?.product?.createdOn)}
+                disabled
+              ></input>
+            </div>
+
+            <div className="mb-4">
+              <label className="mb-2 block text-black dark:text-white">
+                Updated On
+              </label>
+              <input
+                type="text"
+                className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                value={getDateAndTimeFromString(productData?.product?.updatedOn)}
+                disabled
+              ></input>
             </div>
           </div>
 
