@@ -6,6 +6,7 @@ using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Domain.Services;
 using Cornershop.Service.Infrastructure.Contexts;
+using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -18,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();

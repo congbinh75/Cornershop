@@ -1,0 +1,13 @@
+@model Cornershop.Presentation.Customer.Models.AddToCartModel
+
+<form asp-action="AddItem" asp-controller="Cart" method="get">
+    <div class="product__details__quantity">
+        <div class="quantity">
+            <div class="pro-qty">
+                <input asp-for="ProductId" class="d-none" type="text" value="@Model.ProductId" />
+                <input asp-for="Quantity" id="quantity" type="text" value="1">
+            </div>
+        </div>
+    </div>
+    <input type="submit" class="primary-btn" value="ADD TO CART" />
+</form>

@@ -1948,17 +1948,17 @@ ol {
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__price {
-	font-size: 18px;
+	font-size: 1rem;
 	color: #1c1c1c;
 	font-weight: 700;
-	width: 100px;
+	width: 8rem;
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__total {
-	font-size: 18px;
+	font-size: 1rem;
 	color: #1c1c1c;
 	font-weight: 700;
-	width: 110px;
+	width: 8rem;
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__item__close {

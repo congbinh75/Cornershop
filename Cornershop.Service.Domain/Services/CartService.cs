@@ -13,7 +13,9 @@ public class CartService(IDbContextFactory<CornershopDbContext> dbContextFactory
     public async Task<Result<CartDTO?, string?>> GetByUserId(string userId)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var cart = await dbContext.Carts.FirstOrDefaultAsync(c => c.User.Id == userId);
+        var cart = await dbContext.Carts.Where(c => c.User.Id == userId).Include(c => c.CartDetails)
+            .ThenInclude(c => c.Product)
+            .ThenInclude(p => p.ProductImages).FirstOrDefaultAsync();
         if (cart == null) return Constants.ERR_CART_NOT_FOUND;
         return cart.Map();
     }
