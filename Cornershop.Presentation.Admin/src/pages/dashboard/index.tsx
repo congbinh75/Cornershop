@@ -1,9 +1,7 @@
-import Card from './card';
-
 const Dashboard = () => {
   return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <Card title="Total Orders" total="1000">
+        {/* <Card title="Total Orders" total="1000">
           <i className="fa-solid fa-cart-shopping"></i>
         </Card>
         <Card title="Total Revenue" total="4500">
@@ -14,7 +12,7 @@ const Dashboard = () => {
         </Card>
         <Card title="Total Customers" total="3456">
           <i className="fa-solid fa-user"></i>
-        </Card>
+        </Card> */}
       </div>
 
   );
