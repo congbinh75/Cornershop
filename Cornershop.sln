@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Presentation.Cus
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Shared", "Cornershop.Shared\Cornershop.Shared.csproj", "{9299E966-3F2E-4D26-9A0A-25FD8B71CCF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cornershop.Tests", "Cornershop.Tests\Cornershop.Tests.csproj", "{72E6B0E5-A3D3-43BF-8CDD-4898992EC3F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{9299E966-3F2E-4D26-9A0A-25FD8B71CCF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9299E966-3F2E-4D26-9A0A-25FD8B71CCF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9299E966-3F2E-4D26-9A0A-25FD8B71CCF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72E6B0E5-A3D3-43BF-8CDD-4898992EC3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72E6B0E5-A3D3-43BF-8CDD-4898992EC3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72E6B0E5-A3D3-43BF-8CDD-4898992EC3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72E6B0E5-A3D3-43BF-8CDD-4898992EC3F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
