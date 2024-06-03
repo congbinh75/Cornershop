@@ -1,4 +1,5 @@
 using Cornershop.Presentation.Customer.Interfaces;
+using Cornershop.Presentation.Customer.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Controllers;
@@ -11,9 +12,9 @@ public class CartController(ICartService cartService) : Controller
         return View(cart);
     }
 
-    public async Task<IActionResult> AddItem(string productId, int quantity)
+    public async Task<IActionResult> AddItem(AddToCartModel model)
     {
-        var cart = await cartService.AddItem(productId, quantity);
+        var cart = await cartService.AddItem(model.ProductId, model.Quantity);
         return RedirectToAction("Index", "Cart", new { cart });
     }
 

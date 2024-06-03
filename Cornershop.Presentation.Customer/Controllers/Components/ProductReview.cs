@@ -1,20 +1,9 @@
 using Cornershop.Presentation.Customer.Interfaces;
+using Cornershop.Presentation.Customer.Models;
 using Cornershop.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cornershop.Presentation.Customer.Components;
-
-public class ProductReviewModel
-{
-    public ICollection<ReviewDTO> Reviews { get; set; } = [];
-    public ReviewDTO? CurrentUserReview { get; set; }
-    public int PagesCount { get; set; }
-    public int CurrentPage { get; set; }
-    public string ProductId { get; set; } = "";
-
-    public int NewRating { get; set; }
-    public string NewComment { get; set; } = "";
-}
 
 public class ProductReview(IReviewService reviewService) : ViewComponent
 {

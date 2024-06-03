@@ -1,16 +1,9 @@
 using Cornershop.Presentation.Customer.Interfaces;
+using Cornershop.Presentation.Customer.Models;
 using Cornershop.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Cornershop.Presentation.Customer.Components;
-
-public class CategoryFilterModel : PageModel
-{
-    public ICollection<CategoryDTO> Categories { get; set; } = [];
-
-    public ICollection<SubcategoryDTO> Subcategories { get; set; } = [];
-}
 
 public class CategoryFilter(ICategoryService categoryService, ISubcategoryService subcategoryService) : ViewComponent
 {

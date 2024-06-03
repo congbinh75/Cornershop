@@ -1,4 +1,4 @@
-namespace Cornershop.Presentation.Models;
+namespace Cornershop.Presentation.Customer.Models;
 
 public class ErrorViewModel
 {
