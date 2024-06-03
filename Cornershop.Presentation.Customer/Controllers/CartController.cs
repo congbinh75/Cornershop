@@ -14,12 +14,12 @@ public class CartController(ICartService cartService) : Controller
     public async Task<IActionResult> AddItem(string productId, int quantity)
     {
         var cart = await cartService.AddItem(productId, quantity);
-        return View(cart);
+        return RedirectToAction("Index", "Cart", new { cart });
     }
 
     public async Task<IActionResult> RemoveItem(string productId, int quantity)
     {
         var cart = await cartService.RemoveItem(productId, quantity);
-        return View(cart);
+        return RedirectToAction("Index", "Cart", new { cart });
     }
 }
