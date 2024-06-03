@@ -15,7 +15,7 @@ public class ReviewSerivce(IDbContextFactory<CornershopDbContext> dbContextFacto
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var reviews = await dbContext.Reviews.Where(r => r.Product.Id == productId).Include(r => r.User).ToListAsync();
         var count = dbContext.Reviews.Where(r => r.Product.Id == productId).Count();
-        return (reviews.ConvertAll(ReviewMapper.Map), count);
+        return (reviews.ConvertAll(ReviewMapper.Map)!, count);
     }
 
     public async Task<Result<ReviewDTO?, string?>> GetByProductAndUser(string productId, string userId)

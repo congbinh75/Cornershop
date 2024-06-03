@@ -23,7 +23,7 @@ public class AuthorService(IDbContextFactory<CornershopDbContext> dbContextFacto
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var authors = await dbContext.Authors.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync();
         var count = dbContext.Authors.Count();
-        return (authors.ConvertAll(AuthorMapper.Map), count);
+        return (authors.ConvertAll(AuthorMapper.Map)!, count);
     }
 
     public async Task<Result<AuthorDTO?, string?>> Add(AuthorDTO authorDTO)

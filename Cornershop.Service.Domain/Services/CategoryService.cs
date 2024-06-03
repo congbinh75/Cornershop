@@ -21,9 +21,9 @@ public class CategoryService(IDbContextFactory<CornershopDbContext> dbContextFac
     public async Task<(ICollection<CategoryDTO> categories, int count)> GetAll(int page, int pageSize)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var categories = await dbContext.Categories.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync();
+        var categories = await dbContext.Categories.Skip((page - 1) * pageSize).Take(pageSize).OrderBy(a => a.CreatedOn).ToListAsync();
         var count = dbContext.Categories.Count();
-        return (categories.ConvertAll(CategoryMapper.Map), count);
+        return (categories.ConvertAll(CategoryMapper.Map)!, count);
     }
 
     public async Task<Result<CategoryDTO?, string?>> Add(CategoryDTO categoryDTO)

@@ -65,7 +65,7 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
                     .OrderByDescending(p => p.CreatedOn);
 
         var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-        return (products.ConvertAll(ProductMapper.Map), query.Count());
+        return (products.ConvertAll(ProductMapper.Map)!, query.Count());
     }
 
     public async Task<Result<ProductDTO?, string?>> Add(ProductDTO productDTO)

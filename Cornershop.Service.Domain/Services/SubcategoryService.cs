@@ -28,10 +28,10 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
         if (!string.IsNullOrEmpty(categoryId)) query = query.Where(c => c.Category.Id == categoryId);
 
         var subcategories = await query.Skip((page - 1) * pageSize).Take(pageSize)
-            .OrderByDescending(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
+            .OrderBy(a => a.CreatedOn).Include(s => s.Category).ToListAsync();
         var count = query.Count();
 
-        return (subcategories.ConvertAll(SubcategoryMapper.Map), count);
+        return (subcategories.ConvertAll(SubcategoryMapper.Map)!, count);
     }
 
     public async Task<Result<SubcategoryDTO?, string?>> Add(SubcategoryDTO subcategoryDTO)

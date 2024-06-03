@@ -23,7 +23,7 @@ public class PublisherService(IDbContextFactory<CornershopDbContext> dbContextFa
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var publishers = await dbContext.Publishers.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(a => a.CreatedOn).ToListAsync();
         var count = dbContext.Publishers.Count();
-        return (publishers.ConvertAll(PublisherMapper.Map), count);
+        return (publishers.ConvertAll(PublisherMapper.Map)!, count);
     }
 
     public async Task<Result<PublisherDTO?, string?>> Add(PublisherDTO publisherDTO)

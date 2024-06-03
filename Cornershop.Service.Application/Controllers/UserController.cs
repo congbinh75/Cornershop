@@ -171,7 +171,7 @@ public class UserController(IConfiguration configuration,
                     new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                     new Claim(ClaimTypes.NameIdentifier, result.Value?.Id ?? ""),
                     new Claim(ClaimTypes.Email, result.Value?.Email ?? ""),
-                    new Claim(ClaimTypes.Role, ((Role)result.Value?.Role).ToString())
+                    new Claim(ClaimTypes.Role, ((Role)result.Value?.Role!).ToString())
                 };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? ""));
@@ -247,7 +247,7 @@ public class UserController(IConfiguration configuration,
     [HttpPost]
     [Authorize]
     [Route("logout")]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
         Response.Cookies.Append("AuthCookie", string.Empty, new CookieOptions
         {

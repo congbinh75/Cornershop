@@ -37,7 +37,7 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
                 .OrderByDescending(a => a.CreatedOn).ToListAsync();
             count = dbContext.Users.Count();
         }
-        return (users.ConvertAll(UserMapper.Map), count);
+        return (users.ConvertAll(UserMapper.Map)!, count);
     }
 
     public async Task<Result<UserDTO?, string?>> GetByCredentials(string email, string password)
