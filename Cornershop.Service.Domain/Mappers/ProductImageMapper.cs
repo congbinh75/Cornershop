@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class ProductImageMapper
 {
-    public static ProductImageDTO Map(this ProductImage productImage)
+    public static ProductImageDTO? Map(this ProductImage productImage)
     {
+        if (productImage == null) return null;
         return new ProductImageDTO
         {
             Id = productImage.Id,
@@ -20,19 +21,19 @@ public static class ProductImageMapper
         };
     }
 
-    public static ProductImage Map(this ProductImageDTO productImageDTO)
-    {
-        return new ProductImage
-        {
-            Id = productImageDTO.Id,
-            Product = productImageDTO.Product.Map(),
-            ProductId = productImageDTO.Product.Id,
-            ImageUrl = productImageDTO.ImageUrl,
-            IsMainImage = productImageDTO.IsMainImage,
-            CreatedOn = productImageDTO.CreatedOn,
-            CreatedBy = productImageDTO.CreatedBy?.Map(),
-            UpdatedOn = productImageDTO.UpdatedOn,
-            UpdatedBy = productImageDTO.UpdatedBy?.Map()
-        };
-    }
+    // public static ProductImage Map(this ProductImageDTO productImageDTO)
+    // {
+    //     return new ProductImage
+    //     {
+    //         Id = productImageDTO.Id,
+    //         Product = productImageDTO.Product.Map(),
+    //         ProductId = productImageDTO.Product.Id,
+    //         ImageUrl = productImageDTO.ImageUrl,
+    //         IsMainImage = productImageDTO.IsMainImage,
+    //         CreatedOn = productImageDTO.CreatedOn,
+    //         CreatedBy = productImageDTO.CreatedBy?.Map(),
+    //         UpdatedOn = productImageDTO.UpdatedOn,
+    //         UpdatedBy = productImageDTO.UpdatedBy?.Map()
+    //     };
+    // }
 }

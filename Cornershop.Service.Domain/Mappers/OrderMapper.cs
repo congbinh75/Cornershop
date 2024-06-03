@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class OrderMapper
 {
-    public static OrderDTO Map(this Order order)
+    public static OrderDTO? Map(this Order order)
     {
+        if (order == null) return null;
         return new OrderDTO
         {
             Id = order.Id,
@@ -22,20 +23,20 @@ public static class OrderMapper
         };
     }
 
-    public static Order Map(this OrderDTO orderDTO)
-    {
-        return new Order
-        {
-            Id = orderDTO.Id,
-            User = orderDTO.User.Map(),
-            Code = orderDTO.Code,
-            OrderDetails = orderDTO.OrderDetails.Select(x => x.Map()).ToList(),
-            TotalPrice = orderDTO.TotalPrice,
-            Transactions = orderDTO.Transactions.Select(x => x.Map()).ToList(),
-            CreatedBy = orderDTO.CreatedBy?.Map(),
-            CreatedOn = orderDTO.CreatedOn,
-            UpdatedBy = orderDTO.UpdatedBy.Map(),
-            UpdatedOn = orderDTO.UpdatedOn,
-        };
-    }
+    // public static Order Map(this OrderDTO orderDTO)
+    // {
+    //     return new Order
+    //     {
+    //         Id = orderDTO.Id,
+    //         User = orderDTO.User.Map(),
+    //         Code = orderDTO.Code,
+    //         OrderDetails = orderDTO.OrderDetails.Select(x => x.Map()).ToList(),
+    //         TotalPrice = orderDTO.TotalPrice,
+    //         Transactions = orderDTO.Transactions.Select(x => x.Map()).ToList(),
+    //         CreatedBy = orderDTO.CreatedBy?.Map(),
+    //         CreatedOn = orderDTO.CreatedOn,
+    //         UpdatedBy = orderDTO.UpdatedBy.Map(),
+    //         UpdatedOn = orderDTO.UpdatedOn,
+    //     };
+    // }
 }

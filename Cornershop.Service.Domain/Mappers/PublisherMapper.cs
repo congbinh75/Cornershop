@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class PublisherMapper
 {
-    public static PublisherDTO Map(this Publisher publisher)
+    public static PublisherDTO? Map(this Publisher publisher)
     {
+        if (publisher == null) return null;
         return new PublisherDTO
         {
             Id = publisher.Id,
@@ -19,18 +20,18 @@ public static class PublisherMapper
         };
     }
 
-    public static Publisher Map(this PublisherDTO publisherDTO)
-    {
-        return new Publisher
-        {
-            Id = publisherDTO.Id,
-            Name = publisherDTO.Name,
-            Description = publisherDTO.Description,
-            Products = publisherDTO.Products.Select(x => x.Map()).ToList(),
-            CreatedBy = publisherDTO.CreatedBy.Map(),
-            CreatedOn = publisherDTO.CreatedOn,
-            UpdatedBy = publisherDTO.UpdatedBy.Map(),
-            UpdatedOn = publisherDTO.UpdatedOn,
-        };
-    }
+    // public static Publisher Map(this PublisherDTO publisherDTO)
+    // {
+    //     return new Publisher
+    //     {
+    //         Id = publisherDTO.Id,
+    //         Name = publisherDTO.Name,
+    //         Description = publisherDTO.Description,
+    //         Products = publisherDTO.Products.Select(x => x.Map()).ToList(),
+    //         CreatedBy = publisherDTO.CreatedBy.Map(),
+    //         CreatedOn = publisherDTO.CreatedOn,
+    //         UpdatedBy = publisherDTO.UpdatedBy.Map(),
+    //         UpdatedOn = publisherDTO.UpdatedOn,
+    //     };
+    // }
 }

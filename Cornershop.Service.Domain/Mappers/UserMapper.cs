@@ -5,41 +5,44 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class UserMapper
 {
-    public static UserDTO Map(this User user) =>
-    new()
+    public static UserDTO? Map(this User user)
     {
-        Id = user.Id,
-        Username = user.Username,
-        FirstName = user.FirstName,
-        LastName = user.LastName,
-        Email = user.Email,
-        IsBanned = user.IsBanned,
-        Role = user.Role,
-        CreatedOn = user.CreatedOn,
-        CreatedBy = user.CreatedBy != null ? Map(user.CreatedBy) : null,
-        UpdatedOn = user.UpdatedOn,
-        UpdatedBy = user.UpdatedBy != null ? Map(user.UpdatedBy) : null,
-    };
+        if (user == null) return null;
+        return new UserDTO
+        {
+            Id = user.Id,
+            Username = user.Username,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            IsBanned = user.IsBanned,
+            Role = user.Role,
+            CreatedOn = user.CreatedOn,
+            CreatedBy = user.CreatedBy != null ? Map(user.CreatedBy) : null,
+            UpdatedOn = user.UpdatedOn,
+            UpdatedBy = user.UpdatedBy != null ? Map(user.UpdatedBy) : null,
+        };
+    }
 
-    public static User Map(this UserDTO userDTO) =>
-    new()
-    {
-        Id = userDTO.Id,
-        Username = userDTO.Username,
-        FirstName = userDTO.FirstName,
-        LastName = userDTO.LastName,
-        Email = userDTO.Email,
-        IsBanned = userDTO.IsBanned,
-        Role = userDTO.Role,
-        IsEmailConfirmed = userDTO.IsEmailConfirmed,
-        Password = "",
-        Salt = [],
-        Reviews = userDTO.Reviews.Select(x => x.Map()).ToList(),
-        Cart = userDTO.Cart.Map(),
-        Orders = userDTO.Orders.Select(x => x.Map()).ToList(),
-        CreatedOn = userDTO.CreatedOn,
-        CreatedBy = Map(userDTO.CreatedBy),
-        UpdatedOn = userDTO.UpdatedOn,
-        UpdatedBy = Map(userDTO.UpdatedBy)
-    };
+    // public static User Map(this UserDTO userDTO) =>
+    // new()
+    // {
+    //     Id = userDTO.Id,
+    //     Username = userDTO.Username,
+    //     FirstName = userDTO.FirstName,
+    //     LastName = userDTO.LastName,
+    //     Email = userDTO.Email,
+    //     IsBanned = userDTO.IsBanned,
+    //     Role = userDTO.Role,
+    //     IsEmailConfirmed = userDTO.IsEmailConfirmed,
+    //     Password = "",
+    //     Salt = [],
+    //     Reviews = userDTO.Reviews.Select(x => x.Map()).ToList(),
+    //     Cart = userDTO.Cart.Map(),
+    //     Orders = userDTO.Orders.Select(x => x.Map()).ToList(),
+    //     CreatedOn = userDTO.CreatedOn,
+    //     CreatedBy = Map(userDTO.CreatedBy),
+    //     UpdatedOn = userDTO.UpdatedOn,
+    //     UpdatedBy = Map(userDTO.UpdatedBy)
+    // };
 }

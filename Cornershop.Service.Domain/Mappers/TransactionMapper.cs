@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class TransactionMapper
 {
-    public static TransactionDTO Map(this Transaction transaction)
+    public static TransactionDTO? Map(this Transaction transaction)
     {
+        if (transaction == null) return null;
         return new TransactionDTO
         {
             Id = transaction.Id,
@@ -19,17 +20,17 @@ public static class TransactionMapper
         };
     }
 
-    public static Transaction Map(this TransactionDTO transactionDTO)
-    {
-        return new Transaction
-        {
-            Id = transactionDTO.Id,
-            Order = transactionDTO.Order.Map(),
-            Amount = transactionDTO.Amount,
-            CreatedBy = transactionDTO.CreatedBy.Map(),
-            CreatedOn = transactionDTO.CreatedOn,
-            UpdatedBy = transactionDTO.UpdatedBy.Map(),
-            UpdatedOn = transactionDTO.UpdatedOn,
-        };
-    }
+    // public static Transaction Map(this TransactionDTO transactionDTO)
+    // {
+    //     return new Transaction
+    //     {
+    //         Id = transactionDTO.Id,
+    //         Order = transactionDTO.Order.Map(),
+    //         Amount = transactionDTO.Amount,
+    //         CreatedBy = transactionDTO.CreatedBy.Map(),
+    //         CreatedOn = transactionDTO.CreatedOn,
+    //         UpdatedBy = transactionDTO.UpdatedBy.Map(),
+    //         UpdatedOn = transactionDTO.UpdatedOn,
+    //     };
+    // }
 }

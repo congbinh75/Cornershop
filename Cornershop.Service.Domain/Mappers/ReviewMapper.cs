@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class ReviewMapper
 {
-    public static ReviewDTO Map(this Review review)
+    public static ReviewDTO? Map(this Review review)
     {
+        if (review == null) return null;
         return new ReviewDTO
         {
             Id = review.Id,
@@ -20,19 +21,19 @@ public static class ReviewMapper
         };
     }
 
-    public static Review Map(this ReviewDTO reviewDTO)
-    {
-        return new Review
-        {
-            Id = reviewDTO.Id,
-            Product = reviewDTO.Product.Map(),
-            User = reviewDTO.User.Map(),
-            Rating = reviewDTO.Rating,
-            Comment = reviewDTO.Comment,
-            CreatedOn = reviewDTO.CreatedOn,
-            CreatedBy = reviewDTO.CreatedBy.Map(),
-            UpdatedOn = reviewDTO.UpdatedOn,
-            UpdatedBy = reviewDTO.UpdatedBy.Map()
-        };
-    }
+    // public static Review Map(this ReviewDTO reviewDTO)
+    // {
+    //     return new Review
+    //     {
+    //         Id = reviewDTO.Id,
+    //         Product = reviewDTO.Product.Map(),
+    //         User = reviewDTO.User.Map(),
+    //         Rating = reviewDTO.Rating,
+    //         Comment = reviewDTO.Comment,
+    //         CreatedOn = reviewDTO.CreatedOn,
+    //         CreatedBy = reviewDTO.CreatedBy.Map(),
+    //         UpdatedOn = reviewDTO.UpdatedOn,
+    //         UpdatedBy = reviewDTO.UpdatedBy.Map()
+    //     };
+    // }
 }

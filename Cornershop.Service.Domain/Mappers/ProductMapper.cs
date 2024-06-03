@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class ProductMapper
 {
-    public static ProductDTO Map(this Product product)
+    public static ProductDTO? Map(this Product product)
     {
+        if (product == null) return null;
         return new ProductDTO
         {
             Id = product.Id,
@@ -36,36 +37,36 @@ public static class ProductMapper
         };
     }
 
-    public static Product Map(this ProductDTO productDTO)
-    {
-        var ratingVoteDTOs = productDTO.Reviews.Select(ReviewMapper.Map).ToList();
-        return new Product
-        {
-            Id = productDTO.Id,
-            Name = productDTO.Name,
-            Code = productDTO.Code,
-            Description = productDTO.Description,
-            Subcategory = productDTO.Subcategory.Map(),
-            SubcategoryId = productDTO.Subcategory.Id,
-            Price = productDTO.Price,
-            OriginalPrice = productDTO.OriginalPrice,
-            Width = productDTO.Width,
-            Length = productDTO.Length,
-            Height = productDTO.Height,
-            Pages = productDTO.Pages,
-            Format = productDTO.Format,
-            Stock = productDTO.Stock,
-            PublishedYear = productDTO.PublishedYear,
-            ProductImages = productDTO.ProductImages.Select(x => x.Map()).ToList(),
-            Rating = productDTO.Rating,
-            Reviews = productDTO.Reviews.Select(x => x.Map()).ToList(),
-            Author = productDTO.Author.Map(),
-            Publisher = productDTO.Publisher.Map(),
-            IsVisible = productDTO.IsVisible,
-            CreatedOn = productDTO.CreatedOn,
-            CreatedBy = productDTO.CreatedBy.Map(),
-            UpdatedOn = productDTO.UpdatedOn,
-            UpdatedBy = productDTO.UpdatedBy.Map()
-        };
-    }
+    // public static Product Map(this ProductDTO productDTO)
+    // {
+    //     var ratingVoteDTOs = productDTO.Reviews.Select(ReviewMapper.Map).ToList();
+    //     return new Product
+    //     {
+    //         Id = productDTO.Id,
+    //         Name = productDTO.Name,
+    //         Code = productDTO.Code,
+    //         Description = productDTO.Description,
+    //         Subcategory = productDTO.Subcategory.Map(),
+    //         SubcategoryId = productDTO.Subcategory.Id,
+    //         Price = productDTO.Price,
+    //         OriginalPrice = productDTO.OriginalPrice,
+    //         Width = productDTO.Width,
+    //         Length = productDTO.Length,
+    //         Height = productDTO.Height,
+    //         Pages = productDTO.Pages,
+    //         Format = productDTO.Format,
+    //         Stock = productDTO.Stock,
+    //         PublishedYear = productDTO.PublishedYear,
+    //         ProductImages = productDTO.ProductImages.Select(x => x.Map()).ToList(),
+    //         Rating = productDTO.Rating,
+    //         Reviews = productDTO.Reviews.Select(x => x.Map()).ToList(),
+    //         Author = productDTO.Author.Map(),
+    //         Publisher = productDTO.Publisher.Map(),
+    //         IsVisible = productDTO.IsVisible,
+    //         CreatedOn = productDTO.CreatedOn,
+    //         CreatedBy = productDTO.CreatedBy.Map(),
+    //         UpdatedOn = productDTO.UpdatedOn,
+    //         UpdatedBy = productDTO.UpdatedBy.Map()
+    //     };
+    // }
 }

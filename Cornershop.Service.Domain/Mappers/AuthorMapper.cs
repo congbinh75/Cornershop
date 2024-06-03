@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class AuthorMapper
 {
-    public static AuthorDTO Map(this Author author)
+    public static AuthorDTO? Map(this Author author)
     {
+        if (author == null) return null;
         return new AuthorDTO
         {
             Id = author.Id,
@@ -19,18 +20,18 @@ public static class AuthorMapper
         };
     }
 
-    public static Author Map(this AuthorDTO authorDTO)
-    {
-        return new Author
-        {
-            Id = authorDTO.Id,
-            Name = authorDTO.Name,
-            Description = authorDTO.Description,
-            Products = authorDTO.Products.Select(x => x.Map()).ToList(),
-            CreatedBy = authorDTO.CreatedBy?.Map(),
-            CreatedOn = authorDTO.CreatedOn,
-            UpdatedBy = authorDTO.UpdatedBy?.Map(),
-            UpdatedOn = authorDTO.UpdatedOn
-        };
-    }
+    // public static Author Map(this AuthorDTO authorDTO)
+    // {
+    //     return new Author
+    //     {
+    //         Id = authorDTO.Id,
+    //         Name = authorDTO.Name,
+    //         Description = authorDTO.Description,
+    //         Products = authorDTO.Products.Select(x => x.Map()).ToList(),
+    //         CreatedBy = authorDTO.CreatedBy?.Map(),
+    //         CreatedOn = authorDTO.CreatedOn,
+    //         UpdatedBy = authorDTO.UpdatedBy?.Map(),
+    //         UpdatedOn = authorDTO.UpdatedOn
+    //     };
+    // }
 }

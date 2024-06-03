@@ -5,8 +5,9 @@ namespace Cornershop.Service.Domain.Mappers;
 
 public static class SubcategoryMapper
 {
-    public static SubcategoryDTO Map(this Subcategory subcategory)
+    public static SubcategoryDTO? Map(this Subcategory subcategory)
     {
+        if (subcategory == null) return null;
         return new SubcategoryDTO
         {
             Id = subcategory.Id,
@@ -20,18 +21,18 @@ public static class SubcategoryMapper
         };
     }
 
-    public static Subcategory Map(this SubcategoryDTO subcategoryDTO)
-    {
-        return new Subcategory
-        {
-            Id = subcategoryDTO.Id,
-            Name = subcategoryDTO.Name,
-            Description = subcategoryDTO.Description,
-            Category = subcategoryDTO.Category.Map(),
-            CreatedOn = subcategoryDTO.CreatedOn,
-            CreatedBy = subcategoryDTO.CreatedBy.Map(),
-            UpdatedOn = subcategoryDTO.UpdatedOn,
-            UpdatedBy = subcategoryDTO.UpdatedBy.Map()
-        };
-    }
+    // public static Subcategory Map(this SubcategoryDTO subcategoryDTO)
+    // {
+    //     return new Subcategory
+    //     {
+    //         Id = subcategoryDTO.Id,
+    //         Name = subcategoryDTO.Name,
+    //         Description = subcategoryDTO.Description,
+    //         Category = subcategoryDTO.Category.Map(),
+    //         CreatedOn = subcategoryDTO.CreatedOn,
+    //         CreatedBy = subcategoryDTO.CreatedBy.Map(),
+    //         UpdatedOn = subcategoryDTO.UpdatedOn,
+    //         UpdatedBy = subcategoryDTO.UpdatedBy.Map()
+    //     };
+    // }
 }
