@@ -480,7 +480,7 @@ const UpdateProduct = () => {
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Choose category"
                   displayValue={(category: SimpleEntity) => category?.name}
-                  onInput={(event) => setCategoryQuery(event)}
+                  onInput={(event) => setCategoryQuery((event.target as HTMLInputElement).value)}
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
@@ -530,7 +530,7 @@ const UpdateProduct = () => {
                     subcategory?.name
                   }
                   onInput={(event) =>
-                    setCategoryQuery((event.target as HTMLInputElement).value)
+                    setSubcategoryQuery((event.target as HTMLInputElement).value)
                   }
                   required
                 />

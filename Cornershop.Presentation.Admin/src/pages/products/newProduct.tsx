@@ -74,16 +74,16 @@ const NewProduct = () => {
     isVisible: false,
   });
 
-  const [categoryQuery, setCategoryQuery] = useState("");
+  const [categoryQuery, setCategoryQuery] = useState<string>("");
   const [filteredCategories, setFilteredCategories] = useState([]);
 
-  const [subcategoryQuery, setSubcategoryQuery] = useState("");
+  const [subcategoryQuery, setSubcategoryQuery] = useState<string>("");
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
 
-  const [publisherQuery, setPublisherQuery] = useState("");
+  const [publisherQuery, setPublisherQuery] = useState<string>("");
   const [filteredPublishers, setFilteredPublishers] = useState([]);
 
-  const [authorQuery, setAuthorQuery] = useState("");
+  const [authorQuery, setAuthorQuery] = useState<string>("");
   const [filteredAuthors, setFilteredAuthors] = useState([]);
 
   const page = 1;
@@ -138,16 +138,24 @@ const NewProduct = () => {
       const errorMessage = error?.response?.data?.message || error?.message;
       toast.error(errorMessage);
     }
-  }
+  };
 
   useEffect(() => {
     if (mainImage && formData.mainImageUrl) {
-      if ((images.length > 0 && formData.otherImagesUrls.length == images.length) || images.length <= 0) {
+      if (
+        (images.length > 0 &&
+          formData.otherImagesUrls.length == images.length) ||
+        images.length <= 0
+      ) {
         onSubmit();
       }
     }
-
-  }, [formData.mainImageUrl, formData.otherImagesUrls, images.length, mainImage]);
+  }, [
+    formData.mainImageUrl,
+    formData.otherImagesUrls,
+    images.length,
+    mainImage,
+  ]);
 
   const { data: categoryData, error: categoryError } = useGet(
     "/category" + "?page=" + page + "&pageSize=" + pageSize
@@ -209,7 +217,9 @@ const NewProduct = () => {
 
   useEffect(() => {
     const filteredData = authorData?.authors.filter((author: SimpleEntity) => {
-      return author.name.toLowerCase().includes(authorQuery.toLowerCase());
+      return author.name
+        .toLowerCase()
+        .includes(authorQuery.toLowerCase());
     });
     setFilteredAuthors(filteredData);
   }, [authorData?.authors, authorQuery]);
@@ -232,8 +242,8 @@ const NewProduct = () => {
   }, [publisherData?.publishers, publisherQuery]);
 
   return loading ? (
-      <Loader />
-    ) : (
+    <Loader />
+  ) : (
     <div className="w-full lg:w-2/3 mx-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b border-stroke py-4 px-6 dark:border-strokedark">
         <h3 className="font-medium text-black dark:text-white">
@@ -288,7 +298,7 @@ const NewProduct = () => {
                   className="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Choose category"
                   displayValue={(category: SimpleEntity) => category?.name}
-                  onInput={(event) => setCategoryQuery(event)}
+                  onInput={(event) => setCategoryQuery((event.target as HTMLInputElement).value)}
                   required
                 />
                 <ComboboxButton className="absolute inset-y-0 right-0 px-4">
@@ -338,7 +348,7 @@ const NewProduct = () => {
                     subcategory?.name
                   }
                   onInput={(event) =>
-                    setCategoryQuery((event.target as HTMLInputElement).value)
+                    setSubcategoryQuery((event.target as HTMLInputElement).value)
                   }
                   required
                 />
@@ -661,7 +671,7 @@ const NewProduct = () => {
                   onChange={(e) => {
                     setFormData((prevState) => ({
                       ...prevState,
-                      isVisible: (e.target.value === 'true'),
+                      isVisible: e.target.value === "true",
                     }));
                   }}
                   className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
