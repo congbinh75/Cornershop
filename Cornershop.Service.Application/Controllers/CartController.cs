@@ -64,7 +64,7 @@ ITokenInfoProvider tokenInfoProvider) : ControllerBase
     {
         string? userId = tokenInfoProvider.Id;
         if (userId == null) return Unauthorized();
-        var result = await cartService.AddItem(userId, request.ProductId, request.Quantity);
+        var result = await cartService.RemoveItem(userId, request.ProductId, request.Quantity);
         if (result.Success)
         {
             return Ok(new RemoveItemCartResponse { Cart = result.Value });

@@ -25,7 +25,8 @@ public class CartService(IDbContextFactory<CornershopDbContext> dbContextFactory
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
         var cart = await dbContext.Carts.Where(c => c.User.Id == userId).Include(c => c.CartDetails).FirstOrDefaultAsync();
         if (cart == null) return Constants.ERR_CART_NOT_FOUND;
-        var existingCartDetail = cart.CartDetails.FirstOrDefault(c => c.Product.Id == productId);
+        var existingCartDetail = await dbContext.CartDetails.FirstOrDefaultAsync(c => c.Product.Id == productId && c.Cart.User.Id == userId);
+        if (existingCartDetail == null) return Constants.ERR_CART_DETAIL_NOT_FOUND;
         if (existingCartDetail == null) 
         {
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
@@ -51,9 +52,9 @@ public class CartService(IDbContextFactory<CornershopDbContext> dbContextFactory
     public async Task<Result<CartDTO?, string?>> RemoveItem(string userId, string productId, int quantity)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var cart = await dbContext.Carts.Where(c => c.User.Id == userId).Include(c => c.CartDetails).FirstOrDefaultAsync();
+        var cart = await dbContext.Carts.Where(c => c.User.Id == userId).FirstOrDefaultAsync();
         if (cart == null) return Constants.ERR_CART_NOT_FOUND;
-        var existingCartDetail = cart.CartDetails.FirstOrDefault(c => c.Product.Id == productId);
+        var existingCartDetail = await dbContext.CartDetails.FirstOrDefaultAsync(c => c.Product.Id == productId && c.Cart.User.Id == userId);
         if (existingCartDetail == null) return Constants.ERR_CART_DETAIL_NOT_FOUND;
         if (existingCartDetail.Quantity > quantity)
         {

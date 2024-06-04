@@ -89,7 +89,7 @@ public class CartService(IHttpClientFactory httpClientFactory, IConfiguration co
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var data = await httpResponseMessage.Content.ReadAsStringAsync();
-                var response = JsonSerializer.Deserialize<AddItemCartResponse>(data, new JsonSerializerOptions
+                var response = JsonSerializer.Deserialize<RemoveItemCartResponse>(data, new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
