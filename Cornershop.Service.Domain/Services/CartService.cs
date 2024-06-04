@@ -26,7 +26,6 @@ public class CartService(IDbContextFactory<CornershopDbContext> dbContextFactory
         var cart = await dbContext.Carts.Where(c => c.User.Id == userId).Include(c => c.CartDetails).FirstOrDefaultAsync();
         if (cart == null) return Constants.ERR_CART_NOT_FOUND;
         var existingCartDetail = await dbContext.CartDetails.FirstOrDefaultAsync(c => c.Product.Id == productId && c.Cart.User.Id == userId);
-        if (existingCartDetail == null) return Constants.ERR_CART_DETAIL_NOT_FOUND;
         if (existingCartDetail == null) 
         {
             var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
