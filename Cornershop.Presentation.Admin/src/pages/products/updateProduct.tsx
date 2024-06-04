@@ -953,7 +953,7 @@ const UpdateProduct = () => {
 
             <div className="mb-4">
               <label className="mb-2 block text-black dark:text-white">
-                Updated On
+                Updated on
               </label>
               <input
                 type="text"
