@@ -29,15 +29,18 @@
                     <div class="product__details__text">
                         <h3>@Model.Name</h3>
                         <div class="product__details__rating">
-                            @for (int i = 1; i <= Model.Rating; i++)
+                            @if (Model.Rating > 0)
                             {
-                                <i class="fa fa-star"></i>
-                                if (Model.Rating - i > 0 && Model.Rating - i < 1)
+                                for (int i = 1; i <= Model.Rating; i++)
                                 {
-                                    <i class="fa fa-star-half-o"></i>
+                                    <i class="fa fa-star"></i>
+                                    if (Model.Rating - i > 0 && Model.Rating - i < 1)
+                                    {
+                                        <i class="fa fa-star-half-o"></i>
+                                    }
                                 }
+                                <span class="ms-2 rating">@Model.Rating.ToString("0.0")</span>
                             }
-                            <span class="ms-2 rating">@Model.Rating.ToString("0.0")</span>
                         </div>
                         <div class="product__details__price">@string.Format("{0:C}", @Model.Price)</div>
                         <div class="product__details__original__price">@string.Format("{0:C}", @Model.OriginalPrice)
