@@ -34,7 +34,7 @@ public class ReviewService(IHttpClientFactory httpClientFactory, IConfiguration 
 
     public async Task<ReviewDTO?> GetReviewOfProductByCurrentUser(string productId)
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -61,7 +61,7 @@ public class ReviewService(IHttpClientFactory httpClientFactory, IConfiguration 
 
     public async Task<ReviewDTO?> Add(string productId, int rating, string comment)
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -95,7 +95,7 @@ public class ReviewService(IHttpClientFactory httpClientFactory, IConfiguration 
 
     public async Task<bool> Remove(string productId)
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();

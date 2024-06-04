@@ -34,7 +34,7 @@ public class UserService(IHttpClientFactory httpClientFactory, IHttpContextAcces
 
     public async Task<UserDTO?> GetCurrentUser()
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -114,8 +114,31 @@ public class UserService(IHttpClientFactory httpClientFactory, IHttpContextAcces
         return null;
     }
 
-    public Task<UserDTO?> Update(UserDTO? productDTO)
+    public async Task<UserDTO?> Update(UserDTO userDTO)
     {
-        throw new NotImplementedException();
+        var httpClient = httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
+        var registerRequest = new UpdateUserRequest()
+        {
+            FirstName = userDTO.FirstName,
+            LastName = userDTO.LastName
+        };
+        var jsonContent = new StringContent(JsonSerializer.Serialize(registerRequest), Encoding.UTF8, "application/json");
+        var httpResponseMessage = await httpClient.PatchAsync(httpClient.BaseAddress + "api/user", jsonContent);
+
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            var data = await httpResponseMessage.Content.ReadAsStringAsync();
+            var response = JsonSerializer.Deserialize<UpdateUserResponse>(data, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            if (response != null && response.User != null)
+            {
+                return response.User;
+            }
+        }
+        return null;
     }
 }

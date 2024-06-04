@@ -22,7 +22,7 @@ public class LoginModel(IUserService userService) : PageModel
         var token = await userService.Login(User);
         if (token != null)
         {
-            Response.Cookies.Append("AuthCookie", token, new CookieOptions
+            Response.Cookies.Append("AuthCookieClient", token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,

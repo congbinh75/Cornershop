@@ -12,7 +12,7 @@ public class CartService(IHttpClientFactory httpClientFactory, IConfiguration co
 {
     public async Task<CartDTO?> GetCartByCurrentUser()
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -39,7 +39,7 @@ public class CartService(IHttpClientFactory httpClientFactory, IConfiguration co
 
     public async Task<CartDTO?> AddItem(string productId, int quantity = 1)
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -72,7 +72,7 @@ public class CartService(IHttpClientFactory httpClientFactory, IConfiguration co
 
     public async Task<bool> RemoveItem(string productId, int quantity = 1)
     {
-        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookie"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["AuthCookieClient"];
         if (token != null)
         {
             var httpClient = httpClientFactory.CreateClient();

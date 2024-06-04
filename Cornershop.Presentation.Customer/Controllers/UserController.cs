@@ -13,7 +13,7 @@ public class UserController(IUserService userService) : Controller
 
     public IActionResult Logout()
     {
-        Response.Cookies.Append("AuthCookie", string.Empty, new CookieOptions
+        Response.Cookies.Append("AuthCookieClient", string.Empty, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
