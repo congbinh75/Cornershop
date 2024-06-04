@@ -6,13 +6,13 @@
         @{
             foreach (var category in Model.Categories)
             {
-                if (ViewData["categoryId"] != null && category.Id == (string)ViewData["categoryId"])
+                if (ViewData["categoryId"] != null && category.Id == (string)ViewData["categoryId"]!)
                 {
                     <li><a asp-controller="Product" asp-route-categoryId="@category.Id" class="text-success">
                         @category.Name</a></li>
                     foreach (var subcategory in Model.Subcategories)
                     {
-                        if (ViewData["subcategoryId"] != null && subcategory.Id == (string)ViewData["subcategoryId"])
+                        if (ViewData["subcategoryId"] != null && subcategory.Id == (string)ViewData["subcategoryId"]!)
                         {
                             <li class="ps-3 text-small"><a asp-controller="Product" asp-route-categoryId="@category.Id"
                                  asp-route-subcategoryId="@subcategory.Id" class="text-success">
