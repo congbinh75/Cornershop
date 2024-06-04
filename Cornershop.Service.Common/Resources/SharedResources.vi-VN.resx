@@ -181,4 +181,8 @@
     <value>Người dùng hiện tại đã từng đánh giá sản phẩm này</value>
     <comment/>
   </data>
+  <data name="ERR_INVALID_RATING_VALUE" xml:space="preserve">
+    <value>Giá trị đánh giá không hợp lệ</value>
+    <comment/>
+  </data>
 </root>

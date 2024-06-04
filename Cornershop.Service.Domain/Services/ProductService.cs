@@ -160,7 +160,7 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         product.Format = productDTO.Format;
         product.Stock = productDTO.Stock;
         product.PublishedYear = productDTO.PublishedYear;
-        product.Rating = productDTO.Rating;
+        product.Rating = productDTO.Rating < Constants.MinRating || productDTO.Rating > Constants.MaxRating ? product.Rating : productDTO.Rating;
         product.IsVisible = productDTO.IsVisible;
         product.Author = author ?? product.Author;
         product.Publisher = publisher ?? product.Publisher;

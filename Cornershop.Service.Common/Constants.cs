@@ -9,6 +9,9 @@
 
         public const int PostfixStringLength = 8;
 
+        public const int MinRating = 1;
+        public const int MaxRating = 5;
+
         public const string DefaultErrorMessage = "An unexpected error happened. Please try again later or contact our support team.";
 
         public const string ERR_EMAIL_ALREADY_REGISTERED = "ERR_EMAIL_ALREADY_REGISTERED";
@@ -29,6 +32,7 @@
         public const string ERR_INVALID_CREDENTIALS = "ERR_INVALID_CREDENTIALS";
         public const string ERR_INVALID_INPUT_DATA = "ERR_INVALID_INPUT_DATA";
         public const string ERR_INVALID_ROLE_VALUE = "ERR_INVALID_ROLE_VALUE";
+        public const string ERR_INVALID_RATING_VALUE = "ERR_INVALID_RATING_VALUE";
         public const string ERR_UNEXPECTED_ERROR = "ERR_UNEXPECTED_ERROR";
     }
 }

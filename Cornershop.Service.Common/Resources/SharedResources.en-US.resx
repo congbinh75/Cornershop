@@ -181,4 +181,8 @@
     <value>Review for this product by current user is already existed</value>
     <comment/>
   </data>
+  <data name="ERR_INVALID_RATING_VALUE" xml:space="preserve">
+    <value>Rating value is not valid</value>
+    <comment/>
+  </data>
 </root>

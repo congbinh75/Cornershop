@@ -32,6 +32,8 @@ public class ReviewSerivce(IDbContextFactory<CornershopDbContext> dbContextFacto
         var existingReview = await dbContext.Reviews.Where(r => r.Product.Id == reviewDTO.ProductId && r.User.Id == reviewDTO.UserId).FirstOrDefaultAsync();
         if (existingReview != null) return Constants.ERR_REVIEW_FOR_PRODUCT_BY_USER_EXISTED;
 
+        if (reviewDTO.Rating < Constants.MinRating || reviewDTO.Rating > Constants.MaxRating) return Constants.ERR_INVALID_RATING_VALUE;
+
         var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == reviewDTO.ProductId);
         if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
         var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == reviewDTO.UserId); 
