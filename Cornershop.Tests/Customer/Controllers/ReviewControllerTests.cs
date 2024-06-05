@@ -55,11 +55,25 @@ public class ReviewControllerTests
                 NewComment = "Comment5",
                 NewRating = 5
             }};
+        yield return new object[] {
+            new ProductReviewModel
+            {
+                ProductId = "Test6",
+                NewComment = "Comment6",
+                NewRating = 0
+            }};
+        yield return new object[] {
+            new ProductReviewModel
+            {
+                ProductId = "Test7",
+                NewComment = "Comment7",
+                NewRating = 6
+            }};
     }
 
     [Theory]
     [MemberData(nameof(ProductReviewModelData))]
-    public async Task Submit_ShouldCallAddAndRedirectToDetail(ProductReviewModel productReviewModel)
+    public async Task Submit_ShouldCallAddAndRedirectToDetail_WithRatingBetween1And5(ProductReviewModel productReviewModel)
     {
         // Arrange
         var review = new ReviewDTO
