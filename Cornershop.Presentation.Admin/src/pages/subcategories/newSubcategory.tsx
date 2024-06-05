@@ -42,8 +42,8 @@ const NewSubcategory = () => {
     description: "",
   });
 
-  const page = 1;
-  const pageSize = 128;
+  const page = defaultPage;
+  const pageSize = defaultSelectPageSize;
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;

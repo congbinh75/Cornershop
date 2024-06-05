@@ -104,8 +104,8 @@ const UpdateProduct = () => {
   const [authorQuery, setAuthorQuery] = useState("");
   const [filteredAuthors, setFilteredAuthors] = useState([]);
 
-  const page = 1;
-  const pageSize = 128;
+  const page = defaultPage;
+  const pageSize = defaultSelectPageSize;
 
   const { data: productData, error: productError } = useGet(
     "/product/admin/" + id + "?isHiddenIncluded=true"

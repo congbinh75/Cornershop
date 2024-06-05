@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useGet, usePut } from "../../api/service";
-import { success } from "../../utils/constants";
+import { defaultPage, defaultSelectPageSize, success } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 import {
   Combobox,
@@ -86,8 +86,8 @@ const NewProduct = () => {
   const [authorQuery, setAuthorQuery] = useState<string>("");
   const [filteredAuthors, setFilteredAuthors] = useState([]);
 
-  const page = 1;
-  const pageSize = 128;
+  const page = defaultPage;
+  const pageSize = defaultSelectPageSize;
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
