@@ -142,7 +142,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task Update_CategoryNotFound_ReturnError()
+    public async Task Update_CategoryNotFound_ReturnsError()
     {
         // Arrange
         var mockDbContextFactory = await CreateMockDbContextFactoryAsync();
@@ -152,6 +152,37 @@ public class CategoryServiceTests
 
         // Act
         var result = await categoryService.Update(categoryDTO);
+
+        // Assert
+        Assert.NotNull(result.Error);
+        Assert.Equal(Constants.ERR_CATEGORY_NOT_FOUND, result.Error);
+    }
+
+    [Fact]
+    public async Task Remove_ReturnsTrue()
+    {
+        // Arrange
+        var mockDbContextFactory = await CreateMockDbContextFactoryAsync();
+        var categoryService = new CategoryService(mockDbContextFactory.Object);
+        var categoryId = "1";
+
+        // Act
+        var result = await categoryService.Remove(categoryId);
+
+        // Assert
+        Assert.True(result.Value);
+    }
+
+    [Fact]
+    public async Task Remove_CategoryNotFound_ReturnsError()
+    {
+        // Arrange
+        var mockDbContextFactory = await CreateMockDbContextFactoryAsync();
+        var categoryService = new CategoryService(mockDbContextFactory.Object);
+        var categoryId = "3";
+
+        // Act
+        var result = await categoryService.Remove(categoryId);
 
         // Assert
         Assert.NotNull(result.Error);
