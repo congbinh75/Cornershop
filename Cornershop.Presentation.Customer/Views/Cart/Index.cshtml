@@ -70,9 +70,9 @@
                 <div class="shoping__checkout">
                     <h5>Cart Total</h5>
                     <ul>
-                        <li>Subtotal <span>@(string.Format("{0:C}", Model.CartDetails.Sum(c => c.Quantity *
+                        <li>Subtotal <span>@(string.Format("{0:C}", Model.CartDetails?.Sum(c => c.Quantity *
                                 c.Product.Price)))</span></li>
-                        <li>Total <span>@(string.Format("{0:C}", Model.CartDetails.Sum(c => c.Quantity *
+                        <li>Total <span>@(string.Format("{0:C}", Model.CartDetails?.Sum(c => c.Quantity *
                                 c.Product.Price)))</span></li>
                     </ul>
                     <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
