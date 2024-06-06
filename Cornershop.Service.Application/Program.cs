@@ -6,7 +6,6 @@ using Cornershop.Service.Common;
 using Cornershop.Service.Domain.Interfaces;
 using Cornershop.Service.Domain.Services;
 using Cornershop.Service.Infrastructure.Contexts;
-using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -75,7 +74,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000")
+                .WithOrigins(builder.Configuration["Addresses:AdminClient"] ?? "")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
