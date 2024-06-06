@@ -14,28 +14,22 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
     public async Task<Result<ProductDTO?, string?>> GetById(string id, bool isHiddenIncluded = false)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        if (isHiddenIncluded)
+        var query = dbContext.Products
+            .Where(p => p.Id == id)
+            .Include(p => p.Author)
+            .Include(p => p.Publisher)
+            .Include(p => p.Subcategory).ThenInclude(s => s.Category)
+            .Include(p => p.ProductImages)
+            .AsQueryable();
+
+        if (!isHiddenIncluded)
         {
-            var product = await dbContext.Products.Where(p => p.Id == id)
-                .Include(p => p.Author)
-                .Include(p => p.Publisher)
-                .Include(p => p.Subcategory).ThenInclude(s => s.Category)
-                .Include(p => p.ProductImages)
-                .FirstOrDefaultAsync();
-            if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
-            return product.Map();
+            query = query.Where(p => p.IsVisible);
         }
-        else
-        {
-            var product = await dbContext.Products.Where(p => p.Id == id && p.IsVisible == true)
-                .Include(p => p.Author)
-                .Include(p => p.Publisher)
-                .Include(p => p.Subcategory).ThenInclude(s => s.Category)
-                .Include(p => p.ProductImages)
-                .FirstOrDefaultAsync();
-            if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
-            return product.Map();
-        }
+
+        var product = await query.FirstOrDefaultAsync();
+        if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
+        return product.Map();
     }
 
     public async Task<(ICollection<ProductDTO> products, int count)> GetAll(int page, int pageSize, bool isHiddenIncluded = false,
@@ -77,7 +71,7 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Id == productDTO.AuthorId);
         if (author == null) return Constants.ERR_AUTHOR_NOT_FOUND;
         var publisher = await dbContext.Publishers.FirstOrDefaultAsync(p => p.Id == productDTO.PublisherId);
-        if (publisher == null) return Constants.ERR_AUTHOR_NOT_FOUND;
+        if (publisher == null) return Constants.ERR_PUBLISHER_NOT_FOUND;
 
         var product = new Product
         {
@@ -133,12 +127,7 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
     public async Task<Result<ProductDTO?, string?>> Update(ProductDTO productDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var product = await dbContext.Products
-            .Include(p => p.Author)
-            .Include(p => p.Publisher)
-            .Include(p => p.Subcategory)
-            .Include(p => p.ProductImages)
-            .FirstOrDefaultAsync(p => p.Id == productDTO.Id);
+        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == productDTO.Id);
         if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
         var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(p => p.Id == productDTO.SubcategoryId);
         if (subcategory == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;
@@ -149,9 +138,8 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
 
         product.Name = productDTO.Name ?? product.Name;
         product.Description = productDTO.Description ?? product.Description;
-        product.Code = productDTO.Code ?? product.Code;
         product.Price = productDTO.Price;
-        product.Subcategory = subcategory ?? product.Subcategory;
+        product.Subcategory = subcategory;
         product.OriginalPrice = productDTO.OriginalPrice;
         product.Width = productDTO.Width;
         product.Length = productDTO.Length;
@@ -162,8 +150,8 @@ public class ProductService(IDbContextFactory<CornershopDbContext> dbContextFact
         product.PublishedYear = productDTO.PublishedYear;
         product.Rating = productDTO.Rating < Constants.MinRating || productDTO.Rating > Constants.MaxRating ? product.Rating : productDTO.Rating;
         product.IsVisible = productDTO.IsVisible;
-        product.Author = author ?? product.Author;
-        product.Publisher = publisher ?? product.Publisher;
+        product.Author = author;
+        product.Publisher = publisher;
 
         var deletedProductImages = new List<ProductImage>();
         foreach (var item in product.ProductImages)

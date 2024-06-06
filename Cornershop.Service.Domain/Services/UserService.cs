@@ -127,7 +127,7 @@ public class UserService(IDbContextFactory<CornershopDbContext> dbContextFactory
         return true;
     }
 
-    private static (string hashedPassword, byte[] salt) HashPassword(string password, byte[]? salt = null)
+    public static (string hashedPassword, byte[] salt) HashPassword(string password, byte[]? salt = null)
     {
         salt ??= RandomNumberGenerator.GetBytes(128 / 8);
         string hassed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
