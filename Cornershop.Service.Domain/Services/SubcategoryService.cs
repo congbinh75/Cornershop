@@ -37,8 +37,8 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
     public async Task<Result<SubcategoryDTO?, string?>> Add(SubcategoryDTO subcategoryDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id);
-        if (category == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.CategoryId);
+        if (category == null) return Constants.ERR_CATEGORY_NOT_FOUND;
         var subcategory = new Subcategory
         {
             Name = subcategoryDTO.Name,
@@ -53,7 +53,7 @@ public class SubcategoryService(IDbContextFactory<CornershopDbContext> dbContext
     public async Task<Result<SubcategoryDTO?, string?>> Update(SubcategoryDTO subcategoryDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Category.Id);
+        var category = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.CategoryId);
         if (category == null) return Constants.ERR_CATEGORY_NOT_FOUND;
         var subcategory = await dbContext.Subcategories.FirstOrDefaultAsync(c => c.Id == subcategoryDTO.Id);
         if (subcategory == null) return Constants.ERR_SUBCATEGORY_NOT_FOUND;

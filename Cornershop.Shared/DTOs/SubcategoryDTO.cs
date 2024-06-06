@@ -10,6 +10,8 @@ namespace Cornershop.Shared.DTOs
 
         public CategoryDTO Category { get; set; }
 
+        public string CategoryId { get; set; }
+
         public ICollection<ProductDTO> Products { get; set; }
     }
 }

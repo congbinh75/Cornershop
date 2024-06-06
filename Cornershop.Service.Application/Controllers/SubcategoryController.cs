@@ -48,10 +48,7 @@ public class SubcategoryController(ISubcategoryService subcategoryService, IStri
         {
             Name = request.Name,
             Description = request.Description,
-            Category = new CategoryDTO
-            {
-                Id = request.CategoryId
-            }
+            CategoryId = request.CategoryId
         });
         if (result.Success)
         {
@@ -75,7 +72,7 @@ public class SubcategoryController(ISubcategoryService subcategoryService, IStri
         {
             Id = request.Id,
             Name = request.Name,
-            Category = new CategoryDTO { Id = request.CategoryId },
+            CategoryId = request.CategoryId,
             Description = request.Description
         });
         if (result.Success)
