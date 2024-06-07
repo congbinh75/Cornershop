@@ -41,10 +41,10 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetById_ShouldReturnUser_WhenUserExists()
+    public async Task GetById_ReturnsUser()
     {
         // Arrange
-        var userId = "123";
+        var userId = "1";
         var expectedUser = new UserDTO { Id = userId, Email = "test@example.com" };
         var response = new GetCurrentUserResponse { User = expectedUser };
         var responseJson = JsonSerializer.Serialize(response, options: new JsonSerializerOptions
@@ -57,7 +57,7 @@ public class UserServiceTests
                 "SendAsync",
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Method == HttpMethod.Get &&
-                    req.RequestUri == new Uri("https://example.com/api/user/123")),
+                    req.RequestUri == new Uri("https://example.com/api/user/" + userId)),
                 ItExpr.IsAny<CancellationToken>()
             )
             .ReturnsAsync(new HttpResponseMessage
@@ -76,17 +76,17 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetById_ShouldReturnNull_WhenUserDoesNotExist()
+    public async Task GetById_UserNotFound_ReturnsNull()
     {
         // Arrange
-        var userId = "123";
+        var userId = "1";
 
         mockHttpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Method == HttpMethod.Get &&
-                    req.RequestUri == new Uri("https://example.com/api/user/123")),
+                    req.RequestUri == new Uri("https://example.com/api/user/" + userId)),
                 ItExpr.IsAny<CancellationToken>()
             )
             .ReturnsAsync(new HttpResponseMessage
@@ -102,7 +102,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetCurrentUser_ShouldReturnUser_WhenTokenIsValid()
+    public async Task GetCurrentUser_ValidToken_ReturnsUser()
     {
         // Arrange
         var token = "valid-token";
@@ -139,7 +139,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetCurrentUser_ShouldReturnNull_WhenTokenIsInvalid()
+    public async Task GetCurrentUser_InvalidToken_ReturnNull()
     {
         // Arrange
         var token = "invalid-token";
@@ -167,7 +167,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task Login_ShouldReturnToken_WhenCredentialsAreValid()
+    public async Task Login_ValidCredentials_ReturnsToken()
     {
         // Arrange
         var userDto = new UserDTO { Email = "test@example.com", PlainPassword = "password" };
@@ -200,7 +200,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task Login_ShouldReturnNull_WhenCredentialsAreInvalid()
+    public async Task Login_InvalidCredentials_ReturnNull()
     {
         // Arrange
         var userDto = new UserDTO { Email = "test@example.com", PlainPassword = "wrongpassword" };
@@ -226,7 +226,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task Register_ShouldReturnUser_WhenRegistrationIsSuccessful()
+    public async Task Register_ReturnsUser()
     {
         // Arrange
         var userDto = new UserDTO { FirstName = "John", LastName = "Doe", Email = "test@example.com", Username = "johndoe", PlainPassword = "password" };
@@ -260,7 +260,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task Register_ShouldReturnNull_WhenRegistrationFails()
+    public async Task Register_FailedRegistration_ReturnsNull()
     {
         // Arrange
         var userDto = new UserDTO { FirstName = "John", LastName = "Doe", Email = "test@example.com", Username = "johndoe", PlainPassword = "password" };
@@ -286,10 +286,10 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task Update_ShouldReturnUser_WhenUpdateIsSuccessful()
+    public async Task Update_ReturnsUser()
     {
         // Arrange
-        var userDto = new UserDTO { FirstName = "John", LastName = "Doe" };
+        var userDto = new UserDTO { FirstName = "FirstName", LastName = "LastName" };
         var response = new UpdateUserResponse { User = userDto };
         var responseJson = JsonSerializer.Serialize(response, options: new JsonSerializerOptions
         {
@@ -318,10 +318,10 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task Update_ShouldReturnNull_WhenUpdateFails()
+    public async Task Update_FailedUpdate_ReturnNull()
     {
         // Arrange
-        var userDto = new UserDTO { FirstName = "John", LastName = "Doe" };
+        var userDto = new UserDTO { FirstName = "FirstName", LastName = "LastName" };
 
         mockHttpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(
