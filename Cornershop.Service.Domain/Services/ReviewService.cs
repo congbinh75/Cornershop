@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cornershop.Service.Domain.Services;
 
-public class ReviewSerivce(IDbContextFactory<CornershopDbContext> dbContextFactory) : IReviewService
+public class ReviewService(IDbContextFactory<CornershopDbContext> dbContextFactory) : IReviewService
 {
     public async Task<(ICollection<ReviewDTO> reviews, int count)> GetAllByProduct(int page, int pageSize, string productId)
     {
@@ -58,17 +58,17 @@ public class ReviewSerivce(IDbContextFactory<CornershopDbContext> dbContextFacto
     public async Task<Result<bool, string?>> Remove(ReviewDTO reviewDTO)
     {
         using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var review = await dbContext.Reviews.Where(r => r.Product.Id == reviewDTO.Product.Id && r.User.Id == reviewDTO.User.Id).FirstOrDefaultAsync();
+        var review = await dbContext.Reviews.Where(r => r.Product.Id == reviewDTO.ProductId && r.User.Id == reviewDTO.UserId).FirstOrDefaultAsync();
         if (review == null) return Constants.ERR_REVIEW_NOT_FOUND;
 
-        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == reviewDTO.Product.Id);
+        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == reviewDTO.ProductId);
         if (product == null) return Constants.ERR_PRODUCT_NOT_FOUND;
 
         dbContext.Reviews.Remove(review);
         await dbContext.SaveChangesAsync();
 
         var reviews = await dbContext.Reviews.Where(r => r.Product.Id == reviewDTO.ProductId).ToListAsync();
-        product.Rating = reviews.Sum(r => r.Rating) / reviews.Count;
+        product.Rating = reviews.Count > 0 ? reviews.Sum(r => r.Rating) / reviews.Count : 0;
         await dbContext.SaveChangesAsync();
 
         return true;
