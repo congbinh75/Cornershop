@@ -44,7 +44,7 @@ public class UserServiceTests
     public async Task GetById_ReturnsUser()
     {
         // Arrange
-        var userId = "1";
+        var userId = "User1";
         var expectedUser = new UserDTO { Id = userId, Email = "test@example.com" };
         var response = new GetCurrentUserResponse { User = expectedUser };
         var responseJson = JsonSerializer.Serialize(response, options: new JsonSerializerOptions
@@ -79,7 +79,7 @@ public class UserServiceTests
     public async Task GetById_UserNotFound_ReturnsNull()
     {
         // Arrange
-        var userId = "1";
+        var userId = "User1";
 
         mockHttpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -106,7 +106,7 @@ public class UserServiceTests
     {
         // Arrange
         var token = "valid-token";
-        var expectedUser = new UserDTO { Id = "123", Email = "test@example.com" };
+        var expectedUser = new UserDTO { Id = "User1", Email = "test@example.com" };
         var response = new GetCurrentUserResponse { User = expectedUser };
         var responseJson = JsonSerializer.Serialize(response, options: new JsonSerializerOptions
         {
@@ -229,7 +229,7 @@ public class UserServiceTests
     public async Task Register_ReturnsUser()
     {
         // Arrange
-        var userDto = new UserDTO { FirstName = "John", LastName = "Doe", Email = "test@example.com", Username = "johndoe", PlainPassword = "password" };
+        var userDto = new UserDTO { FirstName = "FirstName", LastName = "LastName", Email = "test@example.com", Username = "johndoe", PlainPassword = "password" };
         var response = new RegisterUserResponse { User = userDto };
         var responseJson = JsonSerializer.Serialize(response, options: new JsonSerializerOptions
         {
@@ -263,7 +263,7 @@ public class UserServiceTests
     public async Task Register_FailedRegistration_ReturnsNull()
     {
         // Arrange
-        var userDto = new UserDTO { FirstName = "John", LastName = "Doe", Email = "test@example.com", Username = "johndoe", PlainPassword = "password" };
+        var userDto = new UserDTO { FirstName = "FirstName", LastName = "LastName", Email = "test@example.com", Username = "username", PlainPassword = "password" };
 
         mockHttpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(

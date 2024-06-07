@@ -1,16 +1,11 @@
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using Cornershop.Presentation.Customer.Interfaces;
 using Cornershop.Presentation.Customer.Services;
-using Cornershop.Service.Infrastructure.Entities;
 using Cornershop.Shared.DTOs;
 using Cornershop.Shared.Requests;
-using Cornershop.Shared.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 
@@ -44,8 +39,8 @@ public class ProductServiceTests
     public async Task GetById_ReturnsProduct()
     {
         // Arrange
-        var product = "1";
-        var expectedProduct = new ProductDTO { Id = product, Name = "Name" };
+        var productId = "Product1";
+        var expectedProduct = new ProductDTO { Id = productId, Name = "Name" };
         var response = new GetProductResponse { Product = expectedProduct };
         var responseJson = JsonSerializer.Serialize(response, options: new JsonSerializerOptions
         {
@@ -57,7 +52,7 @@ public class ProductServiceTests
                 "SendAsync",
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Method == HttpMethod.Get &&
-                    req.RequestUri == new Uri("https://example.com/api/product/" + product)),
+                    req.RequestUri == new Uri("https://example.com/api/product/" + productId)),
                 ItExpr.IsAny<CancellationToken>()
             )
             .ReturnsAsync(new HttpResponseMessage
@@ -67,7 +62,7 @@ public class ProductServiceTests
             });
 
         // Act
-        var result = await productService.GetById(product);
+        var result = await productService.GetById(productId);
 
         // Assert
         Assert.NotNull(result);
@@ -76,10 +71,10 @@ public class ProductServiceTests
     }
 
     [Fact]
-    public async Task GetById_UserNotFound_ReturnsNull()
+    public async Task GetById_ProductNotFound_ReturnsNull()
     {
         // Arrange
-        var productId = "1";
+        var productId = "Product1";
 
         mockHttpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(
