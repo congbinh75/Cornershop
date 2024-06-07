@@ -7,11 +7,6 @@ namespace Cornershop.Presentation.Customer.Services;
 
 public class SubcategoryService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : ISubcategoryService
 {
-    public Task<SubcategoryDTO?> GetById(string id)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<ICollection<SubcategoryDTO>> GetAllByCategory(string categoryId, int page, int pageSize)
     {
         var httpClient = httpClientFactory.CreateClient();

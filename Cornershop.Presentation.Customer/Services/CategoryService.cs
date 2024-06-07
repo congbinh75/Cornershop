@@ -11,7 +11,7 @@ public class CategoryService(IHttpClientFactory httpClientFactory, IConfiguratio
     {
         var httpClient = httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
-        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/category" + "?id=" + id);
+        var httpResponseMessage = await httpClient.GetAsync(httpClient.BaseAddress + "api/category/" + id);
 
         if (httpResponseMessage.IsSuccessStatusCode)
         {

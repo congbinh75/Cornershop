@@ -101,7 +101,7 @@ public class ReviewService(IHttpClientFactory httpClientFactory, IConfiguration 
             var httpClient = httpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(configuration["Service:BaseAddress"] ?? "");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var httpResponseMessage = await httpClient.DeleteAsync(httpClient.BaseAddress + "api/review" + "?id" + productId);
+            var httpResponseMessage = await httpClient.DeleteAsync(httpClient.BaseAddress + "api/review" + "?id=" + productId);
 
             if (httpResponseMessage.IsSuccessStatusCode)
             {
